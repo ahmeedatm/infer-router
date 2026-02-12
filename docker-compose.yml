@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 1. Le Cerveau : Ton API Gateway
+  api:
+    build: .                    # Construit l'image à partir du Dockerfile courant
+    container_name: infer-router-api
+    ports:
+      - "8000:8000"             # Expose le port 8000 vers l'extérieur
+    depends_on:
+      - redis                   # Attend que Redis soit prêt avant de se lancer
+    environment:
+      - REDIS_HOST=redis        # L'hôte est le nom du service Docker
+      - REDIS_PORT=6379
+    networks:
+      - infer-net
+    volumes:
+      - .:/app              # "Hot-reload" : tes modifs de code sont vues en direct
+
+  # 2. La Mémoire : Base de données Redis
+  redis:
+    image: redis:8.4.1-trixie   # Ton choix spécifique (si échec, tente redis:alpine)
+    container_name: infer-router-redis
+    ports:
+      - "6379:6379"             # Optionnel : utile pour debugger depuis ton PC
+    networks:
+      - infer-net
+
+# 3. Le Réseau : Isolation des conteneurs
+networks:
+  infer-net:
+    driver: bridge
