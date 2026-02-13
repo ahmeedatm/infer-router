@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
+import os
+import logging
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from redis.asyncio import Redis
@@ -7,10 +9,16 @@ import asyncio
 import time
 import json
 
+
+# Configuration du logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 async def process_inference(redis_client):
-    print("🤖 InferRouter démarré...")
+    logger.info("🤖 InferRouter démarré...")
     # Seuil de basculement (Threshold)
-    QUEUE_THRESHOLD = 5 
+    QUEUE_THRESHOLD = int(os.getenv("QUEUE_THRESHOLD", 5))
+    logger.info(f"⚙️ Seuil configuré à : {QUEUE_THRESHOLD}") 
     
     while True:
         result = await redis_client.brpop("inference_queue")
@@ -21,6 +29,8 @@ async def process_inference(redis_client):
             # --- LOGIQUE DE ROUTAGE (Cœur du sujet) ---
             # On vérifie la longueur actuelle de la file
             queue_length = await redis_client.llen("inference_queue")
+            
+            #logger.info(f"👀 Traitement de {data['sensor_id']} | File: {queue_length} (Seuil: {QUEUE_THRESHOLD})")
             
             if queue_length > QUEUE_THRESHOLD:
                 # Mode Dégradé : on privilégie la latence
@@ -47,11 +57,11 @@ async def process_inference(redis_client):
             }
             await redis_client.lpush("inference_results", json.dumps(data_history))
             
-            print(f"✅ [{model_used}] Latence: {latency:.2f}s | File: {queue_length}")
+            logger.info(f"✅ [{model_used}] Latence: {latency:.2f}s | File: {queue_length}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.redis = Redis(host="redis", port=6379)
+    app.state.redis = Redis(host=os.getenv("REDIS_HOST", "redis"), port=6379)
     worker_task = asyncio.create_task(process_inference(app.state.redis))    
     yield
     worker_task.cancel()
@@ -88,6 +98,7 @@ async def get_results():
 async def receive_data(data: InferenceRequest):
     data_json = data.model_dump_json()
     await app.state.redis.lpush("inference_queue", data_json)
+    logger.info(f"📥 Reçu: {data.sensor_id}")
     return {"status": "queued"}
 
 if __name__ == "__main__":

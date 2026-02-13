@@ -9,7 +9,6 @@ Ce dépôt contient une API FastAPI nommée "Infer Router" qui route des demande
 - docker-compose.yml : (optionnel) composition pour lancer l'API et Redis.
 - Dockerfile : image de l'application.
 - requirements.txt : dépendances Python.
-- rso/ : environnement virtuel local (ne pas versionner).
 
 **Résumé des fonctionnalités implémentées**
 
