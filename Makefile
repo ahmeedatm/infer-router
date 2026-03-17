@@ -1,4 +1,4 @@
-.PHONY: install run build up down clean
+.PHONY: install run build up down clean kill
 
 install:
 	python3 -m venv .venv
@@ -31,6 +31,9 @@ down:
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
+
+kill:
+	-lsof -t -i:8000 | xargs kill -9
 
 send-requests:
 	python3 scripts/send_requests.py --count $(or $(N), 10)

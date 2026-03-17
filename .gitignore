@@ -206,3 +206,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+.DS_Store
+
+# Latex docs
+latex
+
+.claude
+CLAUDE.md

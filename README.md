@@ -72,6 +72,33 @@ curl http://localhost:8000/results
 
 3) Simulation rapide pour déclencher le mode dégradé : envoyer plusieurs requêtes POST en parallèle (ou utiliser un petit script loop) pour augmenter la longueur de la file au-dessus du seuil `5`.
 
+**Lancer les tests**
+
+Le `make test` intégré démarre l'API, vide Redis, envoie des requêtes et attend le traitement :
+
+```bash
+# Test basique (10 requêtes, seuil 5)
+make test
+
+# Paramétré
+make test N=20 THRESHOLD=3
+
+# Multi-scénarios
+python3 scripts/send_requests.py --count 20 --scenario adaptive
+python3 scripts/send_requests.py --count 20 --scenario always-fast
+
+# Vérifier les résultats par scénario
+curl "http://localhost:8000/scenarios"
+curl "http://localhost:8000/results?scenario=adaptive"
+
+# Dashboard live (se rafraîchit toutes les 10 s)
+open http://localhost:8000/dashboard
+
+# Résilience : injecter un message malformé (le worker doit continuer)
+docker exec infer-router-redis redis-cli LPUSH inference_queue "bad-json"
+curl http://localhost:8000/health   # doit retourner {"status":"ok"}
+```
+
 **Dépendances importantes**
 
 - fastapi
@@ -115,7 +142,20 @@ Le système est capable de s'observer et de réagir à la charge.
 - [x] Calcul de Latence : Mesure du temps total ($T_{fin} - T_{début}$) pour chaque requête.
 - [x] Historisation : Sauvegarde des résultats (latence, modèle utilisé) dans Redis (`inference_results`).
 - [x] Visualisation : Route `GET /results` pour consulter l'historique depuis Postman.
-- [x] Contrôle par Seuil (Charge) : Le Worker vérifie la taille de la file (`LLEN`). Si file > 5, il bascule automatiquement sur le modèle rapide.
+- [x] Contrôle par Seuil (Charge) : Le Worker vérifie la taille de la file (`LLEN`). Si file ≥ 5, il bascule automatiquement sur le modèle rapide.
+
+✅ **Phase 2.5 : Refactoring, Corrections de Bugs & Scénarios (Terminé)**
+Architecture modulaire, trois bugs corrigés, et support multi-scénarios avec dashboard live.
+
+- [x] Refactoring modulaire : Code découpé en `config.py`, `models.py`, `worker.py`, `dashboard.py` — `main.py` réduit aux routes uniquement (~70 lignes).
+- [x] Bug fix — Off-by-one : Correction du seuil (`>` → `>=`) pour que `Fast-Model` se déclenche au bon moment.
+- [x] Bug fix — JSON malformé : Le worker attrape les `json.JSONDecodeError` et continue sans planter.
+- [x] Bug fix — Liste Redis non bornée : `LPUSH` + `LTRIM` atomique (pipeline) pour plafonner chaque liste à 1000 entrées.
+- [x] Tagging par scénario : Le champ `scenario` (optionnel, défaut `"default"`) est propagé de `POST /data` jusqu'aux résultats Redis (`inference_results:{scenario}`).
+- [x] Route `GET /scenarios` : Liste tous les scénarios présents dans Redis.
+- [x] Route `GET /results?scenario=` : Filtre les résultats par scénario.
+- [x] Dashboard live `GET /dashboard` : Page HTML avec Chart.js (courbe de latence + donut de distribution par modèle), auto-refresh toutes les 10 s.
+- [x] Script `--scenario` : `scripts/send_requests.py` accepte `--scenario` et l'inclut dans le corps POST.
 
 📝 **Phase 3 : Profilage Dynamique & Feedback (À FAIRE)**
 C'est l'étape actuelle. Le système doit apprendre de ses erreurs (Rétroaction).

@@ -1,105 +1,105 @@
-from fastapi import FastAPI
-import uvicorn
-import os
-import logging
-from pydantic import BaseModel
-from contextlib import asynccontextmanager
-from redis.asyncio import Redis
 import asyncio
-import time
 import json
+import logging
+from contextlib import asynccontextmanager
 
+import uvicorn
+from fastapi import FastAPI, Query
+from fastapi.responses import HTMLResponse
+from redis.asyncio import Redis
 
-# Configuration du logger
-logging.basicConfig(level=logging.INFO)
+from app.config import (
+    ACCURATE_MODEL_LATENCY,
+    ACCURATE_MODEL_NAME,
+    DEFAULT_SCENARIO,
+    FAST_MODEL_LATENCY,
+    FAST_MODEL_NAME,
+    INFERENCE_QUEUE_KEY,
+    LOG_LEVEL,
+    QUEUE_THRESHOLD,
+    REDIS_HOST,
+    REDIS_PORT,
+    RESULTS_KEY_PREFIX,
+)
+from app.dashboard import build_dashboard_html
+from app.models import InferenceRequest, QueuedResponse, ResultsResponse, ScenariosResponse
+from app.worker import process_inference
+
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
 logger = logging.getLogger(__name__)
 
-async def process_inference(redis_client):
-    logger.info("🤖 InferRouter démarré...")
-    # Seuil de basculement (Threshold)
-    QUEUE_THRESHOLD = int(os.getenv("QUEUE_THRESHOLD", 5))
-    logger.info(f"⚙️ Seuil configuré à : {QUEUE_THRESHOLD}") 
-    
-    while True:
-        result = await redis_client.brpop("inference_queue")
-        if result:
-            _, data_json = result
-            data = json.loads(data_json)
-            
-            # --- LOGIQUE DE ROUTAGE (Cœur du sujet) ---
-            # On vérifie la longueur actuelle de la file
-            queue_length = await redis_client.llen("inference_queue")
-            
-            #logger.info(f"👀 Traitement de {data['sensor_id']} | File: {queue_length} (Seuil: {QUEUE_THRESHOLD})")
-            
-            if queue_length > QUEUE_THRESHOLD:
-                # Mode Dégradé : on privilégie la latence
-                model_used = "Fast-Model"
-                processing_time = 0.5
-            else:
-                # Mode Nominal : on privilégie la précision
-                model_used = "Accurate-Model"
-                processing_time = 2.0
-            
-            # Simulation de l'inférence
-            await asyncio.sleep(processing_time)
-            
-            # Calcul de la latence
-            end_time = time.time()
-            latency = end_time - data["timestamp"]
-
-            # Sauvegarde avec l'info du modèle utilisé
-            data_history = {
-                'sensor_id': data["sensor_id"],
-                'model': model_used,
-                'latency': latency,
-                'queue_at_start': queue_length
-            }
-            await redis_client.lpush("inference_results", json.dumps(data_history))
-            
-            logger.info(f"✅ [{model_used}] Latence: {latency:.2f}s | File: {queue_length}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.redis = Redis(host=os.getenv("REDIS_HOST", "redis"), port=6379)
-    worker_task = asyncio.create_task(process_inference(app.state.redis))    
+    app.state.redis = Redis(host=REDIS_HOST, port=REDIS_PORT)
+    worker_task = asyncio.create_task(process_inference(app.state.redis))
     yield
     worker_task.cancel()
-    await app.state.redis.close()
+    try:
+        await worker_task
+    except asyncio.CancelledError:
+        pass
+    await app.state.redis.aclose()
+
 
 app = FastAPI(
     title="Infer Router API",
-    description="Router inference API",
-    version="1.0.0",
-    lifespan=lifespan
+    description="Adaptive inference routing with scenario support",
+    version="2.0.0",
+    lifespan=lifespan,
 )
 
-class InferenceRequest(BaseModel):
-    sensor_id: str
-    timestamp: float
-    features: list[float]
 
 @app.get("/")
 async def root():
     return {"message": "Welcome to Infer Router API"}
 
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
 
-@app.get("/results")
-async def get_results():
-    results_json = await app.state.redis.lrange("inference_results", 0, 9)
-    results = [json.loads(r) for r in results_json]
-    
-    return {"latest_results": results}
 
-@app.post("/data")
+@app.post("/data", response_model=QueuedResponse)
 async def receive_data(data: InferenceRequest):
-    data_json = data.model_dump_json()
-    await app.state.redis.lpush("inference_queue", data_json)
-    logger.info(f"📥 Reçu: {data.sensor_id}")
-    return {"status": "queued"}
+    await app.state.redis.lpush(INFERENCE_QUEUE_KEY, data.model_dump_json())
+    logger.info("Queued %s [scenario=%s]", data.sensor_id, data.scenario)
+    return QueuedResponse(status="queued", scenario=data.scenario)
+
+
+@app.get("/results", response_model=ResultsResponse)
+async def get_results(scenario: str = Query(default=DEFAULT_SCENARIO)):
+    key = f"{RESULTS_KEY_PREFIX}:{scenario}"
+    raw = await app.state.redis.lrange(key, 0, 9)
+    results = [json.loads(r) for r in raw]
+    return ResultsResponse(scenario=scenario, results=results)
+
+
+@app.get("/scenarios", response_model=ScenariosResponse)
+async def get_scenarios():
+    keys = await app.state.redis.keys(f"{RESULTS_KEY_PREFIX}:*")
+    prefix = f"{RESULTS_KEY_PREFIX}:"
+    names = sorted(
+        (k.decode() if isinstance(k, bytes) else k)[len(prefix):]
+        for k in keys
+    )
+    return ScenariosResponse(scenarios=names)
+
+
+@app.get("/config")
+async def get_config():
+    return {
+        "queue_threshold": QUEUE_THRESHOLD,
+        "fast_model": {"name": FAST_MODEL_NAME, "latency_s": FAST_MODEL_LATENCY},
+        "accurate_model": {"name": ACCURATE_MODEL_NAME, "latency_s": ACCURATE_MODEL_LATENCY},
+    }
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard():
+    html = await build_dashboard_html(app.state.redis)
+    return HTMLResponse(content=html)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
