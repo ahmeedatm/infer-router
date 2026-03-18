@@ -1,17 +1,30 @@
+from __future__ import annotations
+
 import datetime
 import json
 import logging
+from collections import Counter
 
 from redis.asyncio import Redis
 
 from app.config import (
     ACCURATE_MODEL_NAME,
+    ACCURACY_KEY_PREFIX,
     FAST_MODEL_NAME,
     QUEUE_THRESHOLD,
     RESULTS_KEY_PREFIX,
 )
 
 logger = logging.getLogger(__name__)
+
+
+async def _load_accuracy(redis_client: Redis) -> dict[str, float | None]:
+    fast_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{FAST_MODEL_NAME}")
+    accurate_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{ACCURATE_MODEL_NAME}")
+    return {
+        FAST_MODEL_NAME: float(fast_raw) if fast_raw is not None else None,
+        ACCURATE_MODEL_NAME: float(accurate_raw) if accurate_raw is not None else None,
+    }
 
 
 async def build_dashboard_html(redis_client: Redis) -> str:
@@ -27,7 +40,9 @@ async def build_dashboard_html(redis_client: Redis) -> str:
     for name in scenario_names:
         scenarios_data[name] = await _load_scenario_data(redis_client, name)
 
-    return _render_html(scenarios_data)
+    accuracy = await _load_accuracy(redis_client)
+
+    return _render_html(scenarios_data, accuracy)
 
 
 async def _load_scenario_data(redis_client: Redis, scenario: str) -> list[dict]:
@@ -62,12 +77,14 @@ def _compute_stats(results: list[dict]) -> dict:
             "fast_count": 0,
             "accurate_count": 0,
             "throughput": 0.0,
+            "routing_reasons": Counter(),
         }
 
     latencies = sorted(r["latency"] for r in results)
     n = len(latencies)
     fast_count = sum(1 for r in results if r.get("model") == FAST_MODEL_NAME)
     timestamps = [r["processed_at"] for r in results if r.get("processed_at") is not None]
+    routing_reasons = Counter(r.get("routing_reason") for r in results if r.get("routing_reason"))
     return {
         "total": n,
         "avg_latency": round(sum(latencies) / n, 4),
@@ -79,6 +96,7 @@ def _compute_stats(results: list[dict]) -> dict:
         "fast_count": fast_count,
         "accurate_count": n - fast_count,
         "throughput": _compute_throughput(timestamps, n),
+        "routing_reasons": routing_reasons,
     }
 
 
@@ -106,8 +124,25 @@ def _build_chart_data(results: list[dict]) -> dict:
     }
 
 
+def _render_routing_reason_stats(routing_reasons: Counter) -> str:
+    reason_colors = {
+        "low_queue": "#4f8ef7",
+        "queue_pressure": "#f7a24f",
+        "accuracy_override": "#a0e0a0",
+        "fallback": "#888888",
+    }
+    items = ""
+    for reason in ("low_queue", "queue_pressure", "accuracy_override", "fallback"):
+        count = routing_reasons.get(reason, 0)
+        color = reason_colors[reason]
+        label = reason.replace("_", " ")
+        items += f'<div class="stat"><span class="label" style="color:{color}">{label}</span><span class="value" style="color:{color}">{count}</span></div>\n'
+    return items
+
+
 def _render_stats_grid(stats: dict) -> str:
     throughput_display = f"{stats['throughput']} req/s" if stats["throughput"] > 0 else "n/a"
+    routing_items = _render_routing_reason_stats(stats.get("routing_reasons", Counter()))
     return f"""
       <div class="stats-grid">
         <div class="stat"><span class="label">Total</span><span class="value">{stats["total"]}</span></div>
@@ -121,6 +156,7 @@ def _render_stats_grid(stats: dict) -> str:
         <div class="stat"><span class="label">Accurate-Model</span><span class="value">{stats["accurate_count"]}</span></div>
         <div class="stat"><span class="label">Throughput</span><span class="value">{throughput_display}</span></div>
         <div class="stat"><span class="label" style="color:#ff5050">Threshold</span><span class="value" style="color:#ff5050">{QUEUE_THRESHOLD}</span></div>
+        {routing_items}
       </div>"""
 
 
@@ -302,13 +338,45 @@ def _render_scenario_section(scenario: str, results: list[dict], chart_id: int) 
     return html, script
 
 
-def _render_html(scenarios_data: dict[str, list[dict]]) -> str:
+def _render_accuracy_section(accuracy: dict[str, float | None]) -> str:
+    def _fmt(v: float | None) -> str:
+        return f"{v * 100:.1f}%" if v is not None else "n/a"
+
+    fast_val = accuracy.get(FAST_MODEL_NAME)
+    acc_val = accuracy.get(ACCURATE_MODEL_NAME)
+    fast_display = _fmt(fast_val)
+    acc_display = _fmt(acc_val)
+
+    fast_color = "#f7a24f"
+    acc_color = "#4f8ef7"
+
+    return f"""
+    <section class="scenario accuracy-section">
+      <h2 style="color:#a0e0a0">Current Model Accuracy</h2>
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="label" style="color:{fast_color}">{FAST_MODEL_NAME}</span>
+          <span class="value" style="color:{fast_color}">{fast_display}</span>
+        </div>
+        <div class="stat">
+          <span class="label" style="color:{acc_color}">{ACCURATE_MODEL_NAME}</span>
+          <span class="value" style="color:{acc_color}">{acc_display}</span>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:#555;margin:0">
+        Updated via <code>POST /feedback</code>. Use <code>GET /accuracy</code> for raw values.
+      </p>
+    </section>
+    """
+
+
+def _render_html(scenarios_data: dict[str, list[dict]], accuracy: dict[str, float | None]) -> str:
     if not scenarios_data:
-        return _empty_html()
+        return _empty_html(accuracy)
 
     all_stats = {name: _compute_stats(results) for name, results in scenarios_data.items()}
 
-    sections = []
+    sections = [_render_accuracy_section(accuracy)]
     chart_scripts = []
 
     if len(scenarios_data) > 1:
@@ -375,21 +443,28 @@ def _render_html(scenarios_data: dict[str, list[dict]]) -> str:
 </html>"""
 
 
-def _empty_html() -> str:
-    return """<!DOCTYPE html>
+def _empty_html(accuracy: dict[str, float | None] | None = None) -> str:
+    accuracy_html = _render_accuracy_section(accuracy) if accuracy else ""
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>InferRouter Dashboard</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #0f1117; color: #e0e0e0;
+    body {{ font-family: system-ui, sans-serif; background: #0f1117; color: #e0e0e0;
            display: flex; flex-direction: column; align-items: center;
-           justify-content: center; height: 100vh; margin: 0; gap: 8px; }
-    p { font-size: 1.5rem; color: #888; margin: 0; }
-    small { color: #444; }
+           justify-content: center; height: 100vh; margin: 0; gap: 8px; }}
+    p {{ font-size: 1.5rem; color: #888; margin: 0; }}
+    small {{ color: #444; }}
+    .scenario {{ background: #1a1d27; border-radius: 12px; padding: 24px; margin-bottom: 32px; width: 90%; max-width: 600px; }}
+    .stats-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }}
+    .stat {{ background: #0f1117; border-radius: 8px; padding: 12px; text-align: center; }}
+    .label {{ display: block; font-size: 0.75rem; color: #888; margin-bottom: 4px; }}
+    .value {{ font-size: 1.2rem; font-weight: bold; color: #e0e0e0; }}
   </style>
 </head>
 <body>
+  {accuracy_html}
   <p>No scenario data found. Send some requests first.</p>
   <small id="ts"></small>
   <script>

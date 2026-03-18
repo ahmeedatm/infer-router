@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
@@ -8,6 +10,8 @@ from redis.asyncio import Redis
 from app.config import (
     ACCURATE_MODEL_LATENCY,
     ACCURATE_MODEL_NAME,
+    ACCURACY_KEY_PREFIX,
+    ACCURACY_PENALTY_THRESHOLD,
     DEFAULT_SCENARIO,
     FAST_MODEL_LATENCY,
     FAST_MODEL_NAME,
@@ -20,7 +24,34 @@ from app.config import (
 logger = logging.getLogger(__name__)
 
 
-def _build_result_dict(data: dict, model_used: str, queue_length: int, scenario: str) -> dict:
+async def _select_model(
+    redis_client: Redis, queue_length: int
+) -> tuple[str, float, str]:
+    """Returns (model_name, processing_time, routing_reason)."""
+    queue_pressured = queue_length >= QUEUE_THRESHOLD
+
+    fast_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{FAST_MODEL_NAME}")
+    accurate_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{ACCURATE_MODEL_NAME}")
+    fast_acc = float(fast_raw) if fast_raw is not None else None
+    accurate_acc = float(accurate_raw) if accurate_raw is not None else None
+
+    if queue_pressured:
+        if fast_acc is not None and accurate_acc is not None:
+            if (accurate_acc - fast_acc) > ACCURACY_PENALTY_THRESHOLD:
+                return ACCURATE_MODEL_NAME, ACCURATE_MODEL_LATENCY, "accuracy_override"
+        reason = "queue_pressure" if fast_acc is not None else "fallback"
+        return FAST_MODEL_NAME, FAST_MODEL_LATENCY, reason
+    return ACCURATE_MODEL_NAME, ACCURATE_MODEL_LATENCY, "low_queue"
+
+
+def _build_result_dict(
+    data: dict,
+    model_used: str,
+    queue_length: int,
+    scenario: str,
+    accuracy: float | None,
+    routing_reason: str,
+) -> dict:
     return {
         "sensor_id": data["sensor_id"],
         "model": model_used,
@@ -28,6 +59,8 @@ def _build_result_dict(data: dict, model_used: str, queue_length: int, scenario:
         "queue_at_start": queue_length,
         "scenario": scenario,
         "processed_at": round(time.time(), 3),
+        "accuracy": accuracy,
+        "routing_reason": routing_reason,
     }
 
 
@@ -51,16 +84,14 @@ async def process_inference(redis_client: Redis) -> None:
             scenario = data.get("scenario", DEFAULT_SCENARIO)
             queue_length = await redis_client.llen(INFERENCE_QUEUE_KEY)
 
-            if queue_length >= QUEUE_THRESHOLD:  # Bug fix 1: >= not >
-                model_used = FAST_MODEL_NAME
-                processing_time = FAST_MODEL_LATENCY
-            else:
-                model_used = ACCURATE_MODEL_NAME
-                processing_time = ACCURATE_MODEL_LATENCY
+            model_used, processing_time, routing_reason = await _select_model(redis_client, queue_length)
 
             await asyncio.sleep(processing_time)
 
-            result_dict = _build_result_dict(data, model_used, queue_length, scenario)
+            raw_acc = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{model_used}")
+            model_accuracy = float(raw_acc) if raw_acc is not None else None
+
+            result_dict = _build_result_dict(data, model_used, queue_length, scenario, model_accuracy, routing_reason)
 
             results_key = f"{RESULTS_KEY_PREFIX}:{scenario}"
             async with redis_client.pipeline(transaction=True) as pipe:
@@ -69,11 +100,12 @@ async def process_inference(redis_client: Redis) -> None:
                 await pipe.execute()  # Bug fix 3: atomic LPUSH+LTRIM caps list
 
             logger.info(
-                "[%s] %s | latency=%.2fs queue=%d",
+                "[%s] %s | latency=%.2fs queue=%d reason=%s",
                 scenario,
                 model_used,
                 result_dict["latency"],
                 queue_length,
+                routing_reason,
             )
 
         except asyncio.CancelledError:

@@ -11,6 +11,8 @@ from redis.asyncio import Redis
 from app.config import (
     ACCURATE_MODEL_LATENCY,
     ACCURATE_MODEL_NAME,
+    ACCURACY_KEY_PREFIX,
+    ACCURACY_PENALTY_THRESHOLD,
     DEFAULT_SCENARIO,
     FAST_MODEL_LATENCY,
     FAST_MODEL_NAME,
@@ -22,7 +24,14 @@ from app.config import (
     RESULTS_KEY_PREFIX,
 )
 from app.dashboard import build_dashboard_html
-from app.models import InferenceRequest, QueuedResponse, ResultsResponse, ScenariosResponse
+from app.models import (
+    FeedbackRequest,
+    FeedbackResponse,
+    InferenceRequest,
+    QueuedResponse,
+    ResultsResponse,
+    ScenariosResponse,
+)
 from app.worker import process_inference
 
 logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
@@ -90,8 +99,26 @@ async def get_scenarios():
 async def get_config():
     return {
         "queue_threshold": QUEUE_THRESHOLD,
+        "accuracy_penalty_threshold": ACCURACY_PENALTY_THRESHOLD,
         "fast_model": {"name": FAST_MODEL_NAME, "latency_s": FAST_MODEL_LATENCY},
         "accurate_model": {"name": ACCURATE_MODEL_NAME, "latency_s": ACCURATE_MODEL_LATENCY},
+    }
+
+
+@app.post("/feedback", response_model=FeedbackResponse)
+async def post_feedback(feedback: FeedbackRequest):
+    await app.state.redis.set(f"{ACCURACY_KEY_PREFIX}:{feedback.model}", str(feedback.accuracy))
+    logger.info("Feedback received: model=%s accuracy=%.4f", feedback.model, feedback.accuracy)
+    return FeedbackResponse(model=feedback.model, accuracy=feedback.accuracy, status="updated")
+
+
+@app.get("/accuracy")
+async def get_accuracy():
+    fast_raw = await app.state.redis.get(f"{ACCURACY_KEY_PREFIX}:{FAST_MODEL_NAME}")
+    accurate_raw = await app.state.redis.get(f"{ACCURACY_KEY_PREFIX}:{ACCURATE_MODEL_NAME}")
+    return {
+        FAST_MODEL_NAME: float(fast_raw) if fast_raw is not None else None,
+        ACCURATE_MODEL_NAME: float(accurate_raw) if accurate_raw is not None else None,
     }
 
 

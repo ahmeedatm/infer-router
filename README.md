@@ -160,17 +160,17 @@ Architecture modulaire, trois bugs corrigés, et support multi-scénarios avec d
 📝 **Phase 3 : Profilage Dynamique & Feedback (À FAIRE)**
 C'est l'étape actuelle. Le système doit apprendre de ses erreurs (Rétroaction).
 
-- [ ] Gestion de l'état des modèles : Stocker la précision actuelle de chaque modèle dans Redis (ex: `accuracy:Fast-Model = 0.60`).
-- [ ] Route de Feedback : Créer une route `POST /feedback` permettant à un utilisateur (ou simulateur) de dire "La précision de ce modèle a baissé".
-- [ ] Intégration dans le Worker : Le Worker doit récupérer la précision actuelle du modèle choisi au moment du calcul pour l'enregistrer dans l'historique.
+- [x] Gestion de l'état des modèles : Stocker la précision actuelle de chaque modèle dans Redis (ex: `accuracy:Fast-Model = 0.60`).
+- [x] Route de Feedback : Créer une route `POST /feedback` permettant à un utilisateur (ou simulateur) de dire "La précision de ce modèle a baissé".
+- [x] Intégration dans le Worker : Le Worker doit récupérer la précision actuelle du modèle choisi au moment du calcul pour l'enregistrer dans l'historique.
 
 📝 **Phase 4 : Stratégie de Priorisation (À FAIRE)**
 Le "Cerveau" final. Il doit prendre une décision basée sur DEUX critères : la file d'attente ET la précision.
 
-- [ ] Algorithme de décision : Implémenter une logique un peu plus fine.
+- [x] Algorithme de décision : Implémenter une logique un peu plus fine.
 
   Exemple : "Si la file est vide MAIS que le modèle précis est devenu mauvais (feedback < 0.5), alors utiliser le modèle rapide quand même."
-- [ ] Mode Dégradé : S'assurer que le système ne plante pas si les précisions ne sont pas définies.
+- [x] Mode Dégradé : S'assurer que le système ne plante pas si les précisions ne sont pas définies.
 
 📝 **Phase 5 : Comparaison & Rapport (À FAIRE)**
 La preuve scientifique pour ton rendu.
