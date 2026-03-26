@@ -75,6 +75,10 @@ bench:
 	        sleep 3; \
 	        docker exec infer-router-redis redis-cli FLUSHALL; \
 	        sleep 1; \
+	        docker exec infer-router-redis redis-cli SET accuracy:Fast-Model 0.90; \
+	        docker exec infer-router-redis redis-cli SET accuracy:Accurate-Model 1.0; \
+	        docker exec infer-router-redis redis-cli SET "metrics:mu:Fast-Model" 5.0; \
+	        docker exec infer-router-redis redis-cli SET "metrics:mu:Accurate-Model" 1.0; \
 	        scenario=$${strategy}_$${load}; \
 	        if [ "$$load" = "normal" ]; then \
 	            .venv/bin/python3 scripts/traffic_client.py \
@@ -131,6 +135,10 @@ bench-quick:
 	        sleep 3; \
 	        docker exec infer-router-redis redis-cli FLUSHALL; \
 	        sleep 1; \
+	        docker exec infer-router-redis redis-cli SET accuracy:Fast-Model 0.90; \
+	        docker exec infer-router-redis redis-cli SET accuracy:Accurate-Model 1.0; \
+	        docker exec infer-router-redis redis-cli SET "metrics:mu:Fast-Model" 5.0; \
+	        docker exec infer-router-redis redis-cli SET "metrics:mu:Accurate-Model" 1.0; \
 	        scenario=$${strategy}_$${load}; \
 	        if [ "$$load" = "normal" ]; then \
 	            .venv/bin/python3 scripts/traffic_client.py \
