@@ -1,4 +1,4 @@
-.PHONY: install run build up down clean traffic bench plot send-requests test bench-redis bench-rabbitmq report
+.PHONY: install run build up down clean traffic bench bench-quick plot send-requests test bench-redis bench-rabbitmq report
 
 # ─── Local dev ───────────────────────────────────────────────────────────────
 
@@ -30,13 +30,13 @@ down:
 
 # Send N requests at RATE seconds between each (default: 20 req at 0.1s interval)
 traffic:
-	python3 scripts/traffic_client.py \
+	.venv/bin/python3 scripts/traffic_client.py \
 		--count $(or $(N),20) \
 		--rate $(or $(RATE),0.1) \
 		--scenario $(or $(SCENARIO),default)
 
 send-requests:
-	python3 scripts/traffic_client.py \
+	.venv/bin/python3 scripts/traffic_client.py \
 		--count $(or $(N),50) \
 		--rate 0.1 \
 		--scenario default
@@ -47,7 +47,7 @@ test:
 	redis-cli -h localhost flushall 2>/dev/null; true
 	REDIS_HOST=localhost ./.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 	sleep 2
-	python3 scripts/traffic_client.py \
+	.venv/bin/python3 scripts/traffic_client.py \
 		--count $(or $(N),20) \
 		--rate $(or $(RATE),0.1) \
 		--scenario $(or $(SCENARIO),default)
@@ -77,25 +77,25 @@ bench:
 	        sleep 1; \
 	        scenario=$${strategy}_$${load}; \
 	        if [ "$$load" = "normal" ]; then \
-	            python3 scripts/traffic_client.py \
+	            .venv/bin/python3 scripts/traffic_client.py \
 	                --count $(BENCH_NORMAL_N) \
 	                --rate $(BENCH_NORMAL_RATE) \
 	                --scenario $$scenario; \
 	        elif [ "$$load" = "burst" ]; then \
-	            python3 scripts/traffic_client.py \
+	            .venv/bin/python3 scripts/traffic_client.py \
 	                --count $(BENCH_BURST_N) \
 	                --rate $(BENCH_BURST_RATE) \
 	                --scenario $$scenario; \
 	        else \
-	            python3 scripts/traffic_client.py \
+	            .venv/bin/python3 scripts/traffic_client.py \
 	                --count $(BENCH_MIXED_N1) \
 	                --rate $(BENCH_NORMAL_RATE) \
 	                --scenario $$scenario; \
-	            python3 scripts/traffic_client.py \
+	            .venv/bin/python3 scripts/traffic_client.py \
 	                --count $(BENCH_MIXED_N2) \
 	                --rate $(BENCH_BURST_RATE) \
 	                --scenario $$scenario; \
-	            python3 scripts/traffic_client.py \
+	            .venv/bin/python3 scripts/traffic_client.py \
 	                --count $(BENCH_MIXED_N1) \
 	                --rate $(BENCH_NORMAL_RATE) \
 	                --scenario $$scenario; \
@@ -110,10 +110,65 @@ bench:
 	@echo ""
 	@echo "Benchmark complete. Run 'make plot' to generate graphs."
 
+# ─── Quick benchmark (for demo / dev — ~8 min instead of ~45 min) ────────────
+# Reduced parameters: normal=30req/1s, burst=30req/0.1s, mixed=50+30+50
+# Overwrites data/bench/ — use make bench for the full campaign.
+
+BENCH_QUICK_NORMAL_N    := 30
+BENCH_QUICK_NORMAL_RATE := 1.0
+BENCH_QUICK_BURST_N     := 30
+BENCH_QUICK_BURST_RATE  := 0.1
+BENCH_QUICK_MIXED_N1    := 50
+BENCH_QUICK_MIXED_N2    := 30
+
+bench-quick:
+	@mkdir -p data/bench/always-fast data/bench/always-accurate data/bench/infer-router
+	@for strategy in always-fast always-accurate infer-router; do \
+	    for load in normal burst mixed; do \
+	        echo ""; \
+	        echo "═══ strategy=$$strategy  load=$$load ═══"; \
+	        ROUTING_STRATEGY=$$strategy docker compose up -d --no-deps api; \
+	        sleep 3; \
+	        docker exec infer-router-redis redis-cli FLUSHALL; \
+	        sleep 1; \
+	        scenario=$${strategy}_$${load}; \
+	        if [ "$$load" = "normal" ]; then \
+	            .venv/bin/python3 scripts/traffic_client.py \
+	                --count $(BENCH_QUICK_NORMAL_N) \
+	                --rate $(BENCH_QUICK_NORMAL_RATE) \
+	                --scenario $$scenario; \
+	        elif [ "$$load" = "burst" ]; then \
+	            .venv/bin/python3 scripts/traffic_client.py \
+	                --count $(BENCH_QUICK_BURST_N) \
+	                --rate $(BENCH_QUICK_BURST_RATE) \
+	                --scenario $$scenario; \
+	        else \
+	            .venv/bin/python3 scripts/traffic_client.py \
+	                --count $(BENCH_QUICK_MIXED_N1) \
+	                --rate $(BENCH_QUICK_NORMAL_RATE) \
+	                --scenario $$scenario; \
+	            .venv/bin/python3 scripts/traffic_client.py \
+	                --count $(BENCH_QUICK_MIXED_N2) \
+	                --rate $(BENCH_QUICK_BURST_RATE) \
+	                --scenario $$scenario; \
+	            .venv/bin/python3 scripts/traffic_client.py \
+	                --count $(BENCH_QUICK_MIXED_N1) \
+	                --rate $(BENCH_QUICK_NORMAL_RATE) \
+	                --scenario $$scenario; \
+	        fi; \
+	        sleep 10; \
+	        curl -s "http://localhost:8000/export?scenario=$$scenario" \
+	            > data/bench/$$strategy/$${load}.json; \
+	        echo "Saved data/bench/$$strategy/$${load}.json"; \
+	    done; \
+	done
+	@echo ""
+	@echo "Quick benchmark complete. Run 'make plot' to generate graphs."
+
 # ─── Plotting (Phase 5) ──────────────────────────────────────────────────────
 
 plot:
-	python3 scripts/plot_results.py
+	.venv/bin/python3 scripts/plot_results.py
 
 # ─── Queue backend benchmark (Phase 7) ───────────────────────────────────────
 # Compares Redis vs RabbitMQ queue backends under identical load.
@@ -125,7 +180,7 @@ bench-redis:
 	sleep 3
 	docker exec infer-router-redis redis-cli FLUSHALL
 	sleep 1
-	python3 scripts/traffic_client.py \
+	.venv/bin/python3 scripts/traffic_client.py \
 		--count $(BENCH_NORMAL_N) \
 		--rate $(BENCH_NORMAL_RATE) \
 		--scenario bench_redis
@@ -139,7 +194,7 @@ bench-rabbitmq:
 	sleep 8
 	docker exec infer-router-redis redis-cli FLUSHALL
 	sleep 1
-	python3 scripts/traffic_client.py \
+	.venv/bin/python3 scripts/traffic_client.py \
 		--count $(BENCH_NORMAL_N) \
 		--rate $(BENCH_NORMAL_RATE) \
 		--scenario bench_rabbitmq
@@ -150,7 +205,7 @@ bench-rabbitmq:
 # ─── Auto-generated report (Phase 8) ─────────────────────────────────────────
 
 report:
-	python3 scripts/generate_report.py
+	.venv/bin/python3 scripts/generate_report.py
 
 # ─── Cleanup ─────────────────────────────────────────────────────────────────
 

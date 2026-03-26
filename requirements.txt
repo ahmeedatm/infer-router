@@ -17,5 +17,6 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.39.0
 aio-pika>=9.4.0
+requests>=2.31.0
 matplotlib>=3.9.0
 numpy>=2.0.0
