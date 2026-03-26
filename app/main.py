@@ -1,6 +1,9 @@
 import asyncio
+import base64
 import json
 import logging
+import time
+import uuid
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -9,19 +12,20 @@ from fastapi.responses import HTMLResponse
 from redis.asyncio import Redis
 
 from app.config import (
-    ACCURATE_MODEL_LATENCY,
     ACCURATE_MODEL_NAME,
+    ACCURATE_MODEL_URL,
     ACCURACY_KEY_PREFIX,
     ACCURACY_PENALTY_THRESHOLD,
     DEFAULT_SCENARIO,
-    FAST_MODEL_LATENCY,
     FAST_MODEL_NAME,
+    FAST_MODEL_URL,
     INFERENCE_QUEUE_KEY,
     LOG_LEVEL,
     QUEUE_THRESHOLD,
     REDIS_HOST,
     REDIS_PORT,
     RESULTS_KEY_PREFIX,
+    THRESHOLD_REDIS_KEY,
 )
 from app.dashboard import build_dashboard_html
 from app.models import (
@@ -31,6 +35,8 @@ from app.models import (
     QueuedResponse,
     ResultsResponse,
     ScenariosResponse,
+    ThresholdUpdateRequest,
+    ThresholdUpdateResponse,
 )
 from app.worker import process_inference
 
@@ -54,7 +60,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Infer Router API",
     description="Adaptive inference routing with scenario support",
-    version="2.0.0",
+    version="3.0.0",
     lifespan=lifespan,
 )
 
@@ -69,10 +75,17 @@ async def health_check():
     return {"status": "ok"}
 
 
-@app.post("/data", response_model=QueuedResponse)
+@app.post("/new_pod_run_model", response_model=QueuedResponse)
 async def receive_data(data: InferenceRequest):
-    await app.state.redis.lpush(INFERENCE_QUEUE_KEY, data.model_dump_json())
-    logger.info("Queued %s [scenario=%s]", data.sensor_id, data.scenario)
+    image_bytes = base64.b64decode(data.image + "==")
+    enriched = {
+        **data.model_dump(),
+        "sensor_id": str(uuid.uuid4()),
+        "timestamp": time.time(),
+        "image_size": len(image_bytes),
+    }
+    await app.state.redis.lpush(INFERENCE_QUEUE_KEY, json.dumps(enriched))
+    logger.info("Queued sensor_id=%s [scenario=%s] image_size=%d", enriched["sensor_id"], data.scenario, enriched["image_size"])
     return QueuedResponse(status="queued", scenario=data.scenario)
 
 
@@ -97,12 +110,21 @@ async def get_scenarios():
 
 @app.get("/config")
 async def get_config():
+    raw = await app.state.redis.get(THRESHOLD_REDIS_KEY)
+    current_threshold = int(raw) if raw is not None else QUEUE_THRESHOLD
     return {
-        "queue_threshold": QUEUE_THRESHOLD,
+        "queue_threshold": current_threshold,
         "accuracy_penalty_threshold": ACCURACY_PENALTY_THRESHOLD,
-        "fast_model": {"name": FAST_MODEL_NAME, "latency_s": FAST_MODEL_LATENCY},
-        "accurate_model": {"name": ACCURATE_MODEL_NAME, "latency_s": ACCURATE_MODEL_LATENCY},
+        "fast_model": {"name": FAST_MODEL_NAME, "url": FAST_MODEL_URL},
+        "accurate_model": {"name": ACCURATE_MODEL_NAME, "url": ACCURATE_MODEL_URL},
     }
+
+
+@app.put("/threshold", response_model=ThresholdUpdateResponse)
+async def set_threshold(body: ThresholdUpdateRequest):
+    await app.state.redis.set(THRESHOLD_REDIS_KEY, str(body.value))
+    logger.info("Queue threshold updated to %d", body.value)
+    return ThresholdUpdateResponse(queue_threshold=body.value, status="updated")
 
 
 @app.post("/feedback", response_model=FeedbackResponse)

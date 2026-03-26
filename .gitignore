@@ -211,6 +211,15 @@ __marimo__/
 
 # Latex docs
 latex
+presentation
 
 .claude
 CLAUDE.md
+
+traffic_des_clients
+
+TODO.md
+
+# Large binary data (images, CSV results)
+data/images/
+data/responses/

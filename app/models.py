@@ -1,24 +1,10 @@
-from typing import Optional
-
 from pydantic import BaseModel, Field, field_validator
 
 
 class InferenceRequest(BaseModel):
-    sensor_id: str
-    timestamp: float
-    features: list[float]
+    image: str
     scenario: str = Field(default="default")
 
-
-class InferenceResult(BaseModel):
-    sensor_id: str
-    model: str
-    latency: float
-    queue_at_start: int
-    scenario: str
-    processed_at: Optional[float] = None
-    accuracy: Optional[float] = None
-    routing_reason: Optional[str] = None
 
 
 KNOWN_MODELS = {"Fast-Model", "Accurate-Model"}
@@ -61,3 +47,12 @@ class ScenariosResponse(BaseModel):
 class QueuedResponse(BaseModel):
     status: str
     scenario: str
+
+
+class ThresholdUpdateRequest(BaseModel):
+    value: int = Field(..., ge=1, description="New queue threshold value")
+
+
+class ThresholdUpdateResponse(BaseModel):
+    queue_threshold: int
+    status: str

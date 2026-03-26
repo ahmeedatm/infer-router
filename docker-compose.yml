@@ -8,10 +8,15 @@ services:
     ports:
       - "8000:8000"             # Expose le port 8000 vers l'extérieur
     depends_on:
-      - redis                   # Attend que Redis soit prêt avant de se lancer
+      - redis
+      - model-fast
+      - model-accurate
     environment:
-      - REDIS_HOST=redis        # L'hôte est le nom du service Docker
+      - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - FAST_MODEL_URL=http://model-fast:5002/new_pod_run_model
+      - ACCURATE_MODEL_URL=http://model-accurate:5002/new_pod_run_model
+      - CLIENT_CALLBACK_URL=http://host.docker.internal:5002/save_result
     networks:
       - infer-net
     volumes:
@@ -19,14 +24,28 @@ services:
 
   # 2. La Mémoire : Base de données Redis
   redis:
-    image: redis:8.4.1-trixie   # Ton choix spécifique (si échec, tente redis:alpine)
+    image: redis:8.4.1-trixie
     container_name: infer-router-redis
     ports:
       - "6379:6379"             # Optionnel : utile pour debugger depuis ton PC
     networks:
       - infer-net
 
-# 3. Le Réseau : Isolation des conteneurs
+  # 3. Modèle rapide (YOLO tiny)
+  model-fast:
+    image: pntumba/model_variant_tiny
+    container_name: infer-model-fast
+    networks:
+      - infer-net
+
+  # 4. Modèle précis (YOLO large)
+  model-accurate:
+    image: pntumba/model_variant_large
+    container_name: infer-model-accurate
+    networks:
+      - infer-net
+
+# 5. Le Réseau : Isolation des conteneurs
 networks:
   infer-net:
     driver: bridge

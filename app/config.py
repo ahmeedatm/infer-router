@@ -8,9 +8,12 @@ LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
 FAST_MODEL_NAME: str = "Fast-Model"
 ACCURATE_MODEL_NAME: str = "Accurate-Model"
-FAST_MODEL_LATENCY: float = 0.5
-ACCURATE_MODEL_LATENCY: float = 2.0
 
+FAST_MODEL_URL: str = os.getenv("FAST_MODEL_URL", "http://model-fast:5002/new_pod_run_model")
+ACCURATE_MODEL_URL: str = os.getenv("ACCURATE_MODEL_URL", "http://model-accurate:5002/new_pod_run_model")
+CLIENT_CALLBACK_URL: str = os.getenv("CLIENT_CALLBACK_URL", "http://host.docker.internal:5002/save_result")
+
+THRESHOLD_REDIS_KEY: str = "config:queue_threshold"
 INFERENCE_QUEUE_KEY: str = "inference_queue"
 RESULTS_KEY_PREFIX: str = "inference_results"
 ACCURACY_KEY_PREFIX: str = "accuracy"

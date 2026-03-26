@@ -78,6 +78,7 @@ def _compute_stats(results: list[dict]) -> dict:
             "accurate_count": 0,
             "throughput": 0.0,
             "routing_reasons": Counter(),
+            "avg_image_size": None,
         }
 
     latencies = sorted(r["latency"] for r in results)
@@ -85,6 +86,8 @@ def _compute_stats(results: list[dict]) -> dict:
     fast_count = sum(1 for r in results if r.get("model") == FAST_MODEL_NAME)
     timestamps = [r["processed_at"] for r in results if r.get("processed_at") is not None]
     routing_reasons = Counter(r.get("routing_reason") for r in results if r.get("routing_reason"))
+    image_sizes = [r["image_size"] for r in results if r.get("image_size") is not None]
+    avg_image_size = round(sum(image_sizes) / len(image_sizes)) if image_sizes else None
     return {
         "total": n,
         "avg_latency": round(sum(latencies) / n, 4),
@@ -97,6 +100,7 @@ def _compute_stats(results: list[dict]) -> dict:
         "accurate_count": n - fast_count,
         "throughput": _compute_throughput(timestamps, n),
         "routing_reasons": routing_reasons,
+        "avg_image_size": avg_image_size,
     }
 
 
@@ -143,6 +147,8 @@ def _render_routing_reason_stats(routing_reasons: Counter) -> str:
 def _render_stats_grid(stats: dict) -> str:
     throughput_display = f"{stats['throughput']} req/s" if stats["throughput"] > 0 else "n/a"
     routing_items = _render_routing_reason_stats(stats.get("routing_reasons", Counter()))
+    avg_size = stats.get("avg_image_size")
+    avg_size_display = f"{avg_size / 1024:.1f} KB" if avg_size is not None else "n/a"
     return f"""
       <div class="stats-grid">
         <div class="stat"><span class="label">Total</span><span class="value">{stats["total"]}</span></div>
@@ -155,6 +161,7 @@ def _render_stats_grid(stats: dict) -> str:
         <div class="stat"><span class="label">Fast-Model</span><span class="value">{stats["fast_count"]}</span></div>
         <div class="stat"><span class="label">Accurate-Model</span><span class="value">{stats["accurate_count"]}</span></div>
         <div class="stat"><span class="label">Throughput</span><span class="value">{throughput_display}</span></div>
+        <div class="stat"><span class="label">Avg img size</span><span class="value">{avg_size_display}</span></div>
         <div class="stat"><span class="label" style="color:#ff5050">Threshold</span><span class="value" style="color:#ff5050">{QUEUE_THRESHOLD}</span></div>
         {routing_items}
       </div>"""
