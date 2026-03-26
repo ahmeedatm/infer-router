@@ -23,8 +23,14 @@ docker exec infer-router-redis redis-cli FLUSHALL
 # Pane gauche — logs filtrés
 docker compose logs -f api 2>&1 | grep -E "(INFO|WARNING|ERROR)"
 
-# Pane droite — résultats auto-refresh
-watch -n 3 'curl -s "http://localhost:8000/results?scenario=demo_burst" | python3 -m json.tool 2>/dev/null | head -40'
+# Pane droite — résultats auto-refresh (watch non disponible par défaut sur macOS)
+while true; do
+  clear
+  curl -s "http://localhost:8000/results?scenario=demo_burst" | python3 -m json.tool 2>/dev/null | head -40
+  sleep 3
+done
+# Alternative si watch est installé (brew install watch) :
+# watch -n 3 'curl -s "http://localhost:8000/results?scenario=demo_burst" | python3 -m json.tool 2>/dev/null | head -40'
 ```
 
 **Navigateur — ouvrir avant d'enregistrer :**
@@ -159,21 +165,29 @@ ROUTING_STRATEGY=infer-router docker compose up -d --no-deps api
 ls data/bench/
 ```
 
-Ouvrir le graphe le plus parlant :
+Graphe 1 — **Latence E2E** (le graphe principal) :
 
 ```bash
-open data/plots/latency_comparison.png
+open data/plots/e2e_latency_comparison.png
 ```
 
-**Commenter :** always-fast ~0.2s, always-accurate ~1.1s, infer-router adaptatif.
+**Pointer sur Mixed load :** infer-router ~13s avg vs always-accurate ~29s avg — **2x moins de latence e2e**. La file d'always-accurate explose sous charge, infer-router l'absorbe en activant le modèle rapide.
 
-Puis montrer le graphe clé :
+Graphe 2 — **Distribution des décisions** :
+
+```bash
+open data/plots/routing_reasons.png
+```
+
+**Pointer sur Mixed load :** ~50% `infer_k1_gold` + ~50% `infer_k2_accurate` — l'algorithme switche dynamiquement. Les baselines restent figées à 100% statique.
+
+Graphe 3 — **Série temporelle** :
 
 ```bash
 open data/plots/infer_router_timeseries_mixed.png
 ```
 
-**À dire :** *"C'est le graphe le plus important. En charge mixte, k_active passe proprement de 1 à 2 pendant le burst, puis revient à 1 quand la charge retombe. λ monte à 8.5 req/s pendant le pic — le système l'absorbe sans dépasser le budget SLA."*
+**À dire :** *"k_active passe de 1 à 2 pendant le burst puis revient à 1. λ monte à ~8 req/s pendant le pic. InferRouter s'adapte en temps réel — ni always-fast ni always-accurate ne peuvent faire ça."*
 
 ---
 
