@@ -24,6 +24,8 @@ from app.config import (
     INFERENCE_QUEUE_KEY,
     LOG_LEVEL,
     OMEGA,
+    QUEUE_BACKEND,
+    RABBITMQ_URL,
     REDIS_HOST,
     REDIS_PORT,
     RESULTS_KEY_PREFIX,
@@ -39,6 +41,7 @@ from app.models import (
     ScenariosResponse,
 )
 from app.mu import get_mu
+from app.queue.redis_backend import RedisQueueBackend
 from app.threshold import get_k_active
 from app.worker import process_inference
 
@@ -49,7 +52,17 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.redis = Redis(host=REDIS_HOST, port=REDIS_PORT)
-    worker_task = asyncio.create_task(process_inference(app.state.redis))
+
+    # Create the appropriate queue backend
+    if QUEUE_BACKEND == "rabbitmq":
+        from app.queue.rabbitmq_backend import RabbitMQQueueBackend
+        app.state.queue = await RabbitMQQueueBackend.create(RABBITMQ_URL, INFERENCE_QUEUE_KEY)
+        logger.info("Queue backend: RabbitMQ (%s)", RABBITMQ_URL)
+    else:
+        app.state.queue = RedisQueueBackend(app.state.redis, INFERENCE_QUEUE_KEY)
+        logger.info("Queue backend: Redis")
+
+    worker_task = asyncio.create_task(process_inference(app.state.redis, app.state.queue))
     lambda_task = asyncio.create_task(lambda_updater(app.state.redis))
     yield
     worker_task.cancel()
@@ -62,13 +75,14 @@ async def lifespan(app: FastAPI):
         await lambda_task
     except asyncio.CancelledError:
         pass
+    await app.state.queue.close()
     await app.state.redis.aclose()
 
 
 app = FastAPI(
     title="Infer Router API",
     description="Adaptive inference routing with scenario support",
-    version="4.0.0",
+    version="5.0.0",
     lifespan=lifespan,
 )
 
@@ -92,11 +106,12 @@ async def receive_data(data: InferenceRequest):
         "timestamp": time.time(),
         "image_size": len(image_bytes),
     }
-    await app.state.redis.lpush(INFERENCE_QUEUE_KEY, json.dumps(enriched))
+    push_latency_ms = await app.state.queue.push(json.dumps(enriched))
+    enriched["queue_push_latency_ms"] = round(push_latency_ms, 3)
     await record_arrival(app.state.redis)
     logger.info(
-        "Queued sensor_id=%s [scenario=%s] image_size=%d",
-        enriched["sensor_id"], data.scenario, enriched["image_size"],
+        "Queued sensor_id=%s [scenario=%s] image_size=%d push_latency=%.2fms",
+        enriched["sensor_id"], data.scenario, enriched["image_size"], push_latency_ms,
     )
     return QueuedResponse(status="queued", scenario=data.scenario)
 
@@ -137,6 +152,7 @@ async def get_config():
     mu_accurate = await get_mu(app.state.redis, ACCURATE_MODEL_NAME)
     return {
         "routing_strategy": ROUTING_STRATEGY,
+        "queue_backend": QUEUE_BACKEND,
         "tau": TAU,
         "c": C_COEFFICIENT,
         "omega": OMEGA,

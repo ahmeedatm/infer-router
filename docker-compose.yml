@@ -18,6 +18,8 @@ services:
       - ACCURATE_MODEL_URL=http://model-accurate:5002/new_pod_run_model
       - CLIENT_CALLBACK_URL=http://host.docker.internal:5002/save_result
       - ROUTING_STRATEGY=${ROUTING_STRATEGY:-infer-router}
+      - QUEUE_BACKEND=${QUEUE_BACKEND:-redis}
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
     networks:
       - infer-net
     volumes:
@@ -46,7 +48,17 @@ services:
     networks:
       - infer-net
 
-# 5. Le Réseau : Isolation des conteneurs
+  # 5. Message broker (optional, used when QUEUE_BACKEND=rabbitmq)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: infer-router-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - infer-net
+
+# 6. Le Réseau : Isolation des conteneurs
 networks:
   infer-net:
     driver: bridge

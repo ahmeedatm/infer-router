@@ -6,6 +6,11 @@ LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 ROUTING_STRATEGY: str = os.getenv("ROUTING_STRATEGY", "infer-router")
 # Valid values: "infer-router" | "always-fast" | "always-accurate"
 
+# Phase 7 — Queue backend
+QUEUE_BACKEND: str = os.getenv("QUEUE_BACKEND", "redis")
+# Valid values: "redis" | "rabbitmq"
+RABBITMQ_URL: str = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
+
 # Phase 4 — InferRouter algorithm parameters
 TAU: float = float(os.getenv("TAU", 5.0))           # SLA waiting-time budget (seconds)
 C_COEFFICIENT: float = float(os.getenv("C_COEFFICIENT", 1.0))  # GPP cost coefficient

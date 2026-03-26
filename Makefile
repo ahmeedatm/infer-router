@@ -1,4 +1,4 @@
-.PHONY: install run build up down clean traffic bench plot send-requests test
+.PHONY: install run build up down clean traffic bench plot send-requests test bench-redis bench-rabbitmq report
 
 # ─── Local dev ───────────────────────────────────────────────────────────────
 
@@ -114,6 +114,43 @@ bench:
 
 plot:
 	python3 scripts/plot_results.py
+
+# ─── Queue backend benchmark (Phase 7) ───────────────────────────────────────
+# Compares Redis vs RabbitMQ queue backends under identical load.
+# Saves results to data/bench/redis/normal.json and data/bench/rabbitmq/normal.json.
+
+bench-redis:
+	@mkdir -p data/bench/redis
+	QUEUE_BACKEND=redis ROUTING_STRATEGY=infer-router docker compose up -d --no-deps api
+	sleep 3
+	docker exec infer-router-redis redis-cli FLUSHALL
+	sleep 1
+	python3 scripts/traffic_client.py \
+		--count $(BENCH_NORMAL_N) \
+		--rate $(BENCH_NORMAL_RATE) \
+		--scenario bench_redis
+	sleep 10
+	curl -s "http://localhost:8000/export?scenario=bench_redis" > data/bench/redis/normal.json
+	@echo "Saved data/bench/redis/normal.json"
+
+bench-rabbitmq:
+	@mkdir -p data/bench/rabbitmq
+	QUEUE_BACKEND=rabbitmq ROUTING_STRATEGY=infer-router docker compose up -d --no-deps api rabbitmq
+	sleep 8
+	docker exec infer-router-redis redis-cli FLUSHALL
+	sleep 1
+	python3 scripts/traffic_client.py \
+		--count $(BENCH_NORMAL_N) \
+		--rate $(BENCH_NORMAL_RATE) \
+		--scenario bench_rabbitmq
+	sleep 10
+	curl -s "http://localhost:8000/export?scenario=bench_rabbitmq" > data/bench/rabbitmq/normal.json
+	@echo "Saved data/bench/rabbitmq/normal.json"
+
+# ─── Auto-generated report (Phase 8) ─────────────────────────────────────────
+
+report:
+	python3 scripts/generate_report.py
 
 # ─── Cleanup ─────────────────────────────────────────────────────────────────
 

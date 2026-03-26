@@ -19,8 +19,8 @@ from app.config import (
     DEFAULT_SCENARIO,
     FAST_MODEL_NAME,
     FAST_MODEL_URL,
-    INFERENCE_QUEUE_KEY,
     OMEGA,
+    QUEUE_BACKEND,
     RESULTS_KEY_PREFIX,
     RESULTS_MAX_LEN,
     ROUTING_STRATEGY,
@@ -29,6 +29,7 @@ from app.config import (
 from app.gpp import rank_models
 from app.inference import call_model
 from app.mu import compute_and_store_mu, get_mu, record_latency
+from app.queue.base import QueueBackend
 from app.threshold import decide_k, get_k_active
 
 logger = logging.getLogger(__name__)
@@ -100,19 +101,22 @@ def _build_result_dict(
         "image_size": data.get("image_size"),
         "k_active": k_active,
         "lambda_at_decision": lambda_at_decision,
+        "queue_backend": QUEUE_BACKEND,
+        "queue_push_latency_ms": data.get("queue_push_latency_ms"),
     }
 
 
-async def process_inference(redis_client: Redis) -> None:
-    logger.info("InferRouter worker started (routing_strategy=%s)", ROUTING_STRATEGY)
+async def process_inference(redis_client: Redis, queue: QueueBackend) -> None:
+    logger.info(
+        "InferRouter worker started (routing_strategy=%s queue_backend=%s)",
+        ROUTING_STRATEGY, QUEUE_BACKEND,
+    )
 
     while True:
         try:
-            result = await redis_client.brpop(INFERENCE_QUEUE_KEY)
-            if result is None:
+            data_json = await queue.pop()
+            if data_json is None:
                 continue
-
-            _, data_json = result
 
             try:
                 data = json.loads(data_json)
@@ -121,7 +125,7 @@ async def process_inference(redis_client: Redis) -> None:
                 continue
 
             scenario = data.get("scenario", DEFAULT_SCENARIO)
-            queue_length = await redis_client.llen(INFERENCE_QUEUE_KEY)
+            queue_length = await queue.length()
 
             # Read cached metrics (updated by background tasks and previous iterations)
             mu_fast = await get_mu(redis_client, FAST_MODEL_NAME)

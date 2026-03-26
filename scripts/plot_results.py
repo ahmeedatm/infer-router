@@ -8,6 +8,7 @@ Charts produced:
   2. Bar: average accuracy per strategy
   3. Scatter: throughput vs average latency (one point per strategy × load)
   4. Line (infer-router only): k_active and λ over time
+  5. Grouped bar: Redis vs RabbitMQ queue push latency + throughput (Phase 7)
 
 Usage:
     python3 scripts/plot_results.py
@@ -247,6 +248,97 @@ def _plot_infer_router_timeseries(
         logger.info("Saved %s", path)
 
 
+# ─── Chart 5: Redis vs RabbitMQ backend comparison (Phase 7) ─────────────────
+
+def _compute_backend_stats(results: list[dict]) -> dict:
+    """Compute queue-specific stats from result dicts."""
+    if not results:
+        return {"count": 0, "push_p50": 0.0, "push_p95": 0.0, "push_p99": 0.0, "throughput": 0.0}
+    push_latencies = [
+        r["queue_push_latency_ms"]
+        for r in results
+        if r.get("queue_push_latency_ms") is not None
+    ]
+    timestamps = [r["processed_at"] for r in results if r.get("processed_at") is not None]
+    n = len(results)
+    duration = max(timestamps) - min(timestamps) if len(timestamps) >= 2 else 0.0
+    if push_latencies:
+        arr = np.array(push_latencies)
+        p50 = float(np.percentile(arr, 50))
+        p95 = float(np.percentile(arr, 95))
+        p99 = float(np.percentile(arr, 99))
+    else:
+        p50 = p95 = p99 = 0.0
+    return {
+        "count": n,
+        "push_p50": p50,
+        "push_p95": p95,
+        "push_p99": p99,
+        "throughput": round(n / duration, 3) if duration > 0 else 0.0,
+    }
+
+
+def _plot_backend_comparison(
+    redis_results: list[dict],
+    rabbitmq_results: list[dict],
+    output_dir: Path,
+) -> None:
+    redis_stats = _compute_backend_stats(redis_results)
+    rmq_stats = _compute_backend_stats(rabbitmq_results)
+
+    backends = ["Redis", "RabbitMQ"]
+    colors = ["#4f8ef7", "#f7a24f"]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Left: push latency P50/P95/P99
+    metrics = ["push_p50", "push_p95", "push_p99"]
+    labels = ["P50", "P95", "P99"]
+    x = np.arange(len(labels))
+    width = 0.35
+    redis_vals = [redis_stats[m] for m in metrics]
+    rmq_vals = [rmq_stats[m] for m in metrics]
+
+    bars_r = ax1.bar(x - width / 2, redis_vals, width, label="Redis", color=colors[0], alpha=0.85)
+    bars_m = ax1.bar(x + width / 2, rmq_vals, width, label="RabbitMQ", color=colors[1], alpha=0.85)
+    for bars in (bars_r, bars_m):
+        for bar in bars:
+            val = bar.get_height()
+            if val > 0:
+                ax1.text(
+                    bar.get_x() + bar.get_width() / 2, val + 0.01,
+                    f"{val:.2f}", ha="center", va="bottom", fontsize=8,
+                )
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(labels)
+    ax1.set_ylabel("Push latency (ms)")
+    ax1.set_title("Queue push latency: Redis vs RabbitMQ", fontweight="bold")
+    ax1.legend()
+    ax1.grid(axis="y", alpha=0.3)
+    ax1.set_ylim(bottom=0)
+
+    # Right: throughput
+    throughputs = [redis_stats["throughput"], rmq_stats["throughput"]]
+    bars = ax2.bar(backends, throughputs, color=colors, alpha=0.85)
+    for bar, val in zip(bars, throughputs):
+        if val > 0:
+            ax2.text(
+                bar.get_x() + bar.get_width() / 2, val + 0.01,
+                f"{val:.2f} req/s", ha="center", va="bottom", fontsize=9,
+            )
+    ax2.set_ylabel("Throughput (req/s)")
+    ax2.set_title("Throughput: Redis vs RabbitMQ", fontweight="bold")
+    ax2.grid(axis="y", alpha=0.3)
+    ax2.set_ylim(bottom=0)
+
+    fig.suptitle("Queue Backend Comparison (Phase 7)", fontweight="bold")
+    fig.tight_layout()
+    path = output_dir / "backend_comparison.png"
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    logger.info("Saved %s", path)
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -285,6 +377,21 @@ def main() -> None:
     # InferRouter time series (only if infer-router data exists)
     if "infer-router" in bench_data:
         _plot_infer_router_timeseries(bench_data["infer-router"], output_dir)
+
+    # Queue backend comparison (Phase 7) — only if both backend files exist
+    redis_file = bench_dir / "redis" / "normal.json"
+    rabbitmq_file = bench_dir / "rabbitmq" / "normal.json"
+    if redis_file.exists() and rabbitmq_file.exists():
+        try:
+            with open(redis_file) as f:
+                redis_results = json.load(f).get("results", [])
+            with open(rabbitmq_file) as f:
+                rabbitmq_results = json.load(f).get("results", [])
+            _plot_backend_comparison(redis_results, rabbitmq_results, output_dir)
+        except Exception as exc:
+            logger.warning("Could not generate backend comparison chart: %s", exc)
+    else:
+        logger.info("Skipping backend comparison (run 'make bench-redis bench-rabbitmq' first)")
 
     logger.info("All plots saved to %s/", output_dir)
 
