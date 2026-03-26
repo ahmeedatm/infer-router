@@ -1,181 +1,394 @@
-# Infer Router
+# InferRouter
 
-Ce dépôt contient une API FastAPI nommée "Infer Router" qui route des demandes d'inférence vers des modèles simulés en fonction de la charge de la file d'attente (Redis). Le but principal est de démontrer une logique de routage adaptative (privilégier latence vs précision) selon la taille de la file.
+Adaptive inference router implementing the three algorithms from Section IV of
+*Mitigating Tail Latency for On-Device Inference With Load-Balanced Heterogeneous Models* (IEEE):
 
-**Structure du projet**
+- **AAP** — Anti-Idling Accuracy Profiling: keeps per-model accuracy estimates up-to-date during idle periods.
+- **GPP** — Gold-Pair Prioritizing: selects the best model by minimising `p(i) = α_i + ω·c/μ_i`.
+- **Threshold Control** — decides how many models to keep active (`k ∈ {1, 2}`) based on `w(k)` and a SLA budget `τ`.
 
-- app/
-  - main.py : implémentation principale de l'API FastAPI, gestion du cycle de vie et du worker d'inférence.
-- docker-compose.yml : (optionnel) composition pour lancer l'API et Redis.
-- Dockerfile : image de l'application.
-- requirements.txt : dépendances Python.
+Three routing strategies can be compared: `always-fast`, `always-accurate`, `infer-router`.
 
-**Résumé des fonctionnalités implémentées**
+---
 
-- **Serveur HTTP**: API FastAPI exposant des endpoints REST.
-- **Queue Redis (asyncio)**: les requêtes d'inférence sont poussées dans la liste Redis `inference_queue`.
-- **Worker asynchrone**: une tâche de fond lit la file avec `BRPOP` et exécute une inférence simulée.
-- **Routage adaptatif**: si la longueur de la file dépasse un seuil (`QUEUE_THRESHOLD = 5`), le worker choisit un modèle rapide (`Fast-Model`) pour privilégier la latence ; sinon il choisit un modèle précis (`Accurate-Model`).
-- **Historique des résultats**: chaque inférence aboutie est poussée dans `inference_results` (liste Redis) avec métadonnées (id du capteur, modèle utilisé, latence, longueur de file au départ).
-- **Lifespan FastAPI**: création et fermeture du client Redis et lancement/arrêt propre du worker via un `asynccontextmanager`.
+## Architecture
 
-**Fichiers clés et explication**
-
-- `app/main.py` :
-  - Import des bibliothèques (`FastAPI`, `uvicorn`, `pydantic`, `redis.asyncio`, `asyncio`, etc.).
-  - Définition du modèle Pydantic `InferenceRequest` avec `sensor_id`, `timestamp` et `features`.
-  - Fonction `process_inference(redis_client)` : boucle infinie qui lit `inference_queue`, calcule la longueur de la file, choisit `Fast-Model` ou `Accurate-Model`, simule un temps de calcul (`0.5s` ou `2.0s`), calcule la latence et stocke l'historique dans `inference_results`.
-  - `lifespan(app)` : initialise `app.state.redis = Redis(host="redis", port=6379)`, lance `process_inference` en tâche de fond et effectue le nettoyage (annulation de la tâche et fermeture du client Redis).
-  - Endpoints :
-    - `GET /` : message de bienvenue.
-    - `GET /health` : état `ok`.
-    - `GET /results` : retourne les 10 derniers résultats depuis `inference_results`.
-    - `POST /data` : reçoit `InferenceRequest`, sérialise en JSON et fait `LPUSH inference_queue`.
-
-**Comment l'exécuter localement**
-
-Méthode 1 — avec `uvicorn` (environnement virtuel activé) :
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+Client
+  │  POST /new_pod_run_model
+  ▼
+FastAPI (app/main.py)
+  │  push → QueueBackend (Redis LIST or RabbitMQ queue)
+  ▼
+Worker (app/worker.py)  ←──── λ tracker (app/arrival.py)
+  │  decide_k()               μ tracker  (app/mu.py)
+  │  rank_models()            AAP probes (app/aap.py)
+  ▼
+Model container (HTTP)
+  │  pntumba/model_variant_tiny   (Fast-Model)
+  │  pntumba/model_variant_large  (Accurate-Model)
+  ▼
+Redis  ←── results / accuracy / metrics
 ```
 
-Méthode 2 — avec Docker / docker-compose (si `docker-compose.yml` fourni) :
+**Request flow:**
+1. `POST /new_pod_run_model` receives a base64 image, assigns a `sensor_id`, measures push latency, and enqueues to the queue backend.
+2. The background worker pops from the queue, reads cached `λ` and `μ` values, then runs the routing decision (threshold → GPP).
+3. The selected model container is called via HTTP. Its latency is recorded and `μ` is updated.
+4. If the Accurate-Model was used, an AAP probe is fired as a background task to update the Fast-Model's accuracy estimate.
+5. The result dict (model, latency, accuracy, k_active, λ, routing_reason, …) is stored in Redis and returned via `GET /results`.
+
+---
+
+## Prerequisites
+
+| Tool | Version |
+|------|---------|
+| Docker + Docker Compose | ≥ 24 |
+| Python | ≥ 3.9 |
+| make | any |
+
+Images for inference must be present in `data/images/` (JPEG files). A sample set is already included.
+
+---
+
+## Step-by-step tutorial
+
+### Step 1 — Clone and inspect the project
 
 ```bash
-docker-compose up --build
+git clone <repo-url>
+cd infer-router
+ls
+# app/         scripts/     data/        docker-compose.yml  Makefile  requirements.txt
 ```
 
-(Remarque : le service Redis doit être joignable à l'hôte `redis` sur le port `6379` si vous utilisez la configuration par défaut du projet.)
-
-**Exemples d'usage (tests rapides)**
-
-1) Poster une donnée d'inférence :
+### Step 2 — Start all containers
 
 ```bash
-curl -X POST "http://localhost:8000/data" -H "Content-Type: application/json" -d '
+make up
+```
+
+This starts four containers on the `infer-net` Docker network:
+
+| Container | Role |
+|-----------|------|
+| `infer-router-api` | FastAPI router on port 8000 |
+| `infer-router-redis` | Redis 8 — queue, metrics, results |
+| `infer-model-fast` | YOLO tiny (fast, lower accuracy) |
+| `infer-model-accurate` | YOLO large (slower, higher accuracy) |
+
+Check they are up:
+
+```bash
+docker compose ps
+curl http://localhost:8000/health
+# {"status":"ok"}
+```
+
+### Step 3 — Inspect the current configuration
+
+```bash
+curl http://localhost:8000/config | python3 -m json.tool
+```
+
+Key fields:
+- `routing_strategy` — active algorithm (`infer-router` by default)
+- `tau` — SLA waiting-time budget in seconds (default: 5.0)
+- `k_active` — number of models currently active (1 or 2)
+- `lambda_current` — measured arrival rate (req/s)
+- `mu` — service rates per model (updated from measured latencies)
+- `queue_backend` — `redis` or `rabbitmq`
+
+### Step 4 — Send a single inference request
+
+The router expects a base64-encoded image:
+
+```bash
+IMAGE=$(base64 -i data/images/000000000009.jpg)
+curl -s -X POST http://localhost:8000/new_pod_run_model \
+  -H "Content-Type: application/json" \
+  -d "{\"image\": \"$IMAGE\", \"scenario\": \"test\"}" | python3 -m json.tool
+# {"status": "queued", "scenario": "test"}
+```
+
+Wait a few seconds for the worker to process it, then retrieve results:
+
+```bash
+curl "http://localhost:8000/results?scenario=test" | python3 -m json.tool
+```
+
+Each result contains:
+- `model` — which model was used
+- `latency` — end-to-end inference time (seconds)
+- `accuracy` — measured accuracy from AAP (null until probed)
+- `routing_reason` — why this model was chosen (`infer_k1_gold`, `infer_k2_fast`, `static_fast`, …)
+- `k_active` — active models at decision time
+- `lambda_at_decision` — arrival rate at decision time
+
+### Step 5 — Send a traffic burst with the traffic client
+
+The `traffic_client.py` script reads images from `data/images/`, sends them to the router at a configurable rate, and starts a local Flask server on port 5002 to receive model callbacks.
+
+```bash
+# 20 requests, 0.5s between each, tagged as scenario "demo"
+python3 scripts/traffic_client.py --count 20 --rate 0.5 --scenario demo
+```
+
+Or use the Makefile shortcut:
+
+```bash
+# Default: 20 req at 0.1s interval, scenario "default"
+make traffic
+
+# Custom
+make traffic N=50 RATE=0.2 SCENARIO=my_test
+```
+
+> **Note:** keep `traffic_client.py` running while sending requests — it hosts the callback server that the model containers call back on port 5002.
+
+### Step 6 — Watch the live dashboard
+
+Open in a browser (auto-refreshes every 10 seconds):
+
+```
+http://localhost:8000/dashboard
+```
+
+The dashboard shows:
+- Recent results table (latency, model, routing reason, accuracy)
+- System metrics (k_active, λ, τ, w(k))
+- Per-model accuracy and priority score
+
+### Step 7 — Try the three routing strategies
+
+You can restart the API with a different strategy without stopping the model containers:
+
+```bash
+# Always use the fast model (lowest latency, accuracy not guaranteed)
+ROUTING_STRATEGY=always-fast docker compose up -d --no-deps api
+
+# Always use the accurate model (highest accuracy, higher latency under load)
+ROUTING_STRATEGY=always-accurate docker compose up -d --no-deps api
+
+# InferRouter adaptive algorithm (default)
+ROUTING_STRATEGY=infer-router docker compose up -d --no-deps api
+```
+
+Verify the active strategy:
+
+```bash
+curl http://localhost:8000/config | python3 -m json.tool | grep routing_strategy
+```
+
+### Step 8 — Run the full benchmark campaign
+
+The benchmark runs all 3 strategies × 3 load scenarios automatically and saves results to `data/bench/`.
+
+> Requires Docker to be running (`make up` first).
+
+```bash
+make bench
+```
+
+Load scenarios:
+
+| Scenario | Requests | Rate | Description |
+|----------|----------|------|-------------|
+| `normal` | 100 | 2.0s interval | Moderate, steady load |
+| `burst` | 50 | 0.1s interval | High-frequency spike |
+| `mixed` | 200 + 50 + 200 | mixed | Ramp up, burst, cooldown |
+
+Results are saved as:
+```
+data/bench/
+  always-fast/     normal.json  burst.json  mixed.json
+  always-accurate/ normal.json  burst.json  mixed.json
+  infer-router/    normal.json  burst.json  mixed.json
+```
+
+### Step 9 — Plot the results
+
+```bash
+make plot
+# → data/plots/latency_comparison.png
+# → data/plots/accuracy_comparison.png
+# → data/plots/throughput_vs_latency.png
+# → data/plots/infer_router_timeseries_normal.png  (+ burst, mixed)
+```
+
+Open the generated PNG files to compare the three strategies across all load scenarios.
+
+### Step 10 — Benchmark queue backends (Redis vs RabbitMQ)
+
+Compare the Redis LIST queue versus RabbitMQ under identical load:
+
+```bash
+# Benchmark with Redis backend
+make bench-redis
+
+# Benchmark with RabbitMQ backend (starts rabbitmq container automatically)
+make bench-rabbitmq
+```
+
+The RabbitMQ management UI is available at `http://localhost:15672` (user: `guest`, password: `guest`).
+
+After both benchmarks complete, re-run the plot to generate the backend comparison chart:
+
+```bash
+make plot
+# → data/plots/backend_comparison.png
+```
+
+### Step 11 — Generate the analysis report
+
+```bash
+make report
+# → REPORT.md
+```
+
+The report is auto-generated from all available benchmark JSON files. It includes:
+- Latency (avg / P95 / P99) and throughput per strategy and load scenario
+- Average accuracy per strategy
+- Analysis prose comparing InferRouter vs baselines
+- τ parameter impact explanation
+- Redis vs RabbitMQ comparison (if both backend benchmarks were run)
+- General conclusion
+
+---
+
+## Local development (without Docker)
+
+Install dependencies in a virtual environment:
+
+```bash
+make install
+# Creates .venv and installs requirements.txt
+```
+
+Start a local Redis container:
+
+```bash
+make redis
+```
+
+Run the API with hot-reload:
+
+```bash
+make run
+# Runs with REDIS_HOST=localhost, ROUTING_STRATEGY=infer-router, TAU=5.0
+
+# Override parameters
+make run ROUTING_STRATEGY=always-fast TAU=3.0
+```
+
+---
+
+## API Reference
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Service health check |
+| `POST` | `/new_pod_run_model` | Submit an inference request |
+| `GET` | `/results?scenario=` | Last 10 results for a scenario |
+| `GET` | `/export?scenario=` | All results for a scenario (no cap, for benchmarking) |
+| `GET` | `/scenarios` | List all scenario names present in Redis |
+| `GET` | `/config` | Active configuration and live metrics (λ, μ, k, τ) |
+| `GET` | `/accuracy` | Per-model accuracy, alpha, mu, and GPP priority score |
+| `GET` | `/dashboard` | Live HTML dashboard (auto-refresh 10s) |
+
+### POST /new_pod_run_model
+
+```json
 {
-  "sensor_id": "sensor-01",
-  "timestamp": 1670000000.0,
-  "features": [0.1, 0.2, 0.3]
-}'
+  "image": "<base64-encoded JPEG string>",
+  "scenario": "my_scenario"
+}
 ```
 
-2) Récupérer les derniers résultats :
+Response:
 
-```bash
-curl http://localhost:8000/results
+```json
+{
+  "status": "queued",
+  "scenario": "my_scenario"
+}
 ```
 
-3) Simulation rapide pour déclencher le mode dégradé : envoyer plusieurs requêtes POST en parallèle (ou utiliser un petit script loop) pour augmenter la longueur de la file au-dessus du seuil `5`.
+---
 
-**Lancer les tests**
+## Configuration
 
-Le `make test` intégré démarre l'API, vide Redis, envoie des requêtes et attend le traitement :
+All parameters are set via environment variables (with defaults):
 
-```bash
-# Test basique (10 requêtes, seuil 5)
-make test
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ROUTING_STRATEGY` | `infer-router` | `infer-router` \| `always-fast` \| `always-accurate` |
+| `QUEUE_BACKEND` | `redis` | `redis` \| `rabbitmq` |
+| `TAU` | `5.0` | SLA waiting-time budget (seconds) |
+| `C_COEFFICIENT` | `1.0` | GPP cost coefficient |
+| `OMEGA` | `1.0` | GPP calibration weight |
+| `AAP_WINDOW` | `10` | AAP sliding window size (number of samples) |
+| `REDIS_HOST` | `redis` | Redis hostname |
+| `REDIS_PORT` | `6379` | Redis port |
+| `FAST_MODEL_URL` | `http://model-fast:5002/new_pod_run_model` | Fast model endpoint |
+| `ACCURATE_MODEL_URL` | `http://model-accurate:5002/new_pod_run_model` | Accurate model endpoint |
+| `RABBITMQ_URL` | `amqp://guest:guest@rabbitmq:5672/` | RabbitMQ connection URL |
+| `LOG_LEVEL` | `INFO` | Logging level |
 
-# Paramétré
-make test N=20 THRESHOLD=3
+---
 
-# Multi-scénarios
-python3 scripts/send_requests.py --count 20 --scenario adaptive
-python3 scripts/send_requests.py --count 20 --scenario always-fast
+## Project structure
 
-# Vérifier les résultats par scénario
-curl "http://localhost:8000/scenarios"
-curl "http://localhost:8000/results?scenario=adaptive"
-
-# Dashboard live (se rafraîchit toutes les 10 s)
-open http://localhost:8000/dashboard
-
-# Résilience : injecter un message malformé (le worker doit continuer)
-docker exec infer-router-redis redis-cli LPUSH inference_queue "bad-json"
-curl http://localhost:8000/health   # doit retourner {"status":"ok"}
+```
+infer-router/
+├── app/
+│   ├── main.py          # FastAPI app, lifespan, all HTTP endpoints
+│   ├── worker.py        # Background inference worker, routing pipeline
+│   ├── config.py        # All configuration constants from env vars
+│   ├── models.py        # Pydantic request/response models
+│   ├── inference.py     # HTTP call to model containers
+│   ├── arrival.py       # λ tracker: sliding-window arrival rate (Redis ZSET)
+│   ├── mu.py            # μ tracker: rolling per-model service rate (Redis LIST)
+│   ├── aap.py           # AAP: Anti-Idling Accuracy Profiling
+│   ├── gpp.py           # GPP: Gold-Pair Prioritizing (pure Python)
+│   ├── threshold.py     # Threshold Control FSM (w(k) formula, k_active state)
+│   ├── dashboard.py     # HTML dashboard builder
+│   └── queue/
+│       ├── base.py          # QueueBackend Protocol
+│       ├── redis_backend.py # Redis LIST implementation (lpush/brpop/llen)
+│       └── rabbitmq_backend.py  # RabbitMQ implementation (aio-pika)
+├── scripts/
+│   ├── traffic_client.py    # Traffic generator + callback Flask server
+│   ├── plot_results.py      # Benchmark result plotter (5 charts)
+│   └── generate_report.py   # Auto-generate REPORT.md from bench JSON
+├── data/
+│   ├── images/          # JPEG images used as inference input
+│   ├── bench/           # Benchmark JSON outputs (gitignored)
+│   ├── plots/           # Generated PNG charts (gitignored)
+│   └── responses/       # Callback CSVs from traffic_client (gitignored)
+├── docker-compose.yml   # API + Redis + models + RabbitMQ
+├── Dockerfile
+├── Makefile
+└── requirements.txt
 ```
 
-**Dépendances importantes**
+---
 
-- fastapi
-- uvicorn
-- redis (version 4.x+ avec support `redis.asyncio`)
-- pydantic
+## Makefile reference
 
-Ces dépendances doivent être listées dans `requirements.txt`.
-
-**Remarques d'implémentation & limites**
-
-- Les modèles (`Fast-Model`, `Accurate-Model`) sont simulés par des `asyncio.sleep`. Il faut remplacer cette simulation par des appels réels d'inférence (HTTP RPC, gRPC, chargement local de modèle) pour un usage en production.
-- L'utilisation actuelle de `BRPOP` bloque jusqu'à réception : c'est volontaire pour la logique du worker. En production, on peut envisager un timeout, gestion d'exceptions réseau et backoff.
-- La métrique `latency` est calculée comme `time.time() - timestamp` envoyé par le client. Veillez à synchroniser les horloges (NT P) si la latence est critique.
-- Gestion des erreurs et des cas limites (messages malformés, Redis down) doit être renforcée (retries, dead-letter queue, logs structurés).
-
-**Améliorations possibles**
-
-- Ajouter des tests unitaires et d'intégration.
-- Exposer des métriques Prometheus (latences, longueur de file, modèle sélectionné).
-- Remplacer la simulation des modèles par une intégration réelle (TensorFlow/PyTorch, ou requêtes vers des microservices d'inférence).
-- Paramétrer `QUEUE_THRESHOLD` via variable d'environnement ou configuration.
-- Ajouter authentification/autorisation pour l'API si nécessaire.
-
-**To-Do List consolidée (version académique)**
-
-Voici la To-Do List consolidée de ton projet InferRouter. Elle est structurée pour coller parfaitement à ton sujet académique.
-
-✅ **Phase 1 : Infrastructure & Mécanique de base (Terminé)**
-Tout ce qui concerne la "plomberie" du système est opérationnel.
-
-- [x] Mise en place Docker : Conteneurs API et Redis qui communiquent dans un réseau isolé (`docker-compose`).
-- [x] API d'Ingestion : Route `POST /data` qui reçoit les données JSON et valide le format (Pydantic).
-- [x] Système de File d'Attente : Sérialisation des requêtes et stockage dans une liste Redis (`LPUSH`).
-- [x] Worker Asynchrone : Tâche de fond qui dépile les messages (`BRPOP`) sans bloquer l'API.
-- [x] Simulation des Modèles : Utilisation de `asyncio.sleep()` pour simuler des temps de calcul différents (Fast vs Accurate).
-
-✅ **Phase 2 : Métriques & Première Intelligence (Terminé)**
-Le système est capable de s'observer et de réagir à la charge.
-
-- [x] Calcul de Latence : Mesure du temps total ($T_{fin} - T_{début}$) pour chaque requête.
-- [x] Historisation : Sauvegarde des résultats (latence, modèle utilisé) dans Redis (`inference_results`).
-- [x] Visualisation : Route `GET /results` pour consulter l'historique depuis Postman.
-- [x] Contrôle par Seuil (Charge) : Le Worker vérifie la taille de la file (`LLEN`). Si file ≥ 5, il bascule automatiquement sur le modèle rapide.
-
-✅ **Phase 2.5 : Refactoring, Corrections de Bugs & Scénarios (Terminé)**
-Architecture modulaire, trois bugs corrigés, et support multi-scénarios avec dashboard live.
-
-- [x] Refactoring modulaire : Code découpé en `config.py`, `models.py`, `worker.py`, `dashboard.py` — `main.py` réduit aux routes uniquement (~70 lignes).
-- [x] Bug fix — Off-by-one : Correction du seuil (`>` → `>=`) pour que `Fast-Model` se déclenche au bon moment.
-- [x] Bug fix — JSON malformé : Le worker attrape les `json.JSONDecodeError` et continue sans planter.
-- [x] Bug fix — Liste Redis non bornée : `LPUSH` + `LTRIM` atomique (pipeline) pour plafonner chaque liste à 1000 entrées.
-- [x] Tagging par scénario : Le champ `scenario` (optionnel, défaut `"default"`) est propagé de `POST /data` jusqu'aux résultats Redis (`inference_results:{scenario}`).
-- [x] Route `GET /scenarios` : Liste tous les scénarios présents dans Redis.
-- [x] Route `GET /results?scenario=` : Filtre les résultats par scénario.
-- [x] Dashboard live `GET /dashboard` : Page HTML avec Chart.js (courbe de latence + donut de distribution par modèle), auto-refresh toutes les 10 s.
-- [x] Script `--scenario` : `scripts/send_requests.py` accepte `--scenario` et l'inclut dans le corps POST.
-
-📝 **Phase 3 : Profilage Dynamique & Feedback (À FAIRE)**
-C'est l'étape actuelle. Le système doit apprendre de ses erreurs (Rétroaction).
-
-- [x] Gestion de l'état des modèles : Stocker la précision actuelle de chaque modèle dans Redis (ex: `accuracy:Fast-Model = 0.60`).
-- [x] Route de Feedback : Créer une route `POST /feedback` permettant à un utilisateur (ou simulateur) de dire "La précision de ce modèle a baissé".
-- [x] Intégration dans le Worker : Le Worker doit récupérer la précision actuelle du modèle choisi au moment du calcul pour l'enregistrer dans l'historique.
-
-📝 **Phase 4 : Stratégie de Priorisation (À FAIRE)**
-Le "Cerveau" final. Il doit prendre une décision basée sur DEUX critères : la file d'attente ET la précision.
-
-- [x] Algorithme de décision : Implémenter une logique un peu plus fine.
-
-  Exemple : "Si la file est vide MAIS que le modèle précis est devenu mauvais (feedback < 0.5), alors utiliser le modèle rapide quand même."
-- [x] Mode Dégradé : S'assurer que le système ne plante pas si les précisions ne sont pas définies.
-
-📝 **Phase 5 : Comparaison & Rapport (À FAIRE)**
-La preuve scientifique pour ton rendu.
-
-- [ ] Scénario "Témoin 1" : Faire un test en forçant le système à utiliser toujours le modèle `Accurate` (et voir la latence exploser).
-- [ ] Scénario "Témoin 2" : Faire un test avec toujours le modèle `Fast` (latence basse, mais précision faible).
-- [ ] Scénario "InferRouter" : Faire le test avec ton algorithme (latence maîtrisée + précision optimisée).
-- [ ] Export des données : Récupérer le JSON de `/results` pour en faire un graphique (Excel ou Python/Matplotlib) comparant les 3 courbes.
+```
+make install          Create .venv and install dependencies
+make run              Start API locally with hot-reload (requires Redis)
+make redis            Start only the Redis container
+make up               Start all Docker containers (API + Redis + models)
+make build            Rebuild Docker images
+make down             Stop all containers
+make traffic          Send 20 requests at 0.1s interval (scenario=default)
+make bench            Full benchmark: 3 strategies × 3 load scenarios
+make bench-redis      Redis backend benchmark (100 req, normal load)
+make bench-rabbitmq   RabbitMQ backend benchmark (100 req, normal load)
+make plot             Generate comparison charts from bench data
+make report           Generate REPORT.md from bench data
+make clean            Remove __pycache__ directories
+```
