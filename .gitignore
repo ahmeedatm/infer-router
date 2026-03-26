@@ -222,3 +222,4 @@ TODO.md
 
 # Large binary data (images, CSV results)
 data/responses/
+data/bench/
