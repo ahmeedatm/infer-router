@@ -107,7 +107,13 @@ async def receive_data(data: InferenceRequest):
         "image_size": len(image_bytes),
     }
     push_latency_ms = await app.state.queue.push(json.dumps(enriched))
-    enriched["queue_push_latency_ms"] = round(push_latency_ms, 3)
+    # Re-enqueue is too expensive; store push latency in a separate Redis key
+    # so the worker can attach it to the result dict.
+    await app.state.redis.set(
+        f"push_latency:{enriched['sensor_id']}",
+        str(round(push_latency_ms, 3)),
+        ex=300,  # expire in 5 min — long enough for the worker to pick it up
+    )
     await record_arrival(app.state.redis)
     logger.info(
         "Queued sensor_id=%s [scenario=%s] image_size=%d push_latency=%.2fms",

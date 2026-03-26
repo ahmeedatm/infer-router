@@ -106,7 +106,7 @@ def _build_result_dict(
         "k_active": k_active,
         "lambda_at_decision": lambda_at_decision,
         "queue_backend": QUEUE_BACKEND,
-        "queue_push_latency_ms": data.get("queue_push_latency_ms"),
+        "queue_push_latency_ms": data.get("_push_latency_ms"),
     }
 
 
@@ -130,6 +130,12 @@ async def process_inference(redis_client: Redis, queue: QueueBackend) -> None:
 
             scenario = data.get("scenario", DEFAULT_SCENARIO)
             queue_length = await queue.length()
+
+            # Retrieve push latency stored by main.py (fire-and-forget delete)
+            sensor_id = data.get("sensor_id", "")
+            push_key = f"push_latency:{sensor_id}"
+            raw_push = await redis_client.getdel(push_key)
+            data["_push_latency_ms"] = float(raw_push) if raw_push else None
 
             # Read cached metrics (updated by background tasks and previous iterations)
             mu_fast = await get_mu(redis_client, FAST_MODEL_NAME)
