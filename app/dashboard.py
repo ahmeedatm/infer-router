@@ -7,13 +7,18 @@ from collections import Counter
 
 from redis.asyncio import Redis
 
+from app.arrival import get_lambda
 from app.config import (
     ACCURATE_MODEL_NAME,
     ACCURACY_KEY_PREFIX,
+    C_COEFFICIENT,
     FAST_MODEL_NAME,
-    QUEUE_THRESHOLD,
+    OMEGA,
     RESULTS_KEY_PREFIX,
+    TAU,
 )
+from app.mu import get_mu
+from app.threshold import compute_waiting_time, get_k_active
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +47,25 @@ async def build_dashboard_html(redis_client: Redis) -> str:
 
     accuracy = await _load_accuracy(redis_client)
 
-    return _render_html(scenarios_data, accuracy)
+    # Fetch live system metrics
+    k_active = await get_k_active(redis_client)
+    lambda_current = await get_lambda(redis_client)
+    mu_fast = await get_mu(redis_client, FAST_MODEL_NAME)
+    mu_accurate = await get_mu(redis_client, ACCURATE_MODEL_NAME)
+    mu_k = (mu_fast + mu_accurate) / 2 if k_active == 2 and mu_fast > 0 else mu_accurate
+    # Use a sample queue length of 0 for the dashboard display (steady-state estimate)
+    w_k = compute_waiting_time(0, mu_k, lambda_current, TAU)
+
+    system_metrics = {
+        "k_active": k_active,
+        "lambda_current": lambda_current,
+        "tau": TAU,
+        "w_k": round(w_k, 3) if w_k != float("inf") else "∞",
+        "mu_fast": mu_fast,
+        "mu_accurate": mu_accurate,
+    }
+
+    return _render_html(scenarios_data, accuracy, system_metrics)
 
 
 async def _load_scenario_data(redis_client: Redis, scenario: str) -> list[dict]:
@@ -130,15 +153,20 @@ def _build_chart_data(results: list[dict]) -> dict:
 
 def _render_routing_reason_stats(routing_reasons: Counter) -> str:
     reason_colors = {
+        "infer_k1_gold": "#4f8ef7",
+        "infer_k2_accurate": "#6fbcf7",
+        "infer_k2_fast": "#f7a24f",
+        "static_fast": "#f7a24f",
+        "static_accurate": "#4f8ef7",
+        # legacy reasons (kept for backward compat)
         "low_queue": "#4f8ef7",
         "queue_pressure": "#f7a24f",
         "accuracy_override": "#a0e0a0",
         "fallback": "#888888",
     }
     items = ""
-    for reason in ("low_queue", "queue_pressure", "accuracy_override", "fallback"):
-        count = routing_reasons.get(reason, 0)
-        color = reason_colors[reason]
+    for reason, count in routing_reasons.most_common():
+        color = reason_colors.get(reason, "#aaaaaa")
         label = reason.replace("_", " ")
         items += f'<div class="stat"><span class="label" style="color:{color}">{label}</span><span class="value" style="color:{color}">{count}</span></div>\n'
     return items
@@ -162,12 +190,11 @@ def _render_stats_grid(stats: dict) -> str:
         <div class="stat"><span class="label">Accurate-Model</span><span class="value">{stats["accurate_count"]}</span></div>
         <div class="stat"><span class="label">Throughput</span><span class="value">{throughput_display}</span></div>
         <div class="stat"><span class="label">Avg img size</span><span class="value">{avg_size_display}</span></div>
-        <div class="stat"><span class="label" style="color:#ff5050">Threshold</span><span class="value" style="color:#ff5050">{QUEUE_THRESHOLD}</span></div>
         {routing_items}
       </div>"""
 
 
-def _render_line_chart_script(line_id: str, chart_data: dict, threshold: int) -> str:
+def _render_line_chart_script(line_id: str, chart_data: dict) -> str:
     return f"""
     new Chart(document.getElementById("{line_id}"), {{
       type: "line",
@@ -202,26 +229,6 @@ def _render_line_chart_script(line_id: str, chart_data: dict, threshold: int) ->
         plugins: {{
           legend: {{ display: true }},
           title: {{ display: true, text: "Latency & queue depth over time" }},
-          annotation: {{
-            annotations: {{
-              thresholdLine: {{
-                type: "line",
-                yMin: {threshold},
-                yMax: {threshold},
-                yScaleID: "y1",
-                borderColor: "rgba(255,80,80,0.85)",
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: {{
-                  display: true,
-                  content: "Routing threshold ({threshold})",
-                  position: "start",
-                  backgroundColor: "rgba(255,80,80,0.15)",
-                  color: "#ff5050",
-                }}
-              }}
-            }}
-          }}
         }},
         scales: {{
           y: {{
@@ -326,7 +333,7 @@ def _render_scenario_section(scenario: str, results: list[dict], chart_id: int) 
     </section>
     """
 
-    script = _render_line_chart_script(line_id, chart_data, QUEUE_THRESHOLD)
+    script = _render_line_chart_script(line_id, chart_data)
     script += f"""
     new Chart(document.getElementById("{donut_id}"), {{
       type: "doughnut",
@@ -371,19 +378,61 @@ def _render_accuracy_section(accuracy: dict[str, float | None]) -> str:
         </div>
       </div>
       <p style="font-size:0.75rem;color:#555;margin:0">
-        Updated via <code>POST /feedback</code>. Use <code>GET /accuracy</code> for raw values.
+        Fast-Model accuracy auto-updated via AAP probes. Use <code>GET /accuracy</code> for raw values.
       </p>
     </section>
     """
 
 
-def _render_html(scenarios_data: dict[str, list[dict]], accuracy: dict[str, float | None]) -> str:
+def _render_system_metrics_section(system_metrics: dict) -> str:
+    w_display = (
+        f"{system_metrics['w_k']}s"
+        if isinstance(system_metrics["w_k"], (int, float))
+        else system_metrics["w_k"]
+    )
+    return f"""
+    <section class="scenario accuracy-section">
+      <h2 style="color:#a0e0ff">System Metrics (Live)</h2>
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="label" style="color:#a0e0ff">k actifs</span>
+          <span class="value" style="color:#a0e0ff">{system_metrics['k_active']}</span>
+        </div>
+        <div class="stat">
+          <span class="label" style="color:#a0e0ff">λ (req/s)</span>
+          <span class="value" style="color:#a0e0ff">{system_metrics['lambda_current']}</span>
+        </div>
+        <div class="stat">
+          <span class="label" style="color:#ff5050">τ (budget)</span>
+          <span class="value" style="color:#ff5050">{system_metrics['tau']}s</span>
+        </div>
+        <div class="stat">
+          <span class="label" style="color:#f7a24f">w(k) estimé</span>
+          <span class="value" style="color:#f7a24f">{w_display}</span>
+        </div>
+        <div class="stat">
+          <span class="label" style="color:#f7a24f">μ Fast-Model</span>
+          <span class="value" style="color:#f7a24f">{system_metrics['mu_fast']}</span>
+        </div>
+        <div class="stat">
+          <span class="label" style="color:#4f8ef7">μ Accurate-Model</span>
+          <span class="value" style="color:#4f8ef7">{system_metrics['mu_accurate']}</span>
+        </div>
+      </div>
+    </section>
+    """
+
+
+def _render_html(scenarios_data: dict[str, list[dict]], accuracy: dict[str, float | None], system_metrics: dict) -> str:
     if not scenarios_data:
-        return _empty_html(accuracy)
+        return _empty_html(accuracy, system_metrics)
 
     all_stats = {name: _compute_stats(results) for name, results in scenarios_data.items()}
 
-    sections = [_render_accuracy_section(accuracy)]
+    sections = [
+        _render_system_metrics_section(system_metrics),
+        _render_accuracy_section(accuracy),
+    ]
     chart_scripts = []
 
     if len(scenarios_data) > 1:
@@ -450,8 +499,9 @@ def _render_html(scenarios_data: dict[str, list[dict]], accuracy: dict[str, floa
 </html>"""
 
 
-def _empty_html(accuracy: dict[str, float | None] | None = None) -> str:
+def _empty_html(accuracy: dict[str, float | None] | None = None, system_metrics: dict | None = None) -> str:
     accuracy_html = _render_accuracy_section(accuracy) if accuracy else ""
+    system_metrics_html = _render_system_metrics_section(system_metrics) if system_metrics else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -471,6 +521,7 @@ def _empty_html(accuracy: dict[str, float | None] | None = None) -> str:
   </style>
 </head>
 <body>
+  {system_metrics_html}
   {accuracy_html}
   <p>No scenario data found. Send some requests first.</p>
   <small id="ts"></small>

@@ -7,44 +7,75 @@ import time
 
 from redis.asyncio import Redis
 
+from app.aap import run_aap_probe
+from app.arrival import get_lambda
 from app.config import (
+    AAP_WINDOW,
     ACCURATE_MODEL_NAME,
     ACCURATE_MODEL_URL,
     ACCURACY_KEY_PREFIX,
-    ACCURACY_PENALTY_THRESHOLD,
+    C_COEFFICIENT,
     CLIENT_CALLBACK_URL,
     DEFAULT_SCENARIO,
     FAST_MODEL_NAME,
     FAST_MODEL_URL,
     INFERENCE_QUEUE_KEY,
-    QUEUE_THRESHOLD,
+    OMEGA,
     RESULTS_KEY_PREFIX,
     RESULTS_MAX_LEN,
-    THRESHOLD_REDIS_KEY,
+    ROUTING_STRATEGY,
+    TAU,
 )
+from app.gpp import rank_models
 from app.inference import call_model
+from app.mu import compute_and_store_mu, get_mu, record_latency
+from app.threshold import decide_k, get_k_active
 
 logger = logging.getLogger(__name__)
 
+_ALL_MODELS: list[tuple[str, str]] = [
+    (ACCURATE_MODEL_NAME, ACCURATE_MODEL_URL),
+    (FAST_MODEL_NAME, FAST_MODEL_URL),
+]
 
-async def _select_model(
-    redis_client: Redis, queue_length: int, threshold: int
-) -> tuple[str, str, str]:
-    """Returns (model_name, model_url, routing_reason)."""
-    queue_pressured = queue_length >= threshold
 
+async def _route_infer_router(
+    redis_client: Redis,
+    queue_length: int,
+    mu_fast: float,
+    mu_accurate: float,
+    lambda_: float,
+) -> tuple[str, str, str, int]:
+    """Run the full InferRouter routing pipeline.
+
+    Returns (model_name, model_url, routing_reason, k_active).
+    """
+    k_active = await decide_k(
+        redis_client, queue_length, mu_fast, mu_accurate, lambda_, TAU
+    )
+
+    if k_active == 1:
+        return ACCURATE_MODEL_NAME, ACCURATE_MODEL_URL, "infer_k1_gold", k_active
+
+    # k_active == 2: use GPP to pick the best model
     fast_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{FAST_MODEL_NAME}")
     accurate_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{ACCURATE_MODEL_NAME}")
-    fast_acc = float(fast_raw) if fast_raw is not None else None
-    accurate_acc = float(accurate_raw) if accurate_raw is not None else None
+    fast_acc = float(fast_raw) if fast_raw is not None else 0.5
+    accurate_acc = float(accurate_raw) if accurate_raw is not None else 1.0
 
-    if queue_pressured:
-        if fast_acc is not None and accurate_acc is not None:
-            if (accurate_acc - fast_acc) > ACCURACY_PENALTY_THRESHOLD:
-                return ACCURATE_MODEL_NAME, ACCURATE_MODEL_URL, "accuracy_override"
-        reason = "queue_pressure" if fast_acc is not None else "fallback"
-        return FAST_MODEL_NAME, FAST_MODEL_URL, reason
-    return ACCURATE_MODEL_NAME, ACCURATE_MODEL_URL, "low_queue"
+    alphas = {
+        ACCURATE_MODEL_NAME: 0.0,               # gold standard: alpha = 0
+        FAST_MODEL_NAME: max(0.0, 1.0 - fast_acc),
+    }
+    mus = {FAST_MODEL_NAME: mu_fast, ACCURATE_MODEL_NAME: mu_accurate}
+
+    ranked = rank_models(_ALL_MODELS, alphas, mus, C_COEFFICIENT, OMEGA)
+    best = ranked[0]
+
+    reason = (
+        "infer_k2_accurate" if best.name == ACCURATE_MODEL_NAME else "infer_k2_fast"
+    )
+    return best.name, best.url, reason, k_active
 
 
 def _build_result_dict(
@@ -54,6 +85,8 @@ def _build_result_dict(
     scenario: str,
     model_result: dict,
     routing_reason: str,
+    k_active: int,
+    lambda_at_decision: float,
 ) -> dict:
     return {
         "sensor_id": data["sensor_id"],
@@ -65,11 +98,13 @@ def _build_result_dict(
         "accuracy": model_result["accuracy"],
         "routing_reason": routing_reason,
         "image_size": data.get("image_size"),
+        "k_active": k_active,
+        "lambda_at_decision": lambda_at_decision,
     }
 
 
 async def process_inference(redis_client: Redis) -> None:
-    logger.info("InferRouter worker started (threshold=%d)", QUEUE_THRESHOLD)
+    logger.info("InferRouter worker started (routing_strategy=%s)", ROUTING_STRATEGY)
 
     while True:
         try:
@@ -88,17 +123,72 @@ async def process_inference(redis_client: Redis) -> None:
             scenario = data.get("scenario", DEFAULT_SCENARIO)
             queue_length = await redis_client.llen(INFERENCE_QUEUE_KEY)
 
-            raw_threshold = await redis_client.get(THRESHOLD_REDIS_KEY)
-            threshold = int(raw_threshold) if raw_threshold is not None else QUEUE_THRESHOLD
+            # Read cached metrics (updated by background tasks and previous iterations)
+            mu_fast = await get_mu(redis_client, FAST_MODEL_NAME)
+            mu_accurate = await get_mu(redis_client, ACCURATE_MODEL_NAME)
+            lambda_ = await get_lambda(redis_client)
 
-            model_used, model_url, routing_reason = await _select_model(redis_client, queue_length, threshold)
+            # --- Routing decision ---
+            if ROUTING_STRATEGY == "always-fast":
+                model_used, model_url, routing_reason = (
+                    FAST_MODEL_NAME, FAST_MODEL_URL, "static_fast"
+                )
+                k_active = await get_k_active(redis_client)
+            elif ROUTING_STRATEGY == "always-accurate":
+                model_used, model_url, routing_reason = (
+                    ACCURATE_MODEL_NAME, ACCURATE_MODEL_URL, "static_accurate"
+                )
+                k_active = await get_k_active(redis_client)
+            else:
+                # infer-router: full algorithm
+                model_used, model_url, routing_reason, k_active = (
+                    await _route_infer_router(
+                        redis_client, queue_length, mu_fast, mu_accurate, lambda_
+                    )
+                )
 
+            # --- Inference ---
             model_result = await call_model(model_url, data["image"], CLIENT_CALLBACK_URL)
 
-            raw_acc = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{model_used}")
-            model_result = {**model_result, "accuracy": float(raw_acc) if raw_acc is not None else None}
+            # --- Update service rate metrics ---
+            await record_latency(redis_client, model_used, model_result["latency"])
+            await compute_and_store_mu(redis_client, model_used)
 
-            result_dict = _build_result_dict(data, model_used, queue_length, scenario, model_result, routing_reason)
+            # Refresh mu after update
+            mu_fast = await get_mu(redis_client, FAST_MODEL_NAME)
+            mu_accurate = await get_mu(redis_client, ACCURATE_MODEL_NAME)
+
+            # Stability check
+            if lambda_ > 0 and (mu_fast + mu_accurate) < lambda_:
+                logger.warning(
+                    "System unstable: sum(μ)=%.3f < λ=%.3f",
+                    mu_fast + mu_accurate,
+                    lambda_,
+                )
+
+            # --- AAP probe (fire-and-forget, only for gold-standard inference) ---
+            if ROUTING_STRATEGY == "infer-router" and model_used == ACCURATE_MODEL_NAME:
+                asyncio.create_task(
+                    run_aap_probe(
+                        redis_client,
+                        data["image"],
+                        model_result.get("results"),
+                        AAP_WINDOW,
+                        CLIENT_CALLBACK_URL,
+                    )
+                )
+
+            # --- Store result ---
+            raw_acc = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{model_used}")
+            model_result = {
+                **model_result,
+                "accuracy": float(raw_acc) if raw_acc is not None else None,
+            }
+
+            result_dict = _build_result_dict(
+                data, model_used, queue_length, scenario, model_result,
+                routing_reason, k_active, lambda_,
+            )
 
             results_key = f"{RESULTS_KEY_PREFIX}:{scenario}"
             async with redis_client.pipeline(transaction=True) as pipe:
@@ -107,13 +197,9 @@ async def process_inference(redis_client: Redis) -> None:
                 await pipe.execute()
 
             logger.info(
-                "[%s] %s | latency=%.2fs queue=%d reason=%s accuracy=%s",
-                scenario,
-                model_used,
-                result_dict["latency"],
-                queue_length,
-                routing_reason,
-                result_dict["accuracy"],
+                "[%s] %s | latency=%.2fs queue=%d k=%d λ=%.2f μf=%.2f μa=%.2f reason=%s",
+                scenario, model_used, result_dict["latency"], queue_length,
+                k_active, lambda_, mu_fast, mu_accurate, routing_reason,
             )
 
         except asyncio.CancelledError:

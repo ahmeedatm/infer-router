@@ -17,6 +17,7 @@ services:
       - FAST_MODEL_URL=http://model-fast:5002/new_pod_run_model
       - ACCURATE_MODEL_URL=http://model-accurate:5002/new_pod_run_model
       - CLIENT_CALLBACK_URL=http://host.docker.internal:5002/save_result
+      - ROUTING_STRATEGY=${ROUTING_STRATEGY:-infer-router}
     networks:
       - infer-net
     volumes:
