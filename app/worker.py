@@ -89,13 +89,17 @@ def _build_result_dict(
     k_active: int,
     lambda_at_decision: float,
 ) -> dict:
+    now = time.time()
+    enqueued_at = data.get("timestamp")
+    e2e_latency = round(now - enqueued_at, 4) if enqueued_at else None
     return {
         "sensor_id": data["sensor_id"],
         "model": model_used,
         "latency": model_result["latency"],
+        "e2e_latency": e2e_latency,
         "queue_at_start": queue_length,
         "scenario": scenario,
-        "processed_at": round(time.time(), 3),
+        "processed_at": round(now, 3),
         "accuracy": model_result["accuracy"],
         "routing_reason": routing_reason,
         "image_size": data.get("image_size"),

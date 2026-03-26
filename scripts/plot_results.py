@@ -62,20 +62,26 @@ def _compute_stats(results: list[dict]) -> dict:
     if not results:
         return {
             "count": 0, "avg_latency": 0.0, "p95": 0.0, "p99": 0.0,
+            "avg_e2e": 0.0, "p95_e2e": 0.0, "p99_e2e": 0.0,
             "avg_accuracy": None, "throughput": 0.0,
         }
     latencies = [r["latency"] for r in results if r.get("latency") is not None]
+    e2e = [r["e2e_latency"] for r in results if r.get("e2e_latency") is not None]
     accuracies = [r["accuracy"] for r in results if r.get("accuracy") is not None]
     timestamps = [r["processed_at"] for r in results if r.get("processed_at") is not None]
 
     n = len(latencies)
     arr = np.array(latencies)
+    e2e_arr = np.array(e2e)
     duration = max(timestamps) - min(timestamps) if len(timestamps) >= 2 else 0.0
     return {
         "count": n,
         "avg_latency": float(np.mean(arr)) if n else 0.0,
         "p95": float(np.percentile(arr, 95)) if n else 0.0,
         "p99": float(np.percentile(arr, 99)) if n else 0.0,
+        "avg_e2e": float(np.mean(e2e_arr)) if len(e2e) else 0.0,
+        "p95_e2e": float(np.percentile(e2e_arr, 95)) if len(e2e) else 0.0,
+        "p99_e2e": float(np.percentile(e2e_arr, 99)) if len(e2e) else 0.0,
         "avg_accuracy": float(np.mean(accuracies)) if accuracies else None,
         "throughput": round(n / duration, 3) if duration > 0 else 0.0,
     }
@@ -339,6 +345,157 @@ def _plot_backend_comparison(
     logger.info("Saved %s", path)
 
 
+# ─── Chart 6: E2E latency comparison (queue wait + inference) ────────────────
+
+def _plot_e2e_latency(
+    all_stats: dict[str, dict[str, dict]],
+    loads: list[str],
+    strategies: list[str],
+    output_dir: Path,
+) -> None:
+    """Compare avg/P95/P99 of end-to-end latency (queue wait + inference)."""
+    # Skip if no e2e data at all
+    has_e2e = any(
+        all_stats.get(s, {}).get(ld, {}).get("avg_e2e", 0) > 0
+        for s in strategies for ld in loads
+    )
+    if not has_e2e:
+        logger.info("Skipping e2e latency chart — no e2e_latency data (re-run bench after update)")
+        return
+
+    metrics = ["avg_e2e", "p95_e2e", "p99_e2e"]
+    metric_labels = ["Avg e2e", "P95 e2e", "P99 e2e"]
+    fig, axes = plt.subplots(1, len(loads), figsize=(5 * len(loads), 6), sharey=False)
+    if len(loads) == 1:
+        axes = [axes]
+
+    for ax, load in zip(axes, loads):
+        x = np.arange(len(strategies))
+        width = 0.25
+        for i, (metric, label) in enumerate(zip(metrics, metric_labels)):
+            values = [
+                all_stats.get(s, {}).get(load, {}).get(metric, 0.0)
+                for s in strategies
+            ]
+            bars = ax.bar(x + i * width, values, width, label=label, alpha=0.85)
+            for bar, val in zip(bars, values):
+                if val > 0:
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                        f"{val:.2f}", ha="center", va="bottom", fontsize=7,
+                    )
+        ax.set_title(f"Load: {load}", fontweight="bold")
+        ax.set_xticks(x + width)
+        ax.set_xticklabels(strategies, rotation=15, ha="right", fontsize=9)
+        ax.set_ylabel("E2E latency (s)")
+        ax.set_ylim(bottom=0)
+        ax.legend(fontsize=8)
+        ax.grid(axis="y", alpha=0.3)
+
+    fig.suptitle(
+        "Latence E2E (attente file + inférence) : Avg / P95 / P99 par stratégie\n"
+        "← C'est ici que InferRouter montre son avantage sous charge",
+        fontweight="bold",
+    )
+    fig.tight_layout()
+    path = output_dir / "e2e_latency_comparison.png"
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    logger.info("Saved %s", path)
+
+
+# ─── Chart 7: Routing reason distribution (stacked bar per strategy × load) ──
+
+REASON_COLORS = {
+    "static_fast":       "#f7a24f",
+    "static_accurate":   "#4f8ef7",
+    "infer_k1_gold":     "#a0e0a0",
+    "infer_k2_accurate": "#5bc8af",
+    "infer_k2_fast":     "#e07040",
+}
+REASON_ORDER = ["static_fast", "static_accurate", "infer_k1_gold", "infer_k2_accurate", "infer_k2_fast"]
+REASON_LABELS = {
+    "static_fast":       "static_fast (always-fast)",
+    "static_accurate":   "static_accurate (always-accurate)",
+    "infer_k1_gold":     "infer_k1_gold (k=1, modèle précis)",
+    "infer_k2_accurate": "infer_k2_accurate (k=2, GPP→précis)",
+    "infer_k2_fast":     "infer_k2_fast (k=2, GPP→rapide)",
+}
+
+
+def _plot_routing_reasons(
+    bench_data: dict[str, dict[str, list[dict]]],
+    strategies: list[str],
+    loads: list[str],
+    output_dir: Path,
+) -> None:
+    """Stacked bar showing % of each routing_reason per strategy × load."""
+    fig, axes = plt.subplots(1, len(loads), figsize=(5 * len(loads), 6), sharey=True)
+    if len(loads) == 1:
+        axes = [axes]
+
+    legend_handles: list = []
+    legend_labels: list = []
+
+    for ax, load in zip(axes, loads):
+        x = np.arange(len(strategies))
+        width = 0.55
+        bottoms = [0.0] * len(strategies)
+
+        for reason in REASON_ORDER:
+            pcts = []
+            for s in strategies:
+                results = bench_data.get(s, {}).get(load, [])
+                if not results:
+                    pcts.append(0.0)
+                    continue
+                n = len(results)
+                count = sum(1 for r in results if r.get("routing_reason") == reason)
+                pcts.append(count / n * 100)
+
+            if sum(pcts) == 0:
+                continue
+
+            color = REASON_COLORS.get(reason, "#aaaaaa")
+            bars = ax.bar(x, pcts, width, bottom=bottoms, color=color, alpha=0.9, label=REASON_LABELS[reason])
+
+            # Keep legend entries unique
+            if REASON_LABELS[reason] not in legend_labels:
+                legend_handles.append(bars)
+                legend_labels.append(REASON_LABELS[reason])
+
+            # Annotate if segment large enough
+            for i, (pct, bot) in enumerate(zip(pcts, bottoms)):
+                if pct > 8:
+                    ax.text(
+                        x[i], bot + pct / 2,
+                        f"{pct:.0f}%",
+                        ha="center", va="center", fontsize=8,
+                        color="white", fontweight="bold",
+                    )
+            bottoms = [b + p for b, p in zip(bottoms, pcts)]
+
+        ax.set_title(f"Load: {load}", fontweight="bold")
+        ax.set_xticks(x)
+        ax.set_xticklabels(strategies, rotation=15, ha="right", fontsize=9)
+        ax.set_ylabel("Requêtes (%)")
+        ax.set_ylim(0, 115)
+        ax.grid(axis="y", alpha=0.3)
+
+    fig.suptitle(
+        "Distribution des décisions de routage par stratégie et charge\n"
+        "Seul InferRouter produit des décisions k1/k2 — les baselines sont statiques",
+        fontweight="bold",
+    )
+    fig.legend(legend_handles, legend_labels, loc="lower center", ncol=3, fontsize=8,
+               bbox_to_anchor=(0.5, -0.05))
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
+    path = output_dir / "routing_reasons.png"
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info("Saved %s", path)
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -371,6 +528,8 @@ def main() -> None:
         return
 
     _plot_latency_comparison(all_stats, available_loads, available_strategies, output_dir)
+    _plot_e2e_latency(all_stats, available_loads, available_strategies, output_dir)
+    _plot_routing_reasons(bench_data, available_strategies, available_loads, output_dir)
     _plot_accuracy_comparison(all_stats, available_loads, available_strategies, output_dir)
     _plot_throughput_vs_latency(all_stats, available_loads, available_strategies, output_dir)
 
