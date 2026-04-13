@@ -16,7 +16,7 @@ services:
       - REDIS_PORT=6379
       - FAST_MODEL_URL=http://model-fast:5002/new_pod_run_model
       - ACCURATE_MODEL_URL=http://model-accurate:5002/new_pod_run_model
-      - CLIENT_CALLBACK_URL=http://host.docker.internal:5002/save_result
+      - CLIENT_CALLBACK_URL=${CLIENT_CALLBACK_URL:-}
       - ROUTING_STRATEGY=${ROUTING_STRATEGY:-infer-router}
       - QUEUE_BACKEND=${QUEUE_BACKEND:-redis}
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
