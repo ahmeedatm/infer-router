@@ -1,9 +1,6 @@
 import asyncio
-import base64
 import json
 import logging
-import time
-import uuid
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -12,6 +9,7 @@ from fastapi.responses import HTMLResponse
 from redis.asyncio import Redis
 
 from app.arrival import get_lambda, lambda_updater, record_arrival
+from app.request_builder import build_enriched_payload
 from app.config import (
     AAP_WINDOW,
     ACCURATE_MODEL_NAME,
@@ -102,13 +100,7 @@ async def health_check():
 
 @app.post("/new_pod_run_model", response_model=QueuedResponse)
 async def receive_data(data: InferenceRequest):
-    image_bytes = base64.b64decode(data.image + "==")
-    enriched = {
-        **data.model_dump(),
-        "sensor_id": str(uuid.uuid4()),
-        "timestamp": time.time(),
-        "image_size": len(image_bytes),
-    }
+    enriched = build_enriched_payload(data)
     push_latency_ms = await app.state.queue.push(json.dumps(enriched))
     # Re-enqueue is too expensive; store push latency in a separate Redis key
     # so the worker can attach it to the result dict.
