@@ -28,12 +28,7 @@ RESULTS_MAX_LEN: int = 1000
 DEFAULT_SCENARIO: str = "default"
 
 # ── Algorithmic parameters (overridable for testing / tuning) ──────────────
-MU_WINDOW: int = int(os.getenv("MU_WINDOW", "50"))
-# Number of latency samples kept per model for μ computation
-
-LAMBDA_WINDOW_S: float = float(os.getenv("LAMBDA_WINDOW_S", "5.0"))
-# Sliding window width (seconds) for arrival rate λ estimation
-
-K_MIN: int = 1
-K_MAX: int = int(os.getenv("K_MAX", "2"))
-# Min/max number of active models in the Threshold FSM
+MU_WINDOW: int = int(os.getenv("MU_WINDOW", "50"))        # latency samples per model for μ computation
+LAMBDA_WINDOW_S: float = float(os.getenv("LAMBDA_WINDOW_S", "5.0"))  # arrival-rate sliding window (seconds)
+K_MIN: int = 1                                             # fixed lower bound — always keep ≥1 model active
+K_MAX: int = int(os.getenv("K_MAX", "2"))                  # max active models in Threshold FSM

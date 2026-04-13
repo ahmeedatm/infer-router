@@ -14,7 +14,7 @@ where:
 
 State machine (2-model system: k in {1, 2}):
     k=2 and w(k=1) <= tau  →  scale-down to k=1
-    w(k_current) > tau     →  scale-up   to k+1 (capped at K_MAX=2)
+    w(k_current) > tau     →  scale-up   to k+1 (capped at K_MAX)
     otherwise              →  maintain   k_current
 """
 from __future__ import annotations
