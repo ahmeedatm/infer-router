@@ -10,14 +10,13 @@ from redis.asyncio import Redis
 from app.arrival import get_lambda
 from app.config import (
     ACCURATE_MODEL_NAME,
-    ACCURACY_KEY_PREFIX,
     C_COEFFICIENT,
     FAST_MODEL_NAME,
     OMEGA,
-    RESULTS_KEY_PREFIX,
     TAU,
 )
 from app.mu import get_mu
+from app.redis_keys import ACCURACY_KEY_PREFIX, RESULTS_KEY_PREFIX
 from app.threshold import compute_waiting_time, get_k_active
 
 logger = logging.getLogger(__name__)

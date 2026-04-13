@@ -16,21 +16,24 @@ from app.config import (
     AAP_WINDOW,
     ACCURATE_MODEL_NAME,
     ACCURATE_MODEL_URL,
-    ACCURACY_KEY_PREFIX,
     C_COEFFICIENT,
     DEFAULT_SCENARIO,
     FAST_MODEL_NAME,
     FAST_MODEL_URL,
-    INFERENCE_QUEUE_KEY,
     LOG_LEVEL,
     OMEGA,
     QUEUE_BACKEND,
     RABBITMQ_URL,
     REDIS_HOST,
     REDIS_PORT,
-    RESULTS_KEY_PREFIX,
     ROUTING_STRATEGY,
     TAU,
+)
+from app.redis_keys import (
+    ACCURACY_KEY_PREFIX,
+    INFERENCE_QUEUE_KEY,
+    PUSH_LATENCY_KEY_PREFIX,
+    RESULTS_KEY_PREFIX,
 )
 from app.dashboard import build_dashboard_html
 from app.gpp import compute_priority
@@ -110,7 +113,7 @@ async def receive_data(data: InferenceRequest):
     # Re-enqueue is too expensive; store push latency in a separate Redis key
     # so the worker can attach it to the result dict.
     await app.state.redis.set(
-        f"push_latency:{enriched['sensor_id']}",
+        f"{PUSH_LATENCY_KEY_PREFIX}:{enriched['sensor_id']}",
         str(round(push_latency_ms, 3)),
         ex=300,  # expire in 5 min — long enough for the worker to pick it up
     )

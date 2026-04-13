@@ -24,8 +24,5 @@ FAST_MODEL_URL: str = os.getenv("FAST_MODEL_URL", "http://model-fast:5002/new_po
 ACCURATE_MODEL_URL: str = os.getenv("ACCURATE_MODEL_URL", "http://model-accurate:5002/new_pod_run_model")
 CLIENT_CALLBACK_URL: str = os.getenv("CLIENT_CALLBACK_URL", "http://host.docker.internal:5002/save_result")
 
-INFERENCE_QUEUE_KEY: str = "inference_queue"
-RESULTS_KEY_PREFIX: str = "inference_results"
-ACCURACY_KEY_PREFIX: str = "accuracy"
 RESULTS_MAX_LEN: int = 1000
 DEFAULT_SCENARIO: str = "default"

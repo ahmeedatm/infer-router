@@ -18,16 +18,14 @@ from redis.asyncio import Redis
 
 from app.arrival import get_lambda
 from app.config import (
-    ACCURACY_KEY_PREFIX,
     FAST_MODEL_NAME,
     FAST_MODEL_URL,
 )
 from app.inference import call_model
 from app.mu import get_mu
+from app.redis_keys import ACCURACY_KEY_PREFIX, AAP_WINDOW_KEY_PREFIX
 
 logger = logging.getLogger(__name__)
-
-AAP_WINDOW_KEY_PREFIX: str = "aap:window"
 
 
 def _compare_results(gold_result: object, candidate_result: object) -> bool:

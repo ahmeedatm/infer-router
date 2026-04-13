@@ -13,7 +13,6 @@ from app.config import (
     AAP_WINDOW,
     ACCURATE_MODEL_NAME,
     ACCURATE_MODEL_URL,
-    ACCURACY_KEY_PREFIX,
     C_COEFFICIENT,
     CLIENT_CALLBACK_URL,
     DEFAULT_SCENARIO,
@@ -21,10 +20,14 @@ from app.config import (
     FAST_MODEL_URL,
     OMEGA,
     QUEUE_BACKEND,
-    RESULTS_KEY_PREFIX,
     RESULTS_MAX_LEN,
     ROUTING_STRATEGY,
     TAU,
+)
+from app.redis_keys import (
+    ACCURACY_KEY_PREFIX,
+    PUSH_LATENCY_KEY_PREFIX,
+    RESULTS_KEY_PREFIX,
 )
 from app.gpp import rank_models
 from app.inference import call_model
@@ -133,7 +136,7 @@ async def process_inference(redis_client: Redis, queue: QueueBackend) -> None:
 
             # Retrieve push latency stored by main.py (fire-and-forget delete)
             sensor_id = data.get("sensor_id", "")
-            push_key = f"push_latency:{sensor_id}"
+            push_key = f"{PUSH_LATENCY_KEY_PREFIX}:{sensor_id}"
             raw_push = await redis_client.getdel(push_key)
             data["_push_latency_ms"] = float(raw_push) if raw_push else None
 
