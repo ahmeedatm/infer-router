@@ -20,15 +20,14 @@ from app.config import (
     FAST_MODEL_URL,
     OMEGA,
     QUEUE_BACKEND,
-    RESULTS_MAX_LEN,
     ROUTING_STRATEGY,
     TAU,
 )
 from app.redis_keys import (
     ACCURACY_KEY_PREFIX,
     PUSH_LATENCY_KEY_PREFIX,
-    RESULTS_KEY_PREFIX,
 )
+from app.result_store import store_result
 from app.gpp import rank_models
 from app.inference import call_model
 from app.mu import compute_and_store_mu, get_mu, record_latency
@@ -207,11 +206,7 @@ async def process_inference(redis_client: Redis, queue: QueueBackend) -> None:
                 routing_reason, k_active, lambda_,
             )
 
-            results_key = f"{RESULTS_KEY_PREFIX}:{scenario}"
-            async with redis_client.pipeline(transaction=True) as pipe:
-                pipe.lpush(results_key, json.dumps(result_dict))
-                pipe.ltrim(results_key, 0, RESULTS_MAX_LEN - 1)
-                await pipe.execute()
+            await store_result(redis_client, scenario, result_dict)
 
             logger.info(
                 "[%s] %s | latency=%.2fs queue=%d k=%d λ=%.2f μf=%.2f μa=%.2f reason=%s",
