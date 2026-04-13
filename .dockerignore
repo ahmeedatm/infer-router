@@ -1,0 +1,43 @@
+# .dockerignore
+# Prevents bloat from dev artefacts being copied into the Docker image.
+
+# Python virtual environment (re-installed in Dockerfile via pip)
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Test artefacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Dataset and benchmark outputs (not needed at runtime)
+data/images/
+data/plots/
+data/bench/
+
+# Traffic client legacy directory
+traffic_des_clients/
+
+# LaTeX and presentation sources
+latex/
+presentation/
+
+# macOS
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Docs (not needed at runtime)
+docs/
+*.pdf
+*.md
