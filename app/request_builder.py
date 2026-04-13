@@ -10,11 +10,12 @@ from __future__ import annotations
 import base64
 import time
 import uuid
+from typing import Any
 
 from app.models import InferenceRequest
 
 
-def build_enriched_payload(request: InferenceRequest) -> dict:
+def build_enriched_payload(request: InferenceRequest) -> dict[str, Any]:
     """Return a JSON-serialisable dict ready to push onto the queue.
 
     Adds:
@@ -22,7 +23,10 @@ def build_enriched_payload(request: InferenceRequest) -> dict:
       - timestamp: epoch seconds at the moment the request is received
       - image_size: decoded byte length of the image
     """
-    image_bytes = base64.b64decode(request.image + "==")
+    try:
+        image_bytes = base64.b64decode(request.image + "==")
+    except Exception as exc:
+        raise ValueError(f"Invalid base64 image data: {exc}") from exc
     return {
         **request.model_dump(),
         "sensor_id": str(uuid.uuid4()),
