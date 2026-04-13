@@ -19,8 +19,8 @@ data/images/
 data/plots/
 data/bench/
 
-# Traffic client legacy directory
-traffic_des_clients/
+# Traffic client scripts (large images/CSVs not needed at runtime)
+scripts/traffic/
 
 # LaTeX and presentation sources
 latex/

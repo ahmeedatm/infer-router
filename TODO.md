@@ -5,7 +5,7 @@
 Remplacer les `sleep()` simulés par de vrais appels HTTP vers les microservices IA fournis par le tuteur sur Docker Hub. L'infer-router se place en proxy entre le client de trafic et les containers modèles.
 
 ```
-traffic_des_clients/user_request.py
+scripts/traffic/user_request.py
         │  POST /new_pod_run_model  {"image": "<base64>"}
         ▼
    infer-router  (routage selon charge + précision)

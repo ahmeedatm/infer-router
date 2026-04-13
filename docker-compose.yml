@@ -7,10 +7,14 @@ services:
     container_name: infer-router-api
     ports:
       - "8000:8000"             # Expose le port 8000 vers l'extérieur
+    restart: unless-stopped
     depends_on:
-      - redis
-      - model-fast
-      - model-accurate
+      redis:
+        condition: service_healthy
+      model-fast:
+        condition: service_started
+      model-accurate:
+        condition: service_started
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -29,10 +33,16 @@ services:
   redis:
     image: redis:8.4.1-trixie
     container_name: infer-router-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"             # Optionnel : utile pour debugger depuis ton PC
     networks:
       - infer-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   # 3. Modèle rapide (YOLO tiny)
   model-fast:

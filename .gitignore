@@ -216,10 +216,12 @@ presentation
 .claude
 CLAUDE.md
 
-traffic_des_clients
 
 TODO.md
+REPORT.md
 
 # Large binary data (images, CSV results)
 data/responses/
 data/bench/
+data/plots/
+*.pdf
