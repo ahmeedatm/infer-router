@@ -9,11 +9,10 @@ import logging
 
 from redis.asyncio import Redis
 
+from app.config import MU_WINDOW
 from app.redis_keys import LATENCIES_KEY_PREFIX, MU_KEY_PREFIX
 
 logger = logging.getLogger(__name__)
-
-MU_WINDOW: int = 50  # TODO: move to config.py in Task 2
 
 
 async def record_latency(redis: Redis, model_name: str, latency: float) -> None:

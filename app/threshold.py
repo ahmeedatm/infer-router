@@ -24,12 +24,10 @@ import math
 
 from redis.asyncio import Redis
 
+from app.config import K_MAX, K_MIN
 from app.redis_keys import K_ACTIVE_KEY
 
 logger = logging.getLogger(__name__)
-
-K_MIN: int = 1  # TODO: move to config.py in Task 2
-K_MAX: int = 2  # Only 2 models in this system  # TODO: move to config.py in Task 2
 
 
 def compute_waiting_time(

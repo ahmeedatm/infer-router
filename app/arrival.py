@@ -12,11 +12,10 @@ import uuid
 
 from redis.asyncio import Redis
 
+from app.config import LAMBDA_WINDOW_S
 from app.redis_keys import ARRIVALS_KEY, LAMBDA_KEY
 
 logger = logging.getLogger(__name__)
-
-LAMBDA_WINDOW_S: float = 5.0  # TODO: move to config.py in Task 2
 
 
 async def record_arrival(redis: Redis) -> None:
