@@ -48,7 +48,6 @@ DEMO.md
 *.pdf
 latex/
 presentation/
-docs/superpowers/
 
 # --- macOS ---
 .DS_Store
