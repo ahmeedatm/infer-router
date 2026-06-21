@@ -124,3 +124,26 @@ QUALITY_LIGHT_COMPLEXITY_PENALTY: float = float(
 QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
     os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.80")
 )
+
+# ────────────────────────────────────────────────────────────────────────────
+# Phase 5 — Benchmark & calibration (harnais d'évaluation)
+# ────────────────────────────────────────────────────────────────────────────
+
+# Coût-proxy du ch.3 : temps_inférence (s) × taille_modèle (milliards de
+# paramètres). La taille est une donnée publique du modèle ; tout modèle absent
+# de la grille déclenche une erreur explicite (jamais d'estimation fabriquée).
+# Le spécialiste de domaine (model_id "<heavy>#<domain>") partage la taille du
+# modèle heavy de base : c'est le même modèle taggé d'un domaine.
+MODEL_SIZE_B: dict[str, float] = {
+    "meta-llama/llama-3.2-3b-instruct": 3.0,
+    "anthropic/claude-sonnet-4.6": 200.0,
+}
+
+# Budgets SLA par défaut du benchmark InferRouter (latence ms, coût USD/appel).
+# Larges par défaut pour que le routeur puisse choisir n'importe quel tier ;
+# surchargeables par env pour étudier l'effet d'un SLA serré.
+BENCH_L_MAX_MS: float = float(os.getenv("BENCH_L_MAX_MS", "1e9"))
+BENCH_C_MAX: float = float(os.getenv("BENCH_C_MAX", "1e9"))
+
+# Seed du tirage aléatoire (stratégie random, reproductibilité — règle dure).
+BENCH_SEED: int = int(os.getenv("BENCH_SEED", "42"))
