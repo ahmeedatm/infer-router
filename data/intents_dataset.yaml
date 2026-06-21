@@ -33,7 +33,7 @@ intents:
   text: Is cell gNB-009-C1 currently available and in service?
   domain: ran
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: null
 - id: ran-read-handover-success-rate
   text: What is the handover success rate for gNB-730 at this time?
@@ -349,13 +349,13 @@ intents:
   slice_type: embb
 - id: ran-amf-load-rebalance-slice-aware-registration
   text: 'AMF pool {AMF-01, AMF-02, AMF-03} serving gNB cluster {gNB-1701 through gNB-1710} is experiencing AMF-01 at 91 percent registration capacity while AMF-02 and AMF-03 are at 45 percent. Rebalance UE registrations across the AMF pool in a slice-aware manner: URLLC UEs must remain anchored to AMF-01 (which has the lowest N2 latency to the RAN), eMBB and mMTC UEs should be redistributed to AMF-02 and AMF-03, and the rebalancing must not trigger simultaneous re-registration storms that would exceed 500 registration requests per second on any single AMF, while keeping total NAS signalling latency below 50 ms.'
-  domain: ran
+  domain: core
   expected_complexity: complex
   criticality: high
   slice_type: null
 - id: ran-qos-flow-remap-upf-relocation-latency
   text: A fleet of autonomous guided vehicles operating in warehouse zone WH-7 is connected via gNB-1801 to UPF-EDGE-03, which is experiencing 12 ms N3 latency due to a routing anomaly. The URLLC slice SLA requires end-to-end latency <= 5 ms. Relocate the UPF anchor for the affected PDU sessions to UPF-EDGE-01 (measured N3 latency 2 ms), remap QoS flows accordingly via the SMF, ensure that the handover of GTP-U tunnels on the N3 interface causes no packet loss exceeding 0.001 percent, and confirm that the eMBB slice sharing gNB-1801 is not disrupted during the UPF relocation procedure.
-  domain: ran
+  domain: core
   expected_complexity: complex
   criticality: high
   slice_type: urllc
@@ -405,7 +405,7 @@ intents:
   text: What is the current packet loss rate on the N3 interface of UPF upf-edge-11?
   domain: core
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: core-read-smf-ip-pool-usage
   text: What percentage of the IP address pool is currently consumed on SMF smf-north-05?
@@ -453,7 +453,7 @@ intents:
   text: What is the current user-plane throughput on UPF upf-edge-09 for the URLLC slice?
   domain: core
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: core-read-udr-subscription-records
   text: How many active subscription records does UDR udr-central-01 hold right now?
@@ -584,7 +584,7 @@ intents:
 - id: core-ausf-certificate-expiry
   text: TLS certificates used by AUSF ausf-region-01 for SBI communication are expiring in 48 hours. Confirm which peer NFs will be affected and initiate a coordinated certificate rotation without dropping active authentication sessions.
   domain: core
-  expected_complexity: medium
+  expected_complexity: complex
   criticality: high
   slice_type: null
 - id: core-smf-idle-session-accumulation
@@ -1143,7 +1143,7 @@ intents:
   text: What is the session setup success rate for URLLC slice NSI-URL-003 right now?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-max-ues-mmtc
   text: How many UEs are currently registered on mMTC slice NSI-MMT-011?
@@ -1161,7 +1161,7 @@ intents:
   text: What is the current end-to-end latency measured on URLLC slice NSI-URL-005?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-snssai-mapping
   text: What S-NSSAI value is assigned to slice instance NSI-EMB-009?
@@ -1173,7 +1173,7 @@ intents:
   text: Which UPF is currently serving URLLC slice NSI-URL-002?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-packet-loss-mmtc
   text: What is the packet loss rate on mMTC slice NSI-MMT-004 at this moment?
@@ -1197,7 +1197,7 @@ intents:
   text: What resource isolation level is configured for URLLC slice NSI-URL-008?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-smf-assigned
   text: Which SMF instance is currently handling session management for slice NSI-MMT-006?
@@ -1215,7 +1215,7 @@ intents:
   text: How many active PDU sessions exist on URLLC slice NSI-URL-010 right now?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-nsi-lifecycle-state
   text: What is the lifecycle state of network slice instance NSI-MMT-019?
@@ -1233,7 +1233,7 @@ intents:
   text: What is the current jitter value reported for URLLC slice NSI-URL-001?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-registered-imsi-count
   text: How many IMSIs are currently registered under mMTC slice NSI-MMT-022?
@@ -1251,7 +1251,7 @@ intents:
   text: What is the uplink throughput currently observed on URLLC slice NSI-URL-007?
   domain: slice
   expected_complexity: simple
-  criticality: high
+  criticality: med
   slice_type: urllc
 - id: slice-read-priority-label
   text: What scheduling priority label is assigned to mMTC slice NSI-MMT-013?
