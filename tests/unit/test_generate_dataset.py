@@ -67,6 +67,35 @@ def test_prompt_complexity_guidance_differs_simple_vs_complex():
     assert simple != complex_
 
 
+def test_prompt_default_has_no_length_constraint():
+    # Non-regression of the v1 mode: the length band must NOT appear by default.
+    prompt = build_generation_prompt("ran", "simple", 5, SEED_EXAMPLES)
+    assert "45 to 65 words" not in prompt
+    assert "regardless of complexity" not in prompt.lower()
+
+
+def test_prompt_length_controlled_injects_band_constraint():
+    prompt = build_generation_prompt(
+        "ran", "simple", 5, SEED_EXAMPLES, length_controlled=True
+    )
+    assert "45 to 65 words" in prompt
+    assert "regardless of complexity" in prompt.lower()
+
+
+def test_prompt_length_controlled_keeps_complexity_guidance():
+    # The length constraint ADDS to the existing complexity guidance, it does
+    # not replace it: simple vs complex must still diverge under length control.
+    simple = build_generation_prompt(
+        "ran", "simple", 5, SEED_EXAMPLES, length_controlled=True
+    )
+    complex_ = build_generation_prompt(
+        "ran", "complex", 5, SEED_EXAMPLES, length_controlled=True
+    )
+    assert simple != complex_
+    assert "45 to 65 words" in simple
+    assert "45 to 65 words" in complex_
+
+
 # ───────────────────────────── parse_generated_intents ──────────────────────
 
 

@@ -20,6 +20,11 @@ Lancer (réseau réel) :
     .venv/bin/python -m scripts.generate_dataset
 Valider une seule cellule à bas coût :
     CELLS=ran:simple N_PER_CELL=5 .venv/bin/python -m scripts.generate_dataset
+
+Mode longueur contrôlée (v2, décorrèle longueur et complexité) :
+    LENGTH_CONTROLLED=1 .venv/bin/python -m scripts.generate_dataset
+Ce mode écrit dans ``data/intents_dataset_lengthctrl.yaml`` (le v1 n'est jamais
+touché) et reste reprenable sur ce fichier de sortie.
 """
 from __future__ import annotations
 
@@ -50,6 +55,9 @@ DEFAULT_N_PER_CELL: int = 21
 GENERATION_MAX_TOKENS: int = 8192
 # Diversité voulue : on échantillonne, on ne cherche pas le déterminisme.
 GENERATION_TEMPERATURE: float = 0.7
+# Chemin de sortie distinct pour le mode longueur contrôlée (dataset v2), afin
+# de NE JAMAIS écraser le v1. La reprenabilité s'applique à ce fichier-là.
+LENGTH_CONTROLLED_DATASET_PATH: str = "data/intents_dataset_lengthctrl.yaml"
 
 
 class GenerationError(RuntimeError):
@@ -82,6 +90,20 @@ _COMPLEXITY_GUIDANCE: dict[str, str] = {
     ),
 }
 
+# Consigne de longueur contrôlée (mode v2, activable via LENGTH_CONTROLLED=1).
+# But : décorréler longueur et complexité pour mesurer le pouvoir prédictif
+# SÉMANTIQUE de l'estimateur (le v1 a un confound longueur/complexité r≈0.996).
+# Cette consigne S'AJOUTE à _COMPLEXITY_GUIDANCE, elle ne la remplace pas.
+_LENGTH_GUIDANCE: str = (
+    "Length control (STRICT, overrides any tendency to vary length with "
+    "complexity): Write EVERY intent in 45 to 65 words, REGARDLESS of "
+    "complexity. Do not make complex intents longer or simple intents shorter. "
+    "Express the complexity ONLY through technical content: number of entities, "
+    "number of constraints, crossed domains, inference depth. A simple intent "
+    "must be padded with realistic operational context to reach the band; a "
+    "complex intent must be expressed tersely within the band."
+)
+
 _PROMPT_TEMPLATE = """You generate realistic telecom network intents for a research dataset \
 (InferRouter-LLM, a master's thesis). Produce EXACTLY {n} declarative intents as \
 a network operator would phrase them.
@@ -92,7 +114,7 @@ All {n} intents MUST belong to the SAME domain and the SAME complexity level:
 
 Complexity definition for this cell:
 {complexity_guidance}
-
+{length_guidance}
 Grounding and realism: anchor every intent in real 3GPP / O-RAN / ETSI ZSM \
 scenarios (gNB cells, AMF/SMF/UPF/AUSF network functions, PRB/RSRP/CQI KPIs, \
 N3/N6 interfaces, network slices). Use plausible identifiers.
@@ -164,6 +186,7 @@ def build_generation_prompt(
     complexity: Complexity,
     n: int,
     seed_examples: tuple[Intent, ...],
+    length_controlled: bool = False,
 ) -> str:
     """Build the LLM prompt for one cell (domain x complexity).
 
@@ -171,12 +194,20 @@ def build_generation_prompt(
     ``text``/``criticality``/``slice_type`` coherently. The prompt imposes
     realism (3GPP / O-RAN grounding), diversity, and an attribute-borne
     complexity gradient (entities, inference depth, crossed domains).
+
+    When ``length_controlled`` is True (dataset v2), an extra STRICT constraint
+    forces every intent into a 45-65 word band regardless of complexity, so the
+    complexity is expressed through content (entities, constraints, crossed
+    domains) and not through verbosity. The constraint adds to the complexity
+    guidance, it does not replace it. Default False keeps the v1 prompt intact.
     """
+    length_guidance = f"\n{_LENGTH_GUIDANCE}\n" if length_controlled else ""
     return _PROMPT_TEMPLATE.format(
         n=n,
         domain=domain,
         complexity=complexity,
         complexity_guidance=_COMPLEXITY_GUIDANCE[complexity],
+        length_guidance=length_guidance,
         seed_block=_seed_block(_select_seeds(seed_examples, domain, complexity)),
     )
 
@@ -358,9 +389,12 @@ def _generate_cell(
     complexity: Complexity,
     n: int,
     seed_examples: tuple[Intent, ...],
+    length_controlled: bool = False,
 ) -> tuple[Intent, ...]:
     """One paid call: generate, parse and dedup a batch for one cell."""
-    prompt = build_generation_prompt(domain, complexity, n, seed_examples)
+    prompt = build_generation_prompt(
+        domain, complexity, n, seed_examples, length_controlled=length_controlled
+    )
     response = call_model(
         config.GENERATION_MODEL,
         prompt,
@@ -376,7 +410,12 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, config.LOG_LEVEL, logging.INFO))
     n_per_cell = int(os.getenv("N_PER_CELL", str(DEFAULT_N_PER_CELL)))
     cells = _parse_cells_env(os.getenv("CELLS"))
-    out_path = Path(config.DATASET_PATH)
+    length_controlled = os.getenv("LENGTH_CONTROLLED", "").strip() in {"1", "true", "True"}
+    out_path = Path(
+        LENGTH_CONTROLLED_DATASET_PATH if length_controlled else config.DATASET_PATH
+    )
+    if length_controlled:
+        print(f"Mode longueur contrôlée (v2) actif -> sortie {out_path}.\n")
 
     seed_examples = load_intents(config.INTENTS_SPIKE_PATH)
     intents = _load_existing(out_path)
@@ -390,7 +429,10 @@ def main() -> None:
             print(f"[skip] {domain}:{complexity} déjà couvert ({have}/{n_per_cell}).")
             continue
         print(f"[gen ] {domain}:{complexity} ({have}/{n_per_cell}) via {config.GENERATION_MODEL} ...", flush=True)
-        batch = _generate_cell(domain, complexity, n_per_cell, seed_examples)
+        batch = _generate_cell(
+            domain, complexity, n_per_cell, seed_examples,
+            length_controlled=length_controlled,
+        )
         fresh = tuple(i for i in batch if _normalize_text(i.text) not in seen_texts)
         seen_texts.update(_normalize_text(i.text) for i in fresh)
         intents = intents + fresh

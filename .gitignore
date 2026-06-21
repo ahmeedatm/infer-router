@@ -35,6 +35,7 @@ data/*
 # Exception : les jeux d'intents versionnés (artefacts validés)
 !data/intents_spike.yaml
 !data/intents_dataset.yaml
+!data/intents_dataset_lengthctrl.yaml
 
 # --- Spike experiment outputs (local-only) ---
 experiments/results/
