@@ -10,9 +10,7 @@ from redis.asyncio import Redis
 from app.arrival import get_lambda
 from app.config import (
     ACCURATE_MODEL_NAME,
-    C_COEFFICIENT,
     FAST_MODEL_NAME,
-    OMEGA,
     TAU,
 )
 from app.mu import get_mu
