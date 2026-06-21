@@ -75,3 +75,6 @@ CHECKLIST_MAX_TOKENS: int = int(os.getenv("CHECKLIST_MAX_TOKENS", "512"))
 
 # Jeu d'intents du spike
 INTENTS_SPIKE_PATH: str = os.getenv("INTENTS_SPIKE_PATH", "data/intents_spike.yaml")
+
+# Estimateur de complexité sémantique (Exp. H-C) — modèle d'embeddings.
+EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")

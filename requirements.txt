@@ -23,5 +23,7 @@ pytest-asyncio==1.2.0
 # ── Post-pivot — InferRouter-LLM spike (ADR-005) ──
 PyYAML==6.0.2
 pandas==2.2.3
-# sentence-transformers : différé à la Phase 6 du spike (tire torch, lourd)
-# sentence-transformers==3.3.1
+# Estimateur de complexité sémantique (Exp. H-C) : embeddings + classifier.
+# sentence-transformers tire torch (lourd) ; installé dans le venv.
+sentence-transformers==5.1.2
+scikit-learn==1.6.1

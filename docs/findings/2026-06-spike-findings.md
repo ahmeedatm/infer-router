@@ -193,10 +193,31 @@ Pistes pour relever la discrimination fine, si on en a besoin plus tard : juge
 de grading un peu plus gros (gemma2:9b), étape 3 de RocketEval (repondération
 supervisée des items), ou découpe des réponses longues avant grading.
 
-## H-C — Séparabilité de la complexité : non testé
+## H-C — Séparabilité de la complexité : nuancé (avertissement utile)
 
-Reporté. L'expérience C (embeddings sentence-transformers) n'a pas été lancée,
-la priorité étant le risque n°1. À mener quand H-A aura une réponse.
+Test local et gratuit : encodage des 20 énoncés par all-MiniLM-L6-v2, puis
+k-NN en leave-one-out pour prédire la complexité.
+
+Résultat : accuracy 35 %, égale au baseline majoritaire (35 %), gain nul
+(k=1 et k=3 à 35 %, k=5 à 45 %). Les intents complexes ressortent (67 %), mais
+simple et medium se confondent. La complexité n'est pas lisible dans la
+proximité des embeddings bruts.
+
+Diagnostic complémentaire décisif : sur les mêmes embeddings, prédire le domaine
+fonctionnel (RAN, cœur, sécurité, slice) donne 55 % contre un baseline de 30 %,
+soit +25 points. Les embeddings encodent donc bien le sujet de l'intent, mais
+pas sa difficulté. La complexité est orthogonale à l'axe sémantique dominant.
+
+Lecture, et elle est constructive. D'abord, un estimateur de complexité fondé
+sur la seule proximité d'embeddings ne marcherait pas. C'est un avertissement,
+pas un échec : l'architecture du rapport prévoit déjà un classifieur entraîné
+sur des attributs calculés (nombre d'entités, profondeur d'inférence, domaines
+croisés), pas sur la similarité brute. Ce résultat conforte ce choix et écarte
+la voie naïve. Ensuite, la bonne séparabilité par domaine soutient la prémisse
+de spécialisation par domaine du pool de LLM.
+
+Réserve : 20 points, c'est indicatif. La mesure propre demandera le dataset
+complet (Plan 3) et l'approche par attributs, pas par embeddings bruts.
 
 ## Verdict global : ADJUST
 
