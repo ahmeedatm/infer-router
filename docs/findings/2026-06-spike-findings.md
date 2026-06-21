@@ -154,6 +154,45 @@ Verdict révisé du spike : le LLM-Juge local est récupérable. RocketEval comp
 fait passer l'accord de 40 % à 90 % sans changer de modèle. La voie est ouverte
 pour reprendre le reste du cœur, une fois la validation propre faite.
 
+## Validation propre : discrimination sur paires contrôlées (expérience D)
+
+Le test précédent opposait un modèle fort à un faible, ce qui gonfle l'accord.
+Test décisif : pour chaque intent, on dégrade la bonne réponse en y injectant
+une seule erreur (chiffre faux, étape retirée, affirmation fausse), puis on
+demande au juge RocketEval complet de classer l'originale et la dégradée. La
+vérité-terrain est connue, les deux textes sont quasi identiques, le juge ne
+peut plus gagner en préférant le plus long.
+
+Résultat : préférence correcte **35 %** (7/20), égalités 40 %, inversions 25 %.
+Par type d'erreur : chiffre faux 57 % (0 inversion), affirmation fausse 33 %,
+étape manquante 14 % avec quatre inversions. Retirer une étape critique fait
+souvent monter le score de la version dégradée, parce que le texte paraît plus
+propre et que le petit juge ne relie pas la checklist à l'omission.
+
+Lecture. Le 90 % obtenu en opposant fort et faible était optimiste. Sur une
+dégradation subtile d'une réponse longue, le juge gemma2:2b ne discrimine pas,
+même avec une checklist générée.
+
+## Verdict consolidé sur le juge (H-A)
+
+Deux régimes, à distinguer nettement.
+
+- Discrimination grossière (un candidat nettement meilleur qu'un autre) :
+  fiable. RocketEval complet corrige l'aveuglement à l'hallucination et classe
+  correctement fort contre faible.
+- Discrimination fine (détecter une erreur isolée, servir d'oracle de qualité
+  absolue) : non fiable avec ce petit juge, à 35 %.
+
+Conséquence pour le système. Le routage ne demande que la discrimination
+grossière : pour un intent donné, l'agent spécialisé est-il nettement meilleur
+que le générique. Le juge peut donc servir de signal de routage, en comparaison
+relative entre candidats, pas de score de qualité absolu sur lequel poser un
+seuil. Cela oriente la contribution C3 et l'usage de q dans le routeur.
+
+Pistes pour relever la discrimination fine, si on en a besoin plus tard : juge
+de grading un peu plus gros (gemma2:9b), étape 3 de RocketEval (repondération
+supervisée des items), ou découpe des réponses longues avant grading.
+
 ## H-C — Séparabilité de la complexité : non testé
 
 Reporté. L'expérience C (embeddings sentence-transformers) n'a pas été lancée,
