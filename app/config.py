@@ -67,6 +67,11 @@ MODEL_PRICING_USD_PER_1K: dict[str, dict[str, float]] = {
 # LLM-Juge local (Ollama)
 OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemma2:2b")
+# Modèle fort qui génère la checklist RocketEval spécifique à chaque intent
+# (via OpenRouter). Réutilise le heavy par défaut.
+CHECKLIST_MODEL: str = os.getenv("CHECKLIST_MODEL", MODEL_HEAVY)
+# Borne de génération (tokens) pour la production de la checklist.
+CHECKLIST_MAX_TOKENS: int = int(os.getenv("CHECKLIST_MAX_TOKENS", "512"))
 
 # Jeu d'intents du spike
 INTENTS_SPIKE_PATH: str = os.getenv("INTENTS_SPIKE_PATH", "data/intents_spike.yaml")

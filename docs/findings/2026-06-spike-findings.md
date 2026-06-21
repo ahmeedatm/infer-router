@@ -123,6 +123,37 @@ l'on injecte une erreur précise, ou deux modèles de capacité voisine), de sor
 qu'un bon juge doive discriminer finement et qu'un mauvais échoue de façon
 mesurable.
 
+## RocketEval complet : le correctif validé
+
+Chantier 2 de l'ADR-006. On remplace la checklist fixe de quatre critères par
+une checklist générée par intent via un modèle fort (claude-sonnet-4.6), gradée
+ensuite par le même petit juge local gemma2:2b. Mêmes 20 intents, mêmes réponses
+v2, même référence.
+
+Accord avec la référence : **90 % (18/20)**, contre 40 % pour la checklist fixe
+en 2b et 50 % en 9b. Par complexité : simple 100 %, medium 100 %, complexe 67 %.
+
+Deux enseignements. D'abord, le petit juge de 2 milliards de paramètres, doté
+d'une bonne checklist, dépasse largement le juge de 9 milliards à checklist
+fixe. Le levier de fiabilité est la méthode d'évaluation, pas la taille du
+modèle, conformément à RocketEval. Ensuite, l'aveuglement à l'hallucination est
+corrigé : sur les intents de lecture, une réponse qui invente un chiffre tombe
+de 1,00 à 0,43, et l'ordre correct (lourd au-dessus du léger) est rétabli, y
+compris sur le cas que le juge inversait auparavant. Cette baisse ciblée est une
+preuve robuste, indépendante de la métrique d'accord.
+
+Réserves. La référence reste déséquilibrée (le lourd l'emporte sur les 20), donc
+les 90 % mesurent surtout que le juge préfère désormais le lourd, pas une
+discrimination fine. Les deux désaccords résiduels sont des égalités sur intents
+complexes (les deux réponses notées 0,12), où gemma2:2b peine à grader une
+checklist de huit items contre une réponse longue. La validation propre, sur des
+paires de qualité proche, et l'étape de repondération supervisée de RocketEval
+(étape 3, non implémentée) restent à faire pour une mesure de niveau publication.
+
+Verdict révisé du spike : le LLM-Juge local est récupérable. RocketEval complet
+fait passer l'accord de 40 % à 90 % sans changer de modèle. La voie est ouverte
+pour reprendre le reste du cœur, une fois la validation propre faite.
+
 ## H-C — Séparabilité de la complexité : non testé
 
 Reporté. L'expérience C (embeddings sentence-transformers) n'a pas été lancée,

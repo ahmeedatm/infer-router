@@ -22,6 +22,7 @@ from typing import Optional
 import httpx
 
 from app import config
+from app.llm.checklist import generate_checklist
 from app.llm.schema import Intent, JudgeScore
 
 logger = logging.getLogger(__name__)
@@ -175,3 +176,56 @@ def judge(
 
     q = sum(checklist.values()) / len(checklist)
     return JudgeScore(q=q, checklist=checklist)
+
+
+def judge_rocketeval(
+    intent: Intent,
+    response_text: str,
+    *,
+    checklist: Optional[tuple[str, ...]] = None,
+    openrouter_client: Optional[httpx.Client] = None,
+    ollama_client: Optional[httpx.Client] = None,
+) -> JudgeScore:
+    """Score a response with the full RocketEval method (per-intent checklist).
+
+    Unlike :func:`judge` (fixed generic checklist), this generates an
+    intent-specific checklist with a strong model when none is supplied, then
+    grades each criterion with the local judge. ``q = #YES / #criteria``.
+
+    Args:
+        intent: The network intent the response is meant to satisfy.
+        response_text: Candidate answer to evaluate.
+        checklist: Optional pre-built tuple of verifiable criteria. When None,
+            it is generated via ``generate_checklist`` (uses openrouter_client).
+        openrouter_client: Optional httpx.Client for checklist generation
+            (OpenRouter). Only used when ``checklist`` is None.
+        ollama_client: Optional httpx.Client for the local judge (Ollama).
+
+    Returns:
+        A JudgeScore with q = (#YES / #criteria) and the per-criterion verdicts
+        keyed by the criterion text.
+
+    Raises:
+        ChecklistError: when checklist generation yields no criterion.
+        OpenRouterError: on checklist-generation request failure.
+        JudgeError: Ollama unreachable, non-2xx status, or malformed JSON.
+    """
+    items = (
+        checklist
+        if checklist is not None
+        else generate_checklist(intent, client=openrouter_client)
+    )
+
+    owns_client = ollama_client is None
+    active = ollama_client or httpx.Client(timeout=config.OPENROUTER_TIMEOUT_S)
+    try:
+        verdicts = {
+            criterion: _grade_one(intent, response_text, criterion, active)
+            for criterion in items
+        }
+    finally:
+        if owns_client:
+            active.close()
+
+    q = sum(verdicts.values()) / len(verdicts)
+    return JudgeScore(q=q, checklist=verdicts)
