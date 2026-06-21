@@ -91,3 +91,36 @@ EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 GENERATION_MODEL: str = os.getenv("GENERATION_MODEL", MODEL_HEAVY)
 # Dataset cible produit par scripts/generate_dataset.py (même format que le spike).
 DATASET_PATH: str = os.getenv("DATASET_PATH", "data/intents_dataset.yaml")
+
+# ────────────────────────────────────────────────────────────────────────────
+# Phase 3 — Routeur tri-critère (décision pure, sans réseau)
+# ────────────────────────────────────────────────────────────────────────────
+
+# Profils coût/latence par tier du pool prototype. Valeurs relatives
+# (le couple light/heavy par défaut). Le coût reprend l'ordre de grandeur de
+# la grille tarifaire ci-dessus (USD par appel typique) ; la latence est en ms.
+# À recalibrer sur mesures réelles (Phase 5). Surchargeable par env pour les tests.
+POOL_LIGHT_COST: float = float(os.getenv("POOL_LIGHT_COST", "0.0004"))
+POOL_LIGHT_LATENCY_MS: float = float(os.getenv("POOL_LIGHT_LATENCY_MS", "300.0"))
+POOL_HEAVY_COST: float = float(os.getenv("POOL_HEAVY_COST", "0.018"))
+POOL_HEAVY_LATENCY_MS: float = float(os.getenv("POOL_HEAVY_LATENCY_MS", "1200.0"))
+
+# Domaines réseau spécialisés du pool (un modèle spécialisé par domaine).
+POOL_DOMAINS: tuple[str, ...] = ("ran", "core", "security", "slice")
+
+# Barème de qualité attendue (heuristique de prototype, app/llm/policy.py).
+# Toutes les valeurs sont dans [0, 1]. À calibrer par le LLM-Juge en Phase 5.
+# Spécialiste sur le domaine de l'intent : forte qualité quelle que soit la complexité.
+QUALITY_SPECIALIST_ON_DOMAIN: float = float(os.getenv("QUALITY_SPECIALIST_ON_DOMAIN", "0.92"))
+# Heavy générique : bonne qualité générale, stable sur toutes les complexités.
+QUALITY_HEAVY_GENERIC: float = float(os.getenv("QUALITY_HEAVY_GENERIC", "0.80"))
+# Light générique : base correcte sur intent simple…
+QUALITY_LIGHT_BASE: float = float(os.getenv("QUALITY_LIGHT_BASE", "0.70"))
+# …mais pénalité croissante avec la complexité (soustraite par cran au-dessus de simple).
+QUALITY_LIGHT_COMPLEXITY_PENALTY: float = float(
+    os.getenv("QUALITY_LIGHT_COMPLEXITY_PENALTY", "0.18")
+)
+# Spécialiste hors-domaine : se comporte comme un heavy générique (même base model).
+QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
+    os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.80")
+)
