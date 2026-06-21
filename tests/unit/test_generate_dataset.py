@@ -16,6 +16,7 @@ from scripts.generate_dataset import (
     coverage_report,
     dedup_intents,
     parse_generated_intents,
+    sample_length_targets,
 )
 
 SEED_EXAMPLES: tuple[Intent, ...] = (
@@ -94,6 +95,78 @@ def test_prompt_length_controlled_keeps_complexity_guidance():
     assert simple != complex_
     assert "45 to 65 words" in simple
     assert "45 to 65 words" in complex_
+
+
+# ───────────────────────────── sample_length_targets ───────────────────────
+
+
+def test_sample_length_targets_is_deterministic_for_same_seed():
+    a = sample_length_targets(10, seed=42)
+    b = sample_length_targets(10, seed=42)
+    assert a == b
+
+
+def test_sample_length_targets_differs_for_different_seed():
+    a = sample_length_targets(10, seed=1)
+    b = sample_length_targets(10, seed=2)
+    assert a != b
+
+
+def test_sample_length_targets_returns_n_values():
+    assert len(sample_length_targets(7, seed=0)) == 7
+    assert len(sample_length_targets(1, seed=0)) == 1
+    assert sample_length_targets(0, seed=0) == ()
+
+
+def test_sample_length_targets_stays_in_bounds():
+    targets = sample_length_targets(200, seed=3, lo=15, hi=70)
+    assert all(15 <= t <= 70 for t in targets)
+
+
+def test_sample_length_targets_respects_custom_bounds():
+    targets = sample_length_targets(50, seed=9, lo=20, hi=30)
+    assert all(20 <= t <= 30 for t in targets)
+
+
+# ───────────────────────────── build_generation_prompt (decorrelated) ───────
+
+
+def test_prompt_default_has_no_length_targets_block():
+    # Non-regression v1/v2: without length_targets the decorrelated block is absent.
+    prompt = build_generation_prompt("ran", "simple", 5, SEED_EXAMPLES)
+    assert "target word counts" not in prompt.lower()
+    assert "independent of complexity" not in prompt.lower()
+
+
+def test_prompt_length_controlled_has_no_length_targets_block():
+    # v2 (band) and v3 (per-intent targets) are distinct: v2 must not emit v3 block.
+    prompt = build_generation_prompt(
+        "ran", "simple", 5, SEED_EXAMPLES, length_controlled=True
+    )
+    assert "target word counts" not in prompt.lower()
+    assert "independent of complexity" not in prompt.lower()
+
+
+def test_prompt_decorrelated_injects_targets_and_instruction():
+    prompt = build_generation_prompt(
+        "ran", "simple", 3, SEED_EXAMPLES, length_targets=(20, 55, 18)
+    )
+    assert "[20, 55, 18]" in prompt
+    assert "independent of complexity" in prompt.lower()
+    assert "target word counts" in prompt.lower()
+
+
+def test_prompt_decorrelated_keeps_complexity_guidance():
+    # The decorrelated targets ADD to complexity guidance; simple != complex.
+    simple = build_generation_prompt(
+        "ran", "simple", 3, SEED_EXAMPLES, length_targets=(20, 55, 18)
+    )
+    complex_ = build_generation_prompt(
+        "ran", "complex", 3, SEED_EXAMPLES, length_targets=(20, 55, 18)
+    )
+    assert simple != complex_
+    assert "[20, 55, 18]" in simple
+    assert "[20, 55, 18]" in complex_
 
 
 # ───────────────────────────── parse_generated_intents ──────────────────────

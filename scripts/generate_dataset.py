@@ -25,11 +25,21 @@ Mode longueur contrôlée (v2, décorrèle longueur et complexité) :
     LENGTH_CONTROLLED=1 .venv/bin/python -m scripts.generate_dataset
 Ce mode écrit dans ``data/intents_dataset_lengthctrl.yaml`` (le v1 n'est jamais
 touché) et reste reprenable sur ce fichier de sortie.
+
+Mode longueur décorrélée (v3, longueur variable mais indépendante de la
+complexité) :
+    LENGTH_DECORRELATED=1 .venv/bin/python -m scripts.generate_dataset
+Chaque intent reçoit une cible de longueur tirée au hasard dans une plage
+commune (15-70 mots), identique pour simple et complex. La longueur varie donc
+d'un intent à l'autre (réalisme) sans corréler avec la complexité. Ce mode écrit
+dans ``data/intents_dataset_decorr.yaml`` (ni v1 ni v2 ne sont touchés) et reste
+reprenable sur ce fichier. Exclusif avec LENGTH_CONTROLLED.
 """
 from __future__ import annotations
 
 import logging
 import os
+import random
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Optional
@@ -58,6 +68,14 @@ GENERATION_TEMPERATURE: float = 0.7
 # Chemin de sortie distinct pour le mode longueur contrôlée (dataset v2), afin
 # de NE JAMAIS écraser le v1. La reprenabilité s'applique à ce fichier-là.
 LENGTH_CONTROLLED_DATASET_PATH: str = "data/intents_dataset_lengthctrl.yaml"
+# Chemin de sortie distinct pour le mode longueur décorrélée (dataset v3), afin
+# de NE JAMAIS écraser v1 ni v2. La reprenabilité s'applique à ce fichier-là.
+LENGTH_DECORRELATED_DATASET_PATH: str = "data/intents_dataset_decorr.yaml"
+# Plage commune de longueurs (mots) tirée par intent en mode décorrélé (v3).
+# Simple et complex partagent cette même distribution : la longueur varie d'un
+# intent à l'autre (réalisme) mais reste indépendante de la complexité.
+DECORR_LENGTH_LO: int = 15
+DECORR_LENGTH_HI: int = 70
 
 
 class GenerationError(RuntimeError):
@@ -103,6 +121,38 @@ _LENGTH_GUIDANCE: str = (
     "must be padded with realistic operational context to reach the band; a "
     "complex intent must be expressed tersely within the band."
 )
+
+# Consigne de longueur décorrélée (mode v3, activable via LENGTH_DECORRELATED=1).
+# But : longueur NATURELLEMENT VARIABLE (réalisme) mais DÉCORRÉLÉE de la
+# complexité. Chaque intent reçoit une cible de longueur tirée au hasard dans une
+# plage commune (15-70 mots), indépendamment de la complexité de la cellule.
+# {targets_list} est injecté à l'exécution (cf. build_generation_prompt).
+_DECORR_GUIDANCE: str = (
+    "Length assignment (per-intent, randomised): Produce exactly {n} intents. "
+    "The target word counts are: {targets_list}. Intent i MUST have about the "
+    "i-th word count in that list. These lengths are assigned RANDOMLY and are "
+    "INDEPENDENT of complexity: do NOT correlate length with difficulty. Express "
+    "complexity through technical content only (number of entities, number of "
+    "constraints, crossed domains, inference depth), never through verbosity."
+)
+
+
+def sample_length_targets(
+    n: int,
+    seed: int,
+    lo: int = DECORR_LENGTH_LO,
+    hi: int = DECORR_LENGTH_HI,
+) -> tuple[int, ...]:
+    """Draw ``n`` per-intent word-count targets in ``[lo, hi]`` (inclusive). Pure.
+
+    Uses a local ``random.Random(seed)`` so the draw is reproducible and never
+    touches the global RNG state. The same distribution is used for every cell
+    regardless of complexity, which is what decorrelates length from complexity
+    in dataset v3.
+    """
+    rng = random.Random(seed)
+    return tuple(rng.randint(lo, hi) for _ in range(n))
+
 
 _PROMPT_TEMPLATE = """You generate realistic telecom network intents for a research dataset \
 (InferRouter-LLM, a master's thesis). Produce EXACTLY {n} declarative intents as \
@@ -187,6 +237,7 @@ def build_generation_prompt(
     n: int,
     seed_examples: tuple[Intent, ...],
     length_controlled: bool = False,
+    length_targets: Optional[tuple[int, ...]] = None,
 ) -> str:
     """Build the LLM prompt for one cell (domain x complexity).
 
@@ -200,8 +251,23 @@ def build_generation_prompt(
     complexity is expressed through content (entities, constraints, crossed
     domains) and not through verbosity. The constraint adds to the complexity
     guidance, it does not replace it. Default False keeps the v1 prompt intact.
+
+    When ``length_targets`` is given (dataset v3, decorrelated lengths), each
+    intent gets a per-intent target word count drawn from a common distribution
+    (same for simple and complex). The prompt asks the model to write intent i
+    at the i-th target, and states explicitly that lengths are random and
+    independent of complexity. The two length modes are mutually exclusive in
+    the runner; here ``length_targets`` simply adds its own block when present.
+    Default ``None`` keeps the v1/v2 prompt intact.
     """
     length_guidance = f"\n{_LENGTH_GUIDANCE}\n" if length_controlled else ""
+    if length_targets is not None:
+        targets_list = "[" + ", ".join(str(t) for t in length_targets) + "]"
+        length_guidance += (
+            "\n"
+            + _DECORR_GUIDANCE.format(n=n, targets_list=targets_list)
+            + "\n"
+        )
     return _PROMPT_TEMPLATE.format(
         n=n,
         domain=domain,
@@ -384,16 +450,33 @@ def _cell_count(intents: tuple[Intent, ...], domain: Domain, complexity: Complex
     )
 
 
+def _cell_length_seed(domain: Domain, complexity: Complexity) -> int:
+    """Stable per-cell seed for the decorrelated length draw (reproducible).
+
+    Derived from the cell index in the matrix (not ``hash``, which is salted per
+    process) so the draw is identical across runs and across machines.
+    """
+    return DOMAINS.index(domain) * len(COMPLEXITIES) + COMPLEXITIES.index(complexity)
+
+
 def _generate_cell(
     domain: Domain,
     complexity: Complexity,
     n: int,
     seed_examples: tuple[Intent, ...],
     length_controlled: bool = False,
+    length_decorrelated: bool = False,
 ) -> tuple[Intent, ...]:
     """One paid call: generate, parse and dedup a batch for one cell."""
+    length_targets = (
+        sample_length_targets(n, seed=_cell_length_seed(domain, complexity))
+        if length_decorrelated
+        else None
+    )
     prompt = build_generation_prompt(
-        domain, complexity, n, seed_examples, length_controlled=length_controlled
+        domain, complexity, n, seed_examples,
+        length_controlled=length_controlled,
+        length_targets=length_targets,
     )
     response = call_model(
         config.GENERATION_MODEL,
@@ -410,11 +493,23 @@ def main() -> None:
     logging.basicConfig(level=getattr(logging, config.LOG_LEVEL, logging.INFO))
     n_per_cell = int(os.getenv("N_PER_CELL", str(DEFAULT_N_PER_CELL)))
     cells = _parse_cells_env(os.getenv("CELLS"))
-    length_controlled = os.getenv("LENGTH_CONTROLLED", "").strip() in {"1", "true", "True"}
-    out_path = Path(
-        LENGTH_CONTROLLED_DATASET_PATH if length_controlled else config.DATASET_PATH
-    )
-    if length_controlled:
+    truthy = {"1", "true", "True"}
+    length_controlled = os.getenv("LENGTH_CONTROLLED", "").strip() in truthy
+    length_decorrelated = os.getenv("LENGTH_DECORRELATED", "").strip() in truthy
+    if length_controlled and length_decorrelated:
+        raise GenerationError(
+            "LENGTH_CONTROLLED (v2) and LENGTH_DECORRELATED (v3) are mutually "
+            "exclusive; set only one."
+        )
+    if length_decorrelated:
+        out_path = Path(LENGTH_DECORRELATED_DATASET_PATH)
+    elif length_controlled:
+        out_path = Path(LENGTH_CONTROLLED_DATASET_PATH)
+    else:
+        out_path = Path(config.DATASET_PATH)
+    if length_decorrelated:
+        print(f"Mode longueur décorrélée (v3) actif -> sortie {out_path}.\n")
+    elif length_controlled:
         print(f"Mode longueur contrôlée (v2) actif -> sortie {out_path}.\n")
 
     seed_examples = load_intents(config.INTENTS_SPIKE_PATH)
@@ -432,6 +527,7 @@ def main() -> None:
         batch = _generate_cell(
             domain, complexity, n_per_cell, seed_examples,
             length_controlled=length_controlled,
+            length_decorrelated=length_decorrelated,
         )
         fresh = tuple(i for i in batch if _normalize_text(i.text) not in seen_texts)
         seen_texts.update(_normalize_text(i.text) for i in fresh)

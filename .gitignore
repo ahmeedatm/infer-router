@@ -36,6 +36,7 @@ data/*
 !data/intents_spike.yaml
 !data/intents_dataset.yaml
 !data/intents_dataset_lengthctrl.yaml
+!data/intents_dataset_decorr.yaml
 
 # --- Spike experiment outputs (local-only) ---
 experiments/results/
