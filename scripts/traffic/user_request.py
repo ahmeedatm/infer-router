@@ -1,5 +1,4 @@
 import os
-import random
 import requests
 import time
 import threading
@@ -40,7 +39,6 @@ def send_request(image_path):
 def data_sources(parameters):
    
     rate = int(parameters.get("rate"))
-    total_requests = int(parameters.get("total_requests"))
 
 
     image_files = os.listdir(IMAGE_DIRECTORY)

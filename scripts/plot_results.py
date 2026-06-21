@@ -521,7 +521,7 @@ def main() -> None:
             all_stats[strategy][load] = _compute_stats(results)
 
     available_strategies = [s for s in STRATEGY_ORDER if s in all_stats]
-    available_loads = [l for l in LOAD_ORDER if any(l in all_stats.get(s, {}) for s in available_strategies)]
+    available_loads = [load for load in LOAD_ORDER if any(load in all_stats.get(s, {}) for s in available_strategies)]
 
     if not available_strategies or not available_loads:
         logger.error("No usable data found.")

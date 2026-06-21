@@ -24,12 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff pytest
           [ -f requirements.txt ] && pip install -r requirements.txt || true
-          [ -f requirement.txt ] && pip install -r requirement.txt || true
 
       - name: Lint (Ruff)
         run: ruff check .
-        continue-on-error: true
 
+      # Tests unitaires uniquement : déterministes, sans réseau ni service.
+      # Les tests d'intégration (tests/integration/) requièrent Ollama/Redis
+      # et ne sont pas exécutés en CI.
       - name: Tests (Pytest)
-        run: pytest -q
-        continue-on-error: true
+        run: pytest tests/unit -q

@@ -62,9 +62,9 @@ async def _route_infer_router(
 
     # k_active == 2: use GPP to pick the best model
     fast_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{FAST_MODEL_NAME}")
-    accurate_raw = await redis_client.get(f"{ACCURACY_KEY_PREFIX}:{ACCURATE_MODEL_NAME}")
     fast_acc = float(fast_raw) if fast_raw is not None else 0.5
-    accurate_acc = float(accurate_raw) if accurate_raw is not None else 1.0
+    # Le modèle gold (Accurate) a alpha = 0 par convention, sa précision mesurée
+    # n'entre pas dans le calcul ci-dessous.
 
     alphas = {
         ACCURATE_MODEL_NAME: 0.0,               # gold standard: alpha = 0
