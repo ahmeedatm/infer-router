@@ -31,7 +31,12 @@ htmlcov/
 .mypy_cache/
 
 # --- Data (local-only: images, benchmarks, results) ---
-data/
+data/*
+# Exception : le jeu d'intents du spike est versionné (artefact validé)
+!data/intents_spike.yaml
+
+# --- Spike experiment outputs (local-only) ---
+experiments/results/
 
 # --- Secrets / local config ---
 .env

@@ -35,3 +35,38 @@ MU_WINDOW: int = int(os.getenv("MU_WINDOW", "50"))        # latency samples per 
 LAMBDA_WINDOW_S: float = float(os.getenv("LAMBDA_WINDOW_S", "5.0"))  # arrival-rate sliding window (seconds)
 K_MIN: int = 1                                             # fixed lower bound — always keep ≥1 model active
 K_MAX: int = int(os.getenv("K_MAX", "2"))                  # max active models in Threshold FSM
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# Post-pivot — InferRouter-LLM spike (ADR-005)
+# Routage d'intents réseau (texte). Découplé de l'app pré-pivot ci-dessus.
+# ════════════════════════════════════════════════════════════════════════════
+
+# OpenRouter — LLM cibles
+OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+# Couple de modèles cibles du spike (ajustables — cf. Exp. B du plan)
+MODEL_LIGHT: str = os.getenv("MODEL_LIGHT", "meta-llama/llama-3.2-3b-instruct")
+MODEL_HEAVY: str = os.getenv("MODEL_HEAVY", "anthropic/claude-sonnet-4.6")
+OPENROUTER_TIMEOUT_S: float = float(os.getenv("OPENROUTER_TIMEOUT_S", "60.0"))
+# Budget de génération (cap de tokens de complétion) des LLM cibles du spike.
+# Cap généreux : borne le coût sans tronquer (le modèle lourd monte à ~2700
+# tokens sur les intents complexes). NB : les réponses courtes du modèle léger
+# ne sont PAS des troncatures de cap mais un arrêt spontané du petit modèle.
+RESPONSE_MAX_TOKENS: int = int(os.getenv("RESPONSE_MAX_TOKENS", "4096"))
+
+# Grille tarifaire OpenRouter (USD par 1000 tokens), par model_id.
+# Source : page tarifs OpenRouter. À ajuster si le couple de modèles change.
+# cost_estimate s'appuie sur cette grille ; tout modèle absent → coût 0.0
+# (choix documenté : on préfère 0.0 explicite à une estimation fausse).
+MODEL_PRICING_USD_PER_1K: dict[str, dict[str, float]] = {
+    "meta-llama/llama-3.2-3b-instruct": {"prompt": 0.000051, "completion": 0.000335},
+    "anthropic/claude-sonnet-4.6": {"prompt": 0.003, "completion": 0.015},
+}
+
+# LLM-Juge local (Ollama)
+OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemma2:2b")
+
+# Jeu d'intents du spike
+INTENTS_SPIKE_PATH: str = os.getenv("INTENTS_SPIKE_PATH", "data/intents_spike.yaml")

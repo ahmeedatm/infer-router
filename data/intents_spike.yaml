@@ -1,0 +1,170 @@
+# intents_spike.yaml — jeu manuel de validation du routeur d'intents (spike risk-first)
+#
+# Critère d'annotation de la complexité (cohérent avec le ch.3 du mémoire) :
+#   - n(e)  = nombre d'entités impliquées (cellules, NF du 5GC, KPI, slices, règles...)
+#   - p(e)  = profondeur d'inférence requise (nombre d'étapes de raisonnement pour
+#             passer de l'énoncé à la réponse exploitable)
+#   - |δ(e)| = nombre de domaines croisés (RAN, core, security, slice)
+#
+#   simple  : p(e)=1, n(e) faible (1-2), |δ(e)|=1.
+#             Lecture d'état ou requête directe, aucune optimisation.
+#   medium  : p(e)=2, n(e) modéré, |δ(e)|=1 (parfois corrélation entre 2 entités d'un
+#             même domaine). Diagnostic guidé ou reconfiguration ciblée.
+#   complex : p(e)>=3, n(e) élevé, |δ(e)|>=2 le plus souvent.
+#             Optimisation multi-contraintes, arbitrage, ou raisonnement multi-domaines.
+#
+# Conventions de champs :
+#   id                  slug court unique
+#   text                énoncé naturel d'un opérateur réseau (anglais)
+#   domain              ran | core | security | slice
+#   expected_complexity simple | medium | complex
+#   criticality         low | med | high
+#   slice_type          embb | urllc | mmtc | null
+
+intents:
+
+  # ----------------------------- SIMPLE (p(e)=1) -----------------------------
+
+  - id: ran-read-throughput
+    text: "What is the current downlink throughput on cell gNB-042?"
+    domain: ran
+    expected_complexity: simple
+    criticality: low
+    slice_type: null
+
+  - id: ran-read-prb-utilization
+    text: "Show me the PRB utilization for sector 2 of gNB-118 right now."
+    domain: ran
+    expected_complexity: simple
+    criticality: low
+    slice_type: null
+
+  - id: core-read-amf-registrations
+    text: "How many UEs are currently registered on AMF amf-east-01?"
+    domain: core
+    expected_complexity: simple
+    criticality: low
+    slice_type: null
+
+  - id: core-read-upf-status
+    text: "Is UPF upf-edge-07 up and what is its active PDU session count?"
+    domain: core
+    expected_complexity: simple
+    criticality: med
+    slice_type: null
+
+  - id: security-list-firewall-rules
+    text: "List the active firewall rules on the N6 interface of the data network gateway."
+    domain: security
+    expected_complexity: simple
+    criticality: low
+    slice_type: null
+
+  - id: slice-read-active-count
+    text: "How many network slice instances are currently active in the production NSMF?"
+    domain: slice
+    expected_complexity: simple
+    criticality: low
+    slice_type: null
+
+  - id: security-read-auth-failures
+    text: "How many UE authentication failures were logged on AUSF ausf-east-01 in the last 5 minutes?"
+    domain: security
+    expected_complexity: simple
+    criticality: med
+    slice_type: null
+
+  # ----------------------------- MEDIUM (p(e)=2) -----------------------------
+
+  - id: ran-diagnose-handover-failures
+    text: "Handover failure rate spiked on gNB-042 over the last hour. Which neighbor cell is causing it?"
+    domain: ran
+    expected_complexity: medium
+    criticality: med
+    slice_type: embb
+
+  - id: ran-adjust-tilt-coverage-hole
+    text: "Users report poor coverage at the north edge of cell gNB-118. Recommend an antenna tilt adjustment to fill the hole."
+    domain: ran
+    expected_complexity: medium
+    criticality: med
+    slice_type: embb
+
+  - id: core-scale-smf-sessions
+    text: "PDU session setup latency is rising on SMF smf-central-03. Should we scale it out, and to how many instances?"
+    domain: core
+    expected_complexity: medium
+    criticality: med
+    slice_type: null
+
+  - id: slice-reconfigure-urllc-latency
+    text: "The URLLC slice for the factory automation tenant is breaching its 5 ms latency SLA. Reconfigure it to bring latency back in budget."
+    domain: slice
+    expected_complexity: medium
+    criticality: high
+    slice_type: urllc
+
+  - id: security-mitigate-signaling-storm
+    text: "We are seeing an abnormal spike of registration requests toward amf-east-01. Identify whether it is a signaling storm and apply rate limiting."
+    domain: security
+    expected_complexity: medium
+    criticality: high
+    slice_type: null
+
+  - id: core-diagnose-pdu-session-drops
+    text: "Subscribers on the eMBB slice are losing PDU sessions intermittently. Correlate UPF and SMF logs to find the root cause."
+    domain: core
+    expected_complexity: medium
+    criticality: high
+    slice_type: embb
+
+  - id: slice-resize-mmtc-capacity
+    text: "The mMTC slice for the smart-metering tenant is nearing its registered device quota. Resize its capacity for the next onboarding wave."
+    domain: slice
+    expected_complexity: medium
+    criticality: med
+    slice_type: mmtc
+
+  # ----------------------------- COMPLEX (p(e)>=3) -----------------------------
+
+  - id: ran-optimize-multicell-load-balance
+    text: "Cells gNB-040 through gNB-045 in the downtown cluster are unevenly loaded during peak hours. Rebalance load across the cluster while keeping every cell's edge-user SINR above target and not exceeding the X2/Xn handover budget."
+    domain: ran
+    expected_complexity: complex
+    criticality: high
+    slice_type: embb
+
+  - id: slice-admission-multitenant-contention
+    text: "Three new slice requests (one URLLC, two eMBB) arrive for the same gNB cluster that is already at 80 percent PRB usage. Decide which to admit, with what resource reservation, so that existing URLLC SLAs are preserved and overall revenue is maximized."
+    domain: slice
+    expected_complexity: complex
+    criticality: high
+    slice_type: urllc
+
+  - id: security-isolate-compromised-slice
+    text: "Anomaly detection flags lateral traffic from a compromised eMBB tenant toward the core signaling plane. Isolate the affected slice, reconfigure segmentation on N3 and N6, and verify that URLLC and mMTC slices on the shared infrastructure remain unaffected."
+    domain: security
+    expected_complexity: complex
+    criticality: high
+    slice_type: embb
+
+  - id: core-redesign-edge-upf-placement
+    text: "Edge latency targets for the URLLC automotive slice are missed in the western region. Propose a new UPF placement and SMF selection policy across the available edge sites that meets the latency SLA without over-provisioning compute and respects the security zoning between tenants."
+    domain: core
+    expected_complexity: complex
+    criticality: high
+    slice_type: urllc
+
+  - id: ran-energy-saving-vs-sla
+    text: "Off-peak energy spend on the suburban gNB cluster is too high. Design a cell-sleep schedule that cuts power draw while keeping coverage continuity and not breaching the eMBB throughput SLA or the mMTC reachability requirement."
+    domain: ran
+    expected_complexity: complex
+    criticality: med
+    slice_type: embb
+
+  - id: security-zero-trust-rollout-impact
+    text: "We plan to enforce ZTNA microsegmentation across the core service-based interfaces. Assess the impact on NF-to-NF latency, redesign the access policies per slice, and stage a rollout that keeps URLLC control-plane latency within budget."
+    domain: security
+    expected_complexity: complex
+    criticality: high
+    slice_type: urllc

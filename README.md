@@ -9,6 +9,8 @@ Adaptive inference router implementing the three algorithms from Section IV of
 
 Three routing strategies can be compared: `always-fast`, `always-accurate`, `infer-router`.
 
+> ⚠️ **Statut (2026-06) — système pré-pivot parqué.** La section ci-dessus (app FastAPI, AAP/GPP/Threshold, routage d'images) décrit le système d'origine, désormais en pause. Le projet a pivoté (cf. ADR-001) vers **InferRouter-LLM** : routage d'intents réseau en texte vers des LLM cibles, avec un LLM-Juge local. Le cœur post-pivot est en cours de construction dans `app/llm/` (spike risk-first, ADR-005). Voir le plan dans le vault : `Memoire/docs/superpowers/plans/2026-06-21-spike-risk-first-validation.md`.
+
 ---
 
 ## Architecture
