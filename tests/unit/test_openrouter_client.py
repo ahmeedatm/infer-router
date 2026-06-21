@@ -106,6 +106,11 @@ class TestCallModelMaxTokens:
         assert "max_tokens" not in captured["body"]
 
 
+def _no_sleep(_seconds: float) -> None:
+    """Sleep stub: tests never block on backoff."""
+    return None
+
+
 class TestCallModelErrors:
     def test_timeout_raises_openrouter_error(self):
         def handler(request: httpx.Request) -> httpx.Response:
@@ -113,7 +118,7 @@ class TestCallModelErrors:
 
         with _make_client(handler) as client:
             with pytest.raises(OpenRouterError) as exc:
-                call_model("m", "p", client=client)
+                call_model("m", "p", client=client, max_retries=0, sleep=_no_sleep)
         assert "timeout" in str(exc.value).lower()
 
     def test_status_429_raises(self):
@@ -122,7 +127,7 @@ class TestCallModelErrors:
 
         with _make_client(handler) as client:
             with pytest.raises(OpenRouterError) as exc:
-                call_model("m", "p", client=client)
+                call_model("m", "p", client=client, max_retries=0, sleep=_no_sleep)
         assert "429" in str(exc.value)
 
     def test_status_500_raises(self):
@@ -131,7 +136,7 @@ class TestCallModelErrors:
 
         with _make_client(handler) as client:
             with pytest.raises(OpenRouterError) as exc:
-                call_model("m", "p", client=client)
+                call_model("m", "p", client=client, max_retries=0, sleep=_no_sleep)
         assert "500" in str(exc.value)
 
     def test_malformed_json_raises(self):
@@ -140,7 +145,7 @@ class TestCallModelErrors:
 
         with _make_client(handler) as client:
             with pytest.raises(OpenRouterError):
-                call_model("m", "p", client=client)
+                call_model("m", "p", client=client, max_retries=0, sleep=_no_sleep)
 
     def test_missing_choices_raises(self):
         def handler(request: httpx.Request) -> httpx.Response:
@@ -148,7 +153,131 @@ class TestCallModelErrors:
 
         with _make_client(handler) as client:
             with pytest.raises(OpenRouterError):
-                call_model("m", "p", client=client)
+                call_model("m", "p", client=client, max_retries=0, sleep=_no_sleep)
+
+
+class TestCallModelRetry:
+    def test_503_then_200_succeeds_after_retry(self):
+        calls = {"n": 0}
+        sleeps: list[float] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return httpx.Response(503, text="service unavailable")
+            return httpx.Response(200, json=_ok_payload())
+
+        with _make_client(handler) as client:
+            resp = call_model(
+                "meta-llama/llama-3.2-3b-instruct",
+                "p",
+                client=client,
+                max_retries=3,
+                sleep=sleeps.append,
+            )
+
+        assert resp.text == "Cell 42 load is 73%."
+        assert calls["n"] == 2  # one failure, one success
+        assert sleeps == [pytest.approx(2.0)]  # one backoff before the retry
+
+    def test_non_json_then_200_succeeds_after_retry(self):
+        calls = {"n": 0}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return httpx.Response(200, text="<html>gateway hiccup</html>")
+            return httpx.Response(200, json=_ok_payload())
+
+        with _make_client(handler) as client:
+            resp = call_model(
+                "meta-llama/llama-3.2-3b-instruct",
+                "p",
+                client=client,
+                max_retries=3,
+                sleep=_no_sleep,
+            )
+
+        assert resp.text == "Cell 42 load is 73%."
+        assert calls["n"] == 2
+
+    def test_timeout_then_200_succeeds_after_retry(self):
+        calls = {"n": 0}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise httpx.TimeoutException("timed out", request=request)
+            return httpx.Response(200, json=_ok_payload())
+
+        with _make_client(handler) as client:
+            resp = call_model(
+                "meta-llama/llama-3.2-3b-instruct",
+                "p",
+                client=client,
+                max_retries=3,
+                sleep=_no_sleep,
+            )
+
+        assert resp.text == "Cell 42 load is 73%."
+        assert calls["n"] == 2
+
+    def test_402_raises_immediately_without_retry(self):
+        calls = {"n": 0}
+        sleeps: list[float] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            return httpx.Response(402, json={"error": "insufficient credits"})
+
+        with _make_client(handler) as client:
+            with pytest.raises(OpenRouterError) as exc:
+                call_model(
+                    "m", "p", client=client, max_retries=3, sleep=sleeps.append
+                )
+
+        assert "402" in str(exc.value)
+        assert calls["n"] == 1  # no retry on a definitive error
+        assert sleeps == []  # never slept
+
+    def test_persistent_503_raises_after_n_attempts(self):
+        calls = {"n": 0}
+        sleeps: list[float] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            return httpx.Response(503, text="still down")
+
+        with _make_client(handler) as client:
+            with pytest.raises(OpenRouterError) as exc:
+                call_model(
+                    "m", "p", client=client, max_retries=3, sleep=sleeps.append
+                )
+
+        message = str(exc.value)
+        assert "503" in message
+        assert "4" in message  # 1 initial + 3 retries = 4 attempts
+        assert calls["n"] == 4
+        # Exponential backoff between attempts: 2s, 4s, 8s.
+        assert sleeps == [
+            pytest.approx(2.0),
+            pytest.approx(4.0),
+            pytest.approx(8.0),
+        ]
+
+    def test_400_raises_immediately_without_retry(self):
+        calls = {"n": 0}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            return httpx.Response(400, json={"error": "bad request"})
+
+        with _make_client(handler) as client:
+            with pytest.raises(OpenRouterError) as exc:
+                call_model("m", "p", client=client, max_retries=3, sleep=_no_sleep)
+
+        assert "400" in str(exc.value)
+        assert calls["n"] == 1
 
 
 class TestCallModelUsageHandling:

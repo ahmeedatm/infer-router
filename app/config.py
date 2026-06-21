@@ -54,6 +54,13 @@ OPENROUTER_TIMEOUT_S: float = float(os.getenv("OPENROUTER_TIMEOUT_S", "60.0"))
 # tokens sur les intents complexes). NB : les réponses courtes du modèle léger
 # ne sont PAS des troncatures de cap mais un arrêt spontané du petit modèle.
 RESPONSE_MAX_TOKENS: int = int(os.getenv("RESPONSE_MAX_TOKENS", "4096"))
+# Retry sur erreurs transitoires (timeout réseau, 429, 5xx, corps non-JSON).
+# Un hoquet de passerelle a tué un run complet de génération du dataset ;
+# on retente UNIQUEMENT le transitoire (jamais les 4xx définitifs).
+# max_retries = nombre de tentatives supplémentaires après le 1er essai.
+# Backoff exponentiel : 2s, 4s, 8s... (backoff * 2**attempt).
+OPENROUTER_MAX_RETRIES: int = int(os.getenv("OPENROUTER_MAX_RETRIES", "3"))
+OPENROUTER_RETRY_BACKOFF_S: float = float(os.getenv("OPENROUTER_RETRY_BACKOFF_S", "2.0"))
 
 # Grille tarifaire OpenRouter (USD par 1000 tokens), par model_id.
 # Source : page tarifs OpenRouter. À ajuster si le couple de modèles change.
@@ -78,3 +85,9 @@ INTENTS_SPIKE_PATH: str = os.getenv("INTENTS_SPIKE_PATH", "data/intents_spike.ya
 
 # Estimateur de complexité sémantique (Exp. H-C) — modèle d'embeddings.
 EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+
+# Génération du dataset d'intents (Plan 3 / ADR-007).
+# Modèle fort par défaut : la génération exige du réalisme et de la diversité.
+GENERATION_MODEL: str = os.getenv("GENERATION_MODEL", MODEL_HEAVY)
+# Dataset cible produit par scripts/generate_dataset.py (même format que le spike).
+DATASET_PATH: str = os.getenv("DATASET_PATH", "data/intents_dataset.yaml")

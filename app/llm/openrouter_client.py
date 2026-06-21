@@ -3,7 +3,9 @@
 Exposes a single entry point, ``call_model``, that posts a prompt to the
 OpenRouter chat-completions endpoint and returns an immutable
 ``ModelResponse``. Latency is measured client-side. Errors are surfaced
-explicitly through ``OpenRouterError`` (never silently swallowed).
+explicitly through ``OpenRouterError`` (never silently swallowed). Transient
+failures (timeout, network transport error, HTTP 429/5xx, non-JSON body) are
+retried with exponential backoff; definitive 4xx errors are not.
 
 The ``client`` parameter is injectable so tests can pass an httpx.Client
 backed by a MockTransport (no real network, no API key required).
@@ -11,16 +13,24 @@ backed by a MockTransport (no real network, no API key required).
 from __future__ import annotations
 
 import time
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 import httpx
 
 from app import config
 from app.llm.schema import ModelResponse
 
+# HTTP statuses worth retrying: rate limit + transient gateway/server errors.
+# Everything else in the 4xx range (400/401/402/403/404) is definitive.
+_RETRYABLE_STATUSES = frozenset({429, 500, 502, 503, 504})
+
 
 class OpenRouterError(RuntimeError):
     """Raised for any failure while calling OpenRouter (network, status, parsing)."""
+
+
+class _TransientError(Exception):
+    """Internal signal: the attempt failed in a way that is worth retrying."""
 
 
 def _build_client() -> httpx.Client:
@@ -84,37 +94,13 @@ def _parse_payload(model_id: str, payload: Any, latency_ms: float) -> ModelRespo
     )
 
 
-def call_model(
+def _build_body(
     model_id: str,
     prompt: str,
-    *,
-    temperature: Optional[float] = None,
-    max_tokens: Optional[int] = None,
-    client: Optional[httpx.Client] = None,
-) -> ModelResponse:
-    """Call an OpenRouter model with a single user prompt.
-
-    Args:
-        model_id: OpenRouter model identifier.
-        prompt: User message content.
-        temperature: Optional sampling temperature. Forwarded to OpenRouter
-            only when provided (non-None); otherwise the provider default is
-            used and the field is omitted from the request body.
-        max_tokens: Optional generation budget (completion token cap).
-            Forwarded to OpenRouter only when provided (non-None); otherwise
-            the provider default is used and the field is omitted from the
-            request body. Set this to avoid truncated answers from models
-            with a low default completion cap.
-        client: Optional injected httpx.Client (for tests / connection reuse).
-
-    Returns:
-        An immutable ModelResponse with measured latency and token usage.
-
-    Raises:
-        OpenRouterError: on timeout, non-2xx status, or malformed response.
-    """
-    owns_client = client is None
-    active = client or _build_client()
+    temperature: Optional[float],
+    max_tokens: Optional[int],
+) -> dict[str, Any]:
+    """Build the chat-completions request body (immutable per call)."""
     body: dict[str, Any] = {
         "model": model_id,
         "messages": [{"role": "user", "content": prompt}],
@@ -123,20 +109,36 @@ def call_model(
         body["temperature"] = temperature
     if max_tokens is not None:
         body["max_tokens"] = max_tokens
-    headers = {"Authorization": f"Bearer {config.OPENROUTER_API_KEY}"}
+    return body
 
+
+def _attempt(
+    active: httpx.Client,
+    model_id: str,
+    body: dict[str, Any],
+) -> ModelResponse:
+    """Run a single request attempt.
+
+    Raises:
+        _TransientError: timeout, network transport error, retryable status
+            (429/5xx), or a non-JSON body (gateway hiccup) — worth retrying.
+        OpenRouterError: definitive failure (4xx other than 429) — no retry.
+    """
+    headers = {"Authorization": f"Bearer {config.OPENROUTER_API_KEY}"}
     start = time.perf_counter()
     try:
         response = active.post(_endpoint(), json=body, headers=headers)
     except httpx.TimeoutException as exc:
-        raise OpenRouterError(f"OpenRouter request timeout: {exc}") from exc
+        raise _TransientError(f"OpenRouter request timeout: {exc}") from exc
     except httpx.HTTPError as exc:
-        raise OpenRouterError(f"OpenRouter request failed: {exc}") from exc
-    finally:
-        if owns_client:
-            active.close()
+        raise _TransientError(f"OpenRouter request failed: {exc}") from exc
     latency_ms = (time.perf_counter() - start) * 1000.0
 
+    if response.status_code in _RETRYABLE_STATUSES:
+        raise _TransientError(
+            f"OpenRouter returned status {response.status_code}: "
+            f"{response.text[:300]}"
+        )
     if response.status_code >= 400:
         raise OpenRouterError(
             f"OpenRouter returned status {response.status_code}: "
@@ -146,6 +148,73 @@ def call_model(
     try:
         payload = response.json()
     except ValueError as exc:
-        raise OpenRouterError(f"Response is not valid JSON: {exc}") from exc
+        raise _TransientError(f"Response is not valid JSON: {exc}") from exc
 
     return _parse_payload(model_id, payload, latency_ms)
+
+
+def call_model(
+    model_id: str,
+    prompt: str,
+    *,
+    temperature: Optional[float] = None,
+    max_tokens: Optional[int] = None,
+    client: Optional[httpx.Client] = None,
+    max_retries: Optional[int] = None,
+    backoff_s: Optional[float] = None,
+    sleep: Callable[[float], None] = time.sleep,
+) -> ModelResponse:
+    """Call an OpenRouter model with a single user prompt.
+
+    Retries transient failures only (timeout, network transport error,
+    HTTP 429/5xx, or a non-JSON body). Definitive errors (400/401/402/403/404)
+    raise ``OpenRouterError`` immediately — retrying them is useless and costly.
+
+    Args:
+        model_id: OpenRouter model identifier.
+        prompt: User message content.
+        temperature: Optional sampling temperature. Forwarded only when
+            provided (non-None); otherwise the field is omitted.
+        max_tokens: Optional generation budget (completion token cap).
+            Forwarded only when provided (non-None); otherwise omitted. Set
+            this to avoid truncated answers from models with a low default cap.
+        client: Optional injected httpx.Client (for tests / connection reuse).
+        max_retries: Extra attempts after the first on transient failures.
+            Defaults to ``config.OPENROUTER_MAX_RETRIES``.
+        backoff_s: Base for exponential backoff (backoff * 2**attempt).
+            Defaults to ``config.OPENROUTER_RETRY_BACKOFF_S``.
+        sleep: Injectable sleep function (tests pass a non-blocking stub).
+
+    Returns:
+        An immutable ModelResponse with measured latency and token usage.
+
+    Raises:
+        OpenRouterError: on a definitive error, or after exhausting all
+            attempts on a transient failure.
+    """
+    if max_retries is None:
+        max_retries = config.OPENROUTER_MAX_RETRIES
+    if backoff_s is None:
+        backoff_s = config.OPENROUTER_RETRY_BACKOFF_S
+
+    owns_client = client is None
+    active = client or _build_client()
+    body = _build_body(model_id, prompt, temperature, max_tokens)
+    total_attempts = max_retries + 1
+
+    try:
+        last_error: Optional[_TransientError] = None
+        for attempt in range(total_attempts):
+            try:
+                return _attempt(active, model_id, body)
+            except _TransientError as exc:
+                last_error = exc
+                if attempt < total_attempts - 1:
+                    sleep(backoff_s * (2 ** attempt))
+        raise OpenRouterError(
+            f"OpenRouter call failed after {total_attempts} attempt(s): "
+            f"{last_error}"
+        ) from last_error
+    finally:
+        if owns_client:
+            active.close()
