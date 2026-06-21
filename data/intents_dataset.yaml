@@ -1,0 +1,1513 @@
+intents:
+- id: ran-read-rsrp-cell
+  text: What is the current RSRP on cell gNB-207-C1?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-sinr-sector
+  text: What is the SINR value for sector 3 of gNB-055 at this moment?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-cqi-cell
+  text: Show me the average CQI reported by UEs on cell gNB-301-C2 right now.
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: ran-read-active-ues
+  text: How many UEs are currently active on gNB-412-C0?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-prb-ul-utilization
+  text: What is the uplink PRB utilization on cell gNB-118-C3 right now?
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: ran-read-cell-availability
+  text: Is cell gNB-009-C1 currently available and in service?
+  domain: ran
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: ran-read-handover-success-rate
+  text: What is the handover success rate for gNB-730 at this time?
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: ran-read-rlc-retransmission
+  text: What is the current RLC retransmission rate on cell gNB-224-C2?
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: urllc
+- id: ran-read-tx-power
+  text: What is the current transmit power level configured on gNB-501-C0?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-dl-latency
+  text: What is the current downlink air-interface latency on cell gNB-340-C1?
+  domain: ran
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: ran-read-paging-load
+  text: How many paging messages per second is gNB-088 processing right now?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: ran-read-beam-index
+  text: Which beam index is currently active on cell gNB-615-C0 for the dominant serving direction?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-cell-bandwidth
+  text: What channel bandwidth is configured on cell gNB-103-C2?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-rach-success-rate
+  text: What is the RACH success rate on gNB-275-C1 at this moment?
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: ran-read-drb-setup-success
+  text: What is the current DRB setup success rate on cell gNB-390-C3?
+  domain: ran
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: ran-read-carrier-frequency
+  text: What carrier frequency is gNB-047-C0 currently operating on?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-ul-throughput-cell
+  text: What is the uplink throughput on cell gNB-512-C1 right now?
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: ran-read-interference-level
+  text: What is the current inter-cell interference level reported on gNB-188-C2?
+  domain: ran
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: ran-read-srs-report
+  text: What is the latest SRS measurement result for cell gNB-660-C0?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-read-slice-prb-quota
+  text: What PRB quota is currently assigned to the mMTC slice on gNB-321-C1?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: ran-read-gnb-sw-version
+  text: What software version is currently running on gNB-800?
+  domain: ran
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: ran-prb-utilization-spike-gnb077
+  text: PRB utilization on gNB-077 sector 2 has exceeded 85% for the past 30 minutes. Identify which UE group is consuming the most resources and recommend a scheduling policy adjustment.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-rsrp-degradation-cell-gnb203
+  text: RSRP values on cell gNB-203 have dropped below -110 dBm for more than 40% of attached UEs. Determine whether the root cause is antenna misconfiguration or interference from an adjacent cell.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-urllc-latency-breach-gnb055
+  text: User-plane latency on the URLLC slice at gNB-055 has breached the 1 ms threshold during peak hours. Pinpoint which radio parameter is contributing most and suggest a targeted fix.
+  domain: ran
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: ran-cqi-drop-correlation-gnb140
+  text: Average CQI on gNB-140 fell from 11 to 6 between 08:00 and 09:00 UTC. Correlate this with any recent power control changes on the same cell and advise whether a rollback is warranted.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-mmtc-device-attach-failure-gnb031
+  text: Attach failure rate for mMTC devices on gNB-031 has risen to 12% over the last hour. Identify whether the issue is paging capacity exhaustion or an RRC configuration mismatch.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: ran-inter-freq-handover-loop-gnb089
+  text: UEs on gNB-089 are oscillating between frequencies F1 and F2 in repeated handover loops. Determine which A3 event offset is misconfigured and recommend the corrected value.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-beamforming-weight-mismatch-gnb114
+  text: Beam tracking failures have increased by 30% on gNB-114 sector 1 since the last software update. Check whether the beamforming weight table was correctly applied and flag any inconsistency.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-ssbri-misconfiguration-gnb066
+  text: SSB-RI reporting from UEs on gNB-066 shows all beams reporting identical RSRP, which is physically implausible. Diagnose whether the SSB transmission pattern is correctly configured.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: ran-uplink-interference-gnb198
+  text: Uplink SINR on gNB-198 cell 3 is consistently 8 dB below the expected baseline. Determine whether the interference source is an external jammer or a misconfigured neighboring gNB transmit power.
+  domain: ran
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: ran-ta-overflow-dense-gnb022
+  text: Timing Advance values on gNB-022 are clustering near the maximum limit, suggesting UEs at cell edge. Evaluate whether a cell range extension or a secondary carrier addition is the better remedy.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-slice-prb-quota-embb-gnb150
+  text: The eMBB slice on gNB-150 is consistently consuming more than its allocated PRB quota of 60%, starving the URLLC slice. Recommend a revised RRM policy to enforce the agreed SLA split.
+  domain: ran
+  expected_complexity: medium
+  criticality: high
+  slice_type: embb
+- id: ran-paging-congestion-gnb073
+  text: Paging success rate on gNB-073 dropped to 78% during the evening peak. Assess whether increasing the paging capacity parameter or redistributing UE tracking areas would resolve the congestion.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: ran-rlf-rate-increase-gnb009
+  text: Radio Link Failure rate on gNB-009 sector 3 has doubled in the last two hours. Correlate with CQI and BLER trends to determine whether this is a coverage or interference problem.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-tdd-pattern-mismatch-gnb187
+  text: Throughput asymmetry on gNB-187 suggests the TDD UL/DL pattern does not match the traffic profile. Identify the current pattern configuration and recommend a switch to better fit the observed 3:1 DL-to-UL ratio.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-rach-failure-spike-gnb044
+  text: RACH failure rate on gNB-044 spiked to 18% after a configuration push at 14:30 UTC. Identify which PRACH parameter change is most likely responsible and suggest a corrective value.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: ran-antenna-tilt-interference-gnb162
+  text: gNB-162 and gNB-175 share overlapping coverage after a recent remote electrical tilt change on gNB-162. Determine the optimal tilt correction on gNB-162 to reduce pilot pollution without creating a coverage gap.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-drx-misconfiguration-urllc-gnb038
+  text: URLLC UEs on gNB-038 are experiencing wake-up latency spikes attributable to DRX cycle settings. Verify whether the configured DRX inactivity timer is compatible with the URLLC latency budget and recommend an adjustment.
+  domain: ran
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: ran-carrier-aggregation-failure-gnb101
+  text: Secondary cell activation failures for carrier aggregation on gNB-101 have reached 25% over the last hour. Determine whether the SCell configuration or the measurement gap settings are the primary cause.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-power-saving-mode-conflict-gnb059
+  text: Energy-saving mode was activated on gNB-059 sector 2, but neighboring cells have not compensated with adequate coverage boost. Identify which neighbor parameters need adjustment to maintain coverage SLA.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: ran-massive-mimo-rank-drop-gnb130
+  text: Average MIMO rank on gNB-130 has fallen from 4 to 2 layers over the past week despite stable UE density. Diagnose whether the issue lies in the codebook configuration or in channel estimation accuracy.
+  domain: ran
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: ran-qos-flow-mapping-error-gnb092
+  text: QoS flow remapping errors are being reported on gNB-092 for GBR bearers associated with the URLLC slice. Determine whether the 5QI-to-scheduler priority mapping is correctly configured and flag any deviation from the agreed profile.
+  domain: ran
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: ran-urllc-embb-prb-arbitration-gnb-cluster
+  text: gNB cluster {gNB-101, gNB-102, gNB-103} is simultaneously serving an active URLLC slice for a factory automation tenant (target latency <= 1 ms, PDB <= 0.5 ms) and two eMBB slices for broadband subscribers at 78 percent aggregate PRB utilisation. Arbitrate PRB allocation across all three slices such that the URLLC one-way latency SLA is never breached, eMBB throughput degradation stays below 15 percent, and total inter-gNB Xn handover rate does not exceed the configured threshold of 12 handovers per minute per cell.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-massive-mimo-beam-energy-sla-cooptimise
+  text: Sector cells gNB-210-S1 and gNB-210-S2 operate Massive MIMO with 64T64R panels. During off-peak hours, reduce radiated power and deactivate redundant beams to cut energy consumption by at least 20 percent, while guaranteeing that edge-user RSRP remains above -110 dBm for all active UEs, CQI does not fall below 6 for eMBB subscribers, and the mMTC device reachability SLA for 4 000 registered IoT nodes is maintained without triggering paging storms.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: null
+- id: ran-multi-tenant-admission-revenue-isolation
+  text: 'Four incoming slice instantiation requests are queued for the shared gNB-330 to gNB-335 cluster: one critical-infrastructure URLLC (guaranteed bit rate 50 Mbps, isolation level = full PRB partitioning), one V2X URLLC (latency <= 3 ms), and two eMBB tenants requesting best-effort expansion. Current PRB load is 82 percent. Determine the admission set and per-slice resource reservation that maximises total committed revenue while ensuring that neither URLLC slice''s SLA is compromised and that eMBB admitted tenants receive at least 10 Mbps guaranteed downlink each.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-handover-storm-prevention-dense-urban
+  text: The dense urban cluster spanning gNB-401 through gNB-412 is experiencing a ping-pong handover rate of 28 events per minute per cell during a crowded event, degrading PDCP reordering and causing RLC retransmissions to spike above 8 percent. Tune A3 event offset, hysteresis, and time-to-trigger parameters across all 12 cells jointly so that handover ping-pong drops below 5 events per minute without allowing any cell's PRB utilisation to exceed 90 percent or edge-user SINR to fall below 3 dB.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: ran-cross-layer-qos-congestion-uplink
+  text: 'gNB-550 uplink is congested: PUSCH PRB utilisation is at 94 percent, average UE transmit power is at maximum (23 dBm), and MCS is falling to index 4 for 30 percent of UEs. Simultaneously, an active URLLC slice for remote surgery requires uplink latency <= 1 ms and packet loss <= 10^-5. Reconfigure uplink scheduler weights, power control parameters (P0, alpha), and if necessary trigger conditional handover of non-critical eMBB UEs to neighbouring gNB-551 or gNB-552, without breaching the URLLC SLA or reducing mMTC device uplink access probability below 99.5 percent.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-energy-harvest-sleep-cycle-rural-cluster
+  text: Rural gNB cluster {gNB-601, gNB-602, gNB-603, gNB-604} operates on a shared power grid with a renewable energy budget of 2.4 kWh per cell per hour during night hours. Design a coordinated cell-sleep and carrier-shutdown schedule across all four cells that keeps total energy draw within budget, maintains coverage overlap so that no registered mMTC device loses connectivity, and preserves the eMBB SLA (minimum 10 Mbps DL) for any UE that remains active, accounting for the fact that gNB-603 carries the only backhaul path for gNB-604.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: mmtc
+- id: ran-dynamic-spectrum-sharing-nr-lte-coexistence
+  text: Spectrum band 2.1 GHz is shared between an LTE macro layer (eNB-700) and an NR layer (gNB-701) via dynamic spectrum sharing. The NR layer must serve a URLLC slice for drone corridor management (latency <= 2 ms, reliability 99.999 percent) while the LTE layer must not see its VoLTE MOS drop below 3.8. Compute a per-subframe PRB lending policy between eNB-700 and gNB-701 that satisfies both SLAs simultaneously and maximises NR eMBB throughput with any remaining resources, given that the total available PRBs in the band are 100 and the LTE baseline reservation is 40 PRBs.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-slice-reconfig-capacity-crunch-stadium
+  text: 'A stadium event is starting in 45 minutes. gNB-801 and gNB-802 are projected to reach 95 percent PRB saturation based on historical crowd models. Three active slices are present: eMBB-public (best effort), eMBB-broadcast (committed 200 Mbps aggregate downlink for live video), and URLLC-safety (committed latency <= 5 ms for security personnel PTT). Reconfigure slice resource quotas, activate carrier aggregation on the n78 secondary component carrier, and pre-position UPF anchor for the broadcast slice at the edge node closest to gNB-801, all without interrupting any currently active session and without violating the safety slice SLA at any point during reconfiguration.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: ran-interference-coordination-hetnet-smallcell
+  text: 'A heterogeneous network layer comprising macro gNB-901 and six small cells {SC-901-A through SC-901-F} is experiencing inter-layer interference: CQI on the small cells averages 5 due to pilot contamination from gNB-901. Implement enhanced inter-cell interference coordination (eICIC) with almost-blank subframe (ABS) patterns on gNB-901, jointly optimising ABS ratio, small-cell transmit power, and UE association policy so that small-cell average CQI rises above 9, macro-layer eMBB throughput loss stays below 10 percent, and the URLLC slice latency on SC-901-C (serving a manufacturing line) remains below 2 ms.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-predictive-capacity-scaling-ml-kpi
+  text: Based on 30-day traffic telemetry from gNB-1001 through gNB-1006, the O-RAN Non-RT RIC has identified a recurring capacity shortfall every weekday between 08:00 and 09:30 where PRB utilisation exceeds 88 percent and average DL PDCP throughput drops 22 percent. Design a proactive intent that pre-activates additional TRX chains, adjusts scheduler MCS upper bounds, and pre-scales the associated SMF session capacity 20 minutes before the predicted onset, while ensuring that the nightly energy-saving mode is not prematurely terminated and that mMTC device registration storms are not triggered by the reconfiguration.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: ran-multiband-carrier-aggregation-qoe-optimise
+  text: UEs in the gNB-1101 coverage area are eligible for five-carrier aggregation across n1, n3, n28, n77, and n258 bands. Optimise the per-UE carrier aggregation configuration and scheduling split across carriers such that aggregate DL throughput per UE exceeds 1.2 Gbps for premium eMBB subscribers, uplink latency for URLLC UEs stays below 1 ms on the primary carrier, mmWave n258 beam management overhead does not consume more than 5 percent of total air-time, and total radiated power remains within the 46 dBm EIRP regulatory limit across all component carriers simultaneously.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: ran-disaster-recovery-coverage-restoration
+  text: gNB-1201 has failed due to a power outage, leaving 3.2 km² of urban area uncovered. Neighbouring cells {gNB-1202, gNB-1203, gNB-1204, gNB-1205} must expand coverage via tilt adjustment and power boosting to restore service. Simultaneously, the URLLC slice for emergency-services communications (latency <= 3 ms, isolation = dedicated PRB pool) must be migrated to gNB-1202 without session interruption, the eMBB SLA for remaining cells must not degrade by more than 20 percent, and the aggregate energy increase across the four cells must not exceed 15 percent above their current baseline draw.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-o-ran-near-rt-ric-xapp-conflict-resolution
+  text: 'Two xApps deployed on the Near-RT RIC for gNB-1301 are issuing conflicting E2 control messages: xApp-A is attempting to reduce CIO for cell gNB-1301 to offload UEs to gNB-1302, while xApp-B is simultaneously increasing transmit power on gNB-1301 to improve RSRP for edge UEs. Resolve the conflict by computing a joint policy that satisfies both xApp objectives within their stated KPI bounds (handover rate < 8 per minute, edge RSRP > -108 dBm), enforces the URLLC slice latency SLA of 2 ms, and does not push PRB utilisation above 85 percent on either cell.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-network-slicing-isolation-audit-remediation
+  text: A compliance audit on the shared gNB cluster {gNB-1401, gNB-1402, gNB-1403} has revealed that the URLLC slice for financial trading (tenant ID TN-FIN-07) and the eMBB slice for public broadband (tenant ID TN-PUB-02) are sharing scheduler queues in violation of the isolation SLA. Remediate by enforcing strict PRB partitioning and separate PDCP/RLC instances for TN-FIN-07, re-validate that TN-FIN-07 latency is <= 1 ms and packet loss <= 10^-6, ensure TN-PUB-02 throughput does not drop below its committed 50 Mbps, and produce a remediation plan that can be executed with zero downtime for either tenant.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-joint-dl-ul-decoupling-load-split
+  text: In the suburban cluster {gNB-1501, gNB-1502, gNB-1503}, downlink traffic is 6x uplink traffic, causing asymmetric PRB waste. Implement downlink-uplink decoupling so that UEs associate to different cells for DL and UL based on RSRP and RSRQ measurements, optimise the association thresholds jointly across all three cells, ensure that the resulting X2/Xn signalling overhead stays below 5 percent of backhaul capacity (backhaul capacity = 10 Gbps per link), and verify that the eMBB DL throughput SLA and the mMTC UL reachability SLA are both met after decoupling.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: ran-coordinated-multipoint-coherent-joint-tx
+  text: UEs at the cell-edge boundary between gNB-1601 and gNB-1602 are experiencing SINR below -2 dB and DL throughput below 5 Mbps. Activate coherent joint transmission CoMP (JT-CoMP) between gNB-1601 and gNB-1602, optimise precoding weights and power allocation across both transmission points, ensure that the additional fronthaul load on the shared F1 interface does not exceed 80 percent of its 25 Gbps capacity, and confirm that the URLLC slice latency budget of 3 ms is preserved end-to-end including the additional CoMP processing delay, without degrading centre-cell UE throughput by more than 8 percent.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: ran-amf-load-rebalance-slice-aware-registration
+  text: 'AMF pool {AMF-01, AMF-02, AMF-03} serving gNB cluster {gNB-1701 through gNB-1710} is experiencing AMF-01 at 91 percent registration capacity while AMF-02 and AMF-03 are at 45 percent. Rebalance UE registrations across the AMF pool in a slice-aware manner: URLLC UEs must remain anchored to AMF-01 (which has the lowest N2 latency to the RAN), eMBB and mMTC UEs should be redistributed to AMF-02 and AMF-03, and the rebalancing must not trigger simultaneous re-registration storms that would exceed 500 registration requests per second on any single AMF, while keeping total NAS signalling latency below 50 ms.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: ran-qos-flow-remap-upf-relocation-latency
+  text: A fleet of autonomous guided vehicles operating in warehouse zone WH-7 is connected via gNB-1801 to UPF-EDGE-03, which is experiencing 12 ms N3 latency due to a routing anomaly. The URLLC slice SLA requires end-to-end latency <= 5 ms. Relocate the UPF anchor for the affected PDU sessions to UPF-EDGE-01 (measured N3 latency 2 ms), remap QoS flows accordingly via the SMF, ensure that the handover of GTP-U tunnels on the N3 interface causes no packet loss exceeding 0.001 percent, and confirm that the eMBB slice sharing gNB-1801 is not disrupted during the UPF relocation procedure.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-mmtc-massive-access-congestion-prb-guard
+  text: A firmware push to 80 000 mMTC devices registered across gNB cluster {gNB-1901 through gNB-1908} is scheduled to begin at 02:00. The resulting RACH preamble collision rate is projected to exceed 40 percent, causing access failures. Design a staggered access barring and back-off configuration across all eight cells that keeps RACH collision rate below 5 percent, ensures firmware delivery completes within a 4-hour window, reserves a PRB guard band for the co-located URLLC slice (latency SLA 2 ms), and does not cause any eMBB UE to experience a radio link failure during the access surge.
+  domain: ran
+  expected_complexity: complex
+  criticality: med
+  slice_type: mmtc
+- id: ran-son-self-healing-coverage-capacity-joint
+  text: 'SON engine has detected that gNB-2001 has a mechanical tilt fault causing a 4 dB coverage hole to the north, while gNB-2002 to the east is simultaneously capacity-limited at 89 percent PRB utilisation due to UE migration from the degraded cell. Trigger a joint self-healing action: remotely adjust electrical tilt on gNB-2001 neighbours {gNB-2003, gNB-2004} to partially fill the coverage hole, offload excess UEs from gNB-2002 to gNB-2005 via load-based handover, maintain the URLLC slice SLA (latency <= 2 ms) throughout the reconfiguration, and ensure that the corrective actions do not create a new coverage hole or push any neighbour cell above 85 percent PRB load.'
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: ran-security-anomaly-isolation-slice-quarantine
+  text: The Near-RT RIC security xApp has flagged abnormal PDCP SDU injection patterns on gNB-2101 consistent with a rogue UE attempting a denial-of-service on the URLLC slice for critical infrastructure (tenant TN-CRIT-03). Isolate the suspected UE by revoking its radio bearer without disrupting other UEs on the cell, trigger AUSF re-authentication for all UEs on the affected slice, enforce a temporary PRB rate cap on any UE failing re-authentication, ensure TN-CRIT-03 latency SLA (1 ms) and packet loss SLA (10^-6) are maintained throughout the quarantine procedure, and coordinate with the SMF to suspend the rogue UE's PDU session on the N1/N2 interface without causing a paging flood on gNB-2102 and gNB-2103.
+  domain: ran
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-read-smf-sessions-count
+  text: How many active PDU sessions does SMF smf-central-02 currently have?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: core-read-upf-n6-interface-status
+  text: What is the operational status of the N6 interface on UPF upf-core-03?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-amf-cpu-utilization
+  text: What is the current CPU utilization on AMF amf-west-01?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-ausf-auth-failures
+  text: How many authentication failures has AUSF ausf-region-04 recorded in the last five minutes?
+  domain: core
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: core-read-upf-n3-packet-loss
+  text: What is the current packet loss rate on the N3 interface of UPF upf-edge-11?
+  domain: core
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: core-read-smf-ip-pool-usage
+  text: What percentage of the IP address pool is currently consumed on SMF smf-north-05?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-amf-deregistration-rate
+  text: What is the UE deregistration rate on AMF amf-east-02 right now?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-nrf-registered-nfs
+  text: How many network functions are currently registered with NRF nrf-central-01?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: core-read-upf-active-pdu-embb
+  text: How many active PDU sessions on UPF upf-south-06 are associated with the eMBB slice?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: embb
+- id: core-read-pcf-policy-rule-count
+  text: How many active policy rules is PCF pcf-core-01 currently enforcing?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: core-read-smf-uplink-volume
+  text: What is the total uplink data volume handled by SMF smf-central-02 in the current hour?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: embb
+- id: core-read-amf-memory-usage
+  text: What is the current memory usage on AMF amf-south-03?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-upf-throughput-urllc
+  text: What is the current user-plane throughput on UPF upf-edge-09 for the URLLC slice?
+  domain: core
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: core-read-udr-subscription-records
+  text: How many active subscription records does UDR udr-central-01 hold right now?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: core-read-ausf-latency
+  text: What is the average authentication response latency on AUSF ausf-region-02 at this moment?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-smf-session-setup-failures
+  text: How many PDU session setup failures has SMF smf-south-07 reported in the last minute?
+  domain: core
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: core-read-upf-n6-latency
+  text: What is the current round-trip latency on the N6 interface of UPF upf-core-01?
+  domain: core
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: core-read-nssf-slice-selection-load
+  text: What is the current request load on NSSF nssf-central-01?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: core-read-amf-registered-ues-mmtc
+  text: How many mMTC UEs are currently registered on AMF amf-north-04?
+  domain: core
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: core-read-upf-drop-rate
+  text: What is the current packet drop rate on UPF upf-west-08?
+  domain: core
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: core-read-smf-downlink-volume-urllc
+  text: What is the total downlink data volume processed by SMF smf-edge-10 for the URLLC slice this hour?
+  domain: core
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: core-ausf-auth-failure-spike
+  text: Authentication failure rate on AUSF ausf-region-02 has jumped 40% in the last 30 minutes. Correlate with UDM subscriber records to determine if this is a credential misconfiguration or a signalling storm.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: core-upf-n6-throughput-drop
+  text: Throughput on the N6 interface of UPF upf-east-01 has dropped below 8 Gbps during peak hours. Identify whether the bottleneck is on the UPF forwarding plane or the upstream IP peering link.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: core-smf-pfcp-session-timeout
+  text: PFCP session establishment timeouts are occurring between SMF smf-core-07 and UPF upf-east-03. Determine whether the issue originates from PFCP heartbeat loss or from an overloaded N4 path.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: core-amf-overload-urllc
+  text: AMF amf-central-01 is reporting overload control activation for URLLC subscribers. Assess whether redistributing registration load to amf-central-02 would relieve the condition without breaching the 1 ms latency budget.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: core-nrf-registration-latency
+  text: NRF nrf-core-01 is showing NF registration response times exceeding 200 ms. Correlate with current NF instance count to decide if the NRF needs a replica added.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: core-upf-mmtc-pdr-mismatch
+  text: Packet detection rule mismatches are being logged on UPF upf-south-02 for mMTC devices in the IoT slice. Cross-check the active PDR table against the latest SMF-pushed rules to find the divergence.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: core-udm-subscriber-data-sync
+  text: UDM udm-primary-01 and its standby udm-standby-01 are showing a 3-second replication lag on subscriber profile updates. Determine if this lag is causing stale session context during handovers.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: core-smf-qos-flow-misconfiguration
+  text: QoS flows for 5QI-80 on SMF smf-west-04 are not being enforced correctly for eMBB subscribers. Verify whether the QoS profile pushed from PCF pcf-core-01 matches the active bearer context on the UPF.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: core-n3-packet-loss-upf
+  text: Packet loss on the N3 interface between gNB cluster gnb-cluster-north and UPF upf-north-01 is averaging 1.2%. Correlate with UPF GTP-U error counters to isolate whether loss is tunnel-side or transport-side.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: embb
+- id: core-pcf-policy-rule-conflict
+  text: PCF pcf-region-03 is generating conflicting policy rules for two overlapping subscriber groups on the eMBB slice. Identify which PCC rule set is taking precedence and whether it violates the committed data rate for either group.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: core-amf-deregistration-loop
+  text: A subset of subscribers homed on AMF amf-south-02 are entering repeated deregistration and re-registration cycles. Determine if the root cause is a timer misconfiguration on the AMF or a connectivity issue toward UDM.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: core-upf-urllc-bufferbloat
+  text: End-to-end latency for URLLC slice traffic through UPF upf-central-02 is intermittently exceeding 2 ms. Check whether GTP-U queue depths on the UPF are causing bufferbloat and recommend a queue discipline adjustment.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: core-nssf-slice-selection-failure
+  text: NSSF nssf-core-01 is returning slice selection failures for S-NSSAI 01-000001 at a rate of 5% over the last hour. Correlate with current slice capacity metrics to determine if the failures are capacity-driven or configuration-driven.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: core-ausf-certificate-expiry
+  text: TLS certificates used by AUSF ausf-region-01 for SBI communication are expiring in 48 hours. Confirm which peer NFs will be affected and initiate a coordinated certificate rotation without dropping active authentication sessions.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: core-smf-idle-session-accumulation
+  text: SMF smf-core-05 is accumulating idle PDU sessions beyond the configured threshold of 500 k sessions. Evaluate whether triggering a session release procedure for sessions idle longer than 3 hours would free sufficient resources.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: core-upf-mmtc-anchor-reselection
+  text: UPF upf-iot-01 serving as the PSA anchor for the mMTC slice is at 88% CPU utilisation. Assess whether reselecting upf-iot-02 as the anchor for new sessions would balance load without disrupting active device contexts.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: core-amf-tai-list-misconfiguration
+  text: Subscribers in tracking area TAI-4412 are receiving incorrect TAI lists from AMF amf-east-03, causing unnecessary paging area updates. Cross-check the TAI list configuration against the current gNB-to-AMF mapping table.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: core-udm-uecm-context-mismatch
+  text: UDM udm-primary-02 UECM records show a different serving AMF for 12 000 subscribers than what AMF amf-central-03 reports locally. Determine whether the mismatch is causing failed paging attempts and identify the synchronisation gap.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: core-pcf-charging-rule-latency
+  text: Policy charging rule installation latency from PCF pcf-core-02 to SMF smf-core-06 is spiking to 800 ms during busy hour. Determine if the Npcf interface is congested or if the PCF rule computation itself is the bottleneck.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: core-nef-api-rate-limit-breach
+  text: NEF nef-core-01 is logging rate limit breaches on the Nnef_EventExposure service for an mMTC application server. Correlate event subscription volume with current NEF throughput capacity to decide whether to throttle or scale the NEF.
+  domain: core
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: core-upf-far-rule-drop
+  text: UPF upf-west-02 is silently dropping uplink packets for a set of PDU sessions associated with SMF smf-west-02. Verify whether the Forwarding Action Rules installed on the UPF contain a DROP action that should have been a FORWARD action.
+  domain: core
+  expected_complexity: medium
+  criticality: high
+  slice_type: embb
+- id: core-upf-migration-latency-energy
+  text: UPF instances UPF-CORE-07 and UPF-CORE-09 serving the eMBB slice in the northern region are co-located on a single physical host that is breaching both the 10 ms N3 latency SLA and the data-centre PUE budget. Redistribute their sessions across edge sites EDGE-N1, EDGE-N2, and EDGE-N3, re-anchor the affected PDU sessions through SMF-02 without dropping active bearers, and ensure the rebalanced placement keeps per-site power draw below the contracted 4 kW ceiling while preserving tenant isolation between the enterprise and consumer sub-slices.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: core-amf-failover-urllc-sla
+  text: AMF-CLUSTER-A is showing a 15 percent registration failure rate during the evening peak due to N1/N2 signalling overload. Migrate URLLC automotive UEs currently anchored to AMF-CLUSTER-A to AMF-CLUSTER-B and AMF-CLUSTER-C using load-balanced NAS rerouting, while guaranteeing that re-registration latency stays below 5 ms, that AUSF-01 authentication throughput is not exceeded, and that the factory-floor URLLC slice isolation from the public eMBB slice is maintained throughout the failover window.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-n6-peering-cost-qos
+  text: Traffic on the N6 interface between UPF-EDGE-04 and the internet peering router is saturating the 40 Gbps link during business hours, causing video-streaming QoS degradation for the eMBB consumer slice and increasing transit costs. Determine an optimal traffic-steering policy across secondary peering links N6-PEER-B and N6-PEER-C that caps monthly transit cost below the 50 k EUR budget, maintains streaming video MOS above 4.0, and does not route enterprise VPN traffic through the cheaper but lower-security N6-PEER-C path.
+  domain: core
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: core-slice-admission-resource-arbitration
+  text: 'Four simultaneous slice instantiation requests have arrived: two private-network URLLC slices for manufacturing tenants T-MFG-01 and T-MFG-02, one mMTC slice for a smart-metering operator, and one broadband eMBB slice for a MVNO. Available UPF capacity on the regional core is at 78 percent. Arbitrate admission, assign SMF and UPF resources, set guaranteed bit-rate reservations, and schedule the mMTC slice activation during the overnight low-traffic window, ensuring no admitted URLLC SLA is compromised and total revenue per admitted slice is maximised.'
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-ausf-udm-security-zone-breach
+  text: Anomalous authentication attempt patterns detected on AUSF-02 suggest a credential-stuffing attack targeting the mMTC smart-grid slice. Simultaneously, UDM-01 is approaching its subscriber database query rate limit. Isolate suspect SUPI ranges 460-01-1000000 through 460-01-1099999 at the AMF level, reroute legitimate authentication traffic to AUSF-03, redistribute UDM query load across UDM-01 and UDM-02, and ensure the URLLC and eMBB slices sharing the same AMF pool experience no degradation in registration latency or throughput during the mitigation.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: mmtc
+- id: core-smf-pdu-session-reanchor-handover
+  text: A batch of 12,000 UEs served by gNB-101 through gNB-108 in the eastern corridor are performing inter-gNB handovers that repeatedly trigger PDU session re-anchoring between UPF-EAST-01 and UPF-EAST-02, causing N9 tunnel churn and a measured 8 ms latency spike. Redesign the ULCL insertion policy on SMF-EAST so that the local breakout UPF remains stable across the handover boundary, the N9 path length does not exceed two hops, and the eMBB slice throughput SLA of 500 Mbps per active session is maintained without increasing core transport cost.
+  domain: core
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: core-energy-saving-nf-consolidation-night
+  text: Between 01:00 and 05:00 local time, core NF utilisation drops below 20 percent across the metro region. Consolidate SMF-METRO-02, SMF-METRO-03, and UPF-METRO-05 onto fewer physical hosts to achieve at least 35 percent energy saving, while keeping one dedicated SMF and UPF instance reserved exclusively for the URLLC healthcare slice at all times, ensuring NSSF slice selection policies remain consistent, and guaranteeing that scale-out can be completed within 90 seconds if traffic exceeds the low-load threshold.
+  domain: core
+  expected_complexity: complex
+  criticality: med
+  slice_type: null
+- id: core-roaming-n32-sla-cost-optimisation
+  text: Inbound roaming traffic from partner PLMN 234-30 is entering through N32 interface SEPP-01 and being forwarded to UPF-CORE-03, but end-to-end latency for roaming sessions exceeds the bilateral SLA of 20 ms and inter-PLMN transit fees are 18 percent above the quarterly budget. Reroute roaming PDU sessions through a closer UPF anchor, adjust SMF-ROAM-01 selection criteria to prefer lower-latency paths, validate that SEPP-02 can absorb the redirected signalling load, and confirm that the eMBB and URLLC roaming SLA tiers are honoured separately without cross-tier leakage.
+  domain: core
+  expected_complexity: complex
+  criticality: med
+  slice_type: null
+- id: core-network-slice-sla-renegotiation-capacity
+  text: Enterprise tenant ENT-PHARMA-03 is requesting an upgrade of its URLLC network slice guaranteed bit rate from 200 Mbps to 500 Mbps and a reduction of the maximum allowed latency from 5 ms to 2 ms. Assess whether the current UPF-PRIV-02 and SMF-PRIV-01 capacity can accommodate the upgrade alongside existing commitments to tenants ENT-AUTO-01 and ENT-AUTO-02, identify the minimum additional compute and transport resources required if not, calculate the cost delta against the tenant's contracted price ceiling, and produce a feasible activation plan that avoids disrupting live sessions.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-pcf-policy-conflict-multi-slice
+  text: PCF-CENTRAL is generating conflicting QoS policy decisions for UEs that are simultaneously active on the eMBB public slice and the URLLC enterprise slice via multi-slice registration. The conflict causes GBR bearers on the URLLC slice to be incorrectly downgraded during congestion events on the shared AMF pool. Resolve the policy arbitration logic in PCF-CENTRAL, enforce strict priority separation so URLLC GBR flows are never pre-empted by eMBB non-GBR traffic, and validate that the corrected policy propagates consistently to all affected SMF and UPF nodes without requiring a full NF restart.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-upf-n9-path-optimisation-transport-cost
+  text: Traffic between UPF-SOUTH-01 and UPF-CENTRAL-03 traverses three intermediate transport hops on the N9 interface, incurring unnecessary latency and exceeding the monthly transport cost allocation by 22 percent. Re-evaluate UPF topology for the southern region, determine whether inserting a regional UPF at site SITE-SOUTH-HUB reduces both hop count and cost, model the impact on SMF-SOUTH session binding, and ensure that the mMTC low-power device slice retains its 24-hour data delivery SLA and that the eMBB slice peak throughput is not degraded during the topology transition.
+  domain: core
+  expected_complexity: complex
+  criticality: med
+  slice_type: null
+- id: core-disaster-recovery-core-nf-reroute
+  text: Data centre DC-WEST has declared a power emergency and all NF instances hosted there, including AMF-W1, SMF-W1, UPF-W1, and AUSF-W1, must be evacuated within 10 minutes. Orchestrate a live migration of all active PDU sessions and NAS registrations to the standby instances in DC-CENTRAL and DC-EAST, prioritise URLLC emergency-services sessions above all other traffic classes, ensure UDM subscriber data consistency is maintained across the migration, and confirm that post-migration N2 and N3 interface latency remains within SLA for all active slice types.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: core-charging-revenue-assurance-slice
+  text: CHF-01 is reporting a 3 percent discrepancy between N40 charging data records from SMF-METRO-01 and the billing mediation system for the eMBB MVNO slice, resulting in under-billing estimated at 80 k EUR per month. Trace the discrepancy to its root cause across the SMF, UPF, and CHF processing chain, correct the CDR generation policy without interrupting live session charging, implement a reconciliation mechanism that cross-validates N40 records against UPF usage reports in real time, and ensure the fix does not introduce additional latency on the N40 interface that would breach the 500 ms charging response SLA.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: core-mmtc-congestion-signalling-storm
+  text: A firmware update pushed to 800,000 smart-meter UEs on the mMTC slice has triggered a simultaneous re-registration storm, saturating AMF-IOT-01 and AMF-IOT-02 NAS signalling capacity and causing collateral latency increases on the co-hosted eMBB AMF pool. Implement a back-off and staggered re-registration scheme coordinated through the NEF, throttle the mMTC NAS signalling rate to a level AMF-IOT-01 and AMF-IOT-02 can sustain, and ensure that eMBB UE registration and PDU session establishment latency returns to baseline within 15 minutes without dropping any already-registered mMTC sessions.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: mmtc
+- id: core-inter-slice-isolation-audit-remediation
+  text: A ZSM conformance audit has identified that user-plane traffic from the public eMBB slice can reach the N6 segment of the private URLLC industrial slice through a misconfigured UPF-SHARED-02 packet filter. Remediate the isolation breach by correcting the UPF flow detection rules, verify that all 14 enterprise URLLC tenants sharing UPF-SHARED-02 have correctly scoped N6 routing tables, re-run isolation validation probes across all affected N3 and N9 paths, and produce a closed-loop assurance report confirming zero cross-slice leakage before restoring full traffic on the affected segment.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-nwdaf-predictive-scaling-peak-event
+  text: NWDAF analytics indicate that a stadium event on Saturday will drive a 400 percent traffic surge in zone ZONE-STADIUM-03 between 18:00 and 23:00, affecting both eMBB streaming and URLLC crowd-safety IoT slices. Pre-scale UPF-STADIUM-01 and SMF-METRO-02 capacity 90 minutes before the event, pre-position a dedicated UPF instance for the URLLC safety slice at edge site EDGE-STAD-01, coordinate with the RAN layer to reserve PRBs on gNB-201 through gNB-205, and define an automated scale-in schedule that returns resources to the shared pool within 30 minutes of the predicted traffic tail without stranding reserved compute.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: core-transport-network-slice-mapping-sla
+  text: The IETF network slice providing the underlay for the 5G URLLC transport between gNB-301 and UPF-NORTH-02 is sharing bandwidth with the eMBB backhaul on the same optical segment OPT-SEG-N7. During peak hours, jitter on the URLLC path exceeds 500 µs, violating the 3GPP TS 22.261 requirement. Remap the URLLC transport slice onto a dedicated low-latency optical path, adjust the DSCP marking policy on the N3 interface to enforce strict priority queuing, validate that the eMBB backhaul retains its committed information rate, and ensure the reconfiguration is applied consistently across all transport nodes without a control-plane outage.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: core-multi-vendor-nf-interop-session-continuity
+  text: A planned software upgrade of SMF-VENDOR-A-01 to release 17.4 introduces an incompatibility with the proprietary N4 PFCP extensions used by UPF-VENDOR-B-03, causing session establishment failures for approximately 5 percent of new PDU sessions on the enterprise eMBB slice. Implement a compatibility shim at the SMF-UPF interface, validate that all existing sessions survive the upgrade without re-anchoring, ensure that the URLLC slice using the same UPF cluster is not impacted, and define a rollback criterion and automated trigger that reverts SMF-VENDOR-A-01 to release 17.3 if session failure rate exceeds 1 percent post-upgrade.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: core-open-roaming-nef-exposure-security
+  text: A third-party application server AS-PARTNER-07 is consuming NEF-01 traffic influence APIs to steer eMBB sessions across UPF-EDGE-02 and UPF-EDGE-05, but audit logs reveal that AS-PARTNER-07 is issuing influence requests that inadvertently affect URLLC slice sessions outside its authorised scope. Tighten the NEF OAuth2 scope definitions to restrict AS-PARTNER-07 to eMBB DNN only, audit and revoke any active traffic influence resources that cross slice boundaries, validate that the corrected policy does not degrade the legitimate eMBB steering performance, and implement a real-time anomaly detection rule on NEF-01 that alerts on future out-of-scope API calls.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: core-qos-flow-reclassification-sla-breach
+  text: Monitoring on UPF-METRO-04 shows that video-conferencing flows for enterprise tenant ENT-MEDIA-02 on the eMBB slice are being classified into the default QFI-9 bearer instead of the contracted GBR QFI-5, causing packet loss of 2.1 percent and MOS degradation below the SLA floor of 3.8. Identify whether the misclassification originates in the PCF policy push, the SMF QoS profile binding, or the UPF SDF template, correct the root-cause configuration, validate end-to-end QoS marking consistency from N3 to N6, and confirm that the fix does not inadvertently elevate non-GBR mMTC flows into reserved GBR resources.
+  domain: core
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: core-federated-slice-cross-operator-sla
+  text: A federated network slice spanning operator OP-A's 5G core and operator OP-B's transport domain is serving a cross-border URLLC logistics application. End-to-end latency measured at the application layer is 18 ms against a 10 ms SLA, and the latency budget breakdown across N3, N9, and the inter-operator N32 segment is ambiguous. Instrument latency measurement probes at each interface boundary, attribute the excess latency to the responsible domain, negotiate a corrective UPF placement change within OP-A's domain if the fault is local, coordinate with OP-B's OSS if the fault is in the transport domain, and establish a joint SLA monitoring feed that provides both operators with real-time visibility without exposing proprietary topology data.
+  domain: core
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: security-check-ipsec-status-n3
+  text: What is the current IPsec tunnel status on the N3 interface of UPF upf-west-03?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-read-active-sessions-ausf
+  text: How many active authentication sessions are currently handled by AUSF ausf-core-02?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: security-get-acl-smf
+  text: What access control list entries are configured on SMF smf-central-01?
+  domain: security
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: security-check-integrity-algo-gnb
+  text: Which integrity protection algorithm is currently active on gNB cell gnb-cell-117?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: security-read-failed-nas-amf
+  text: How many failed NAS authentication attempts were recorded on AMF amf-region-04 in the last 10 minutes?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-get-cipher-algo-ue
+  text: What ciphering algorithm is negotiated for UE IMSI-001011234567890 on its current RRC connection?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: security-list-blocked-ips-n6
+  text: List all currently blocked IP addresses on the N6 interface of UPF upf-edge-07.
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: security-check-certificate-expiry-amf
+  text: When does the TLS certificate on AMF amf-north-01 expire?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-read-intrusion-alerts-upf
+  text: How many intrusion detection alerts were raised on UPF upf-south-05 in the past hour?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-get-encryption-status-slice
+  text: Is user-plane encryption enabled on the URLLC slice with NSSAI SST-2 SD-0x000001?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: security-read-security-mode-gnb
+  text: What is the current RRC security mode command status on gNB gnb-downtown-22?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: security-check-ausf-key-refresh
+  text: When was the last KAUSF key refresh performed on AUSF ausf-east-01?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: security-list-open-ports-smf
+  text: Which TCP and UDP ports are currently open on SMF smf-edge-03?
+  domain: security
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: security-read-dos-drop-count-upf
+  text: What is the current packet drop count due to DoS protection rules on UPF upf-core-01?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-check-ue-auth-status
+  text: Is UE IMSI-001010987654321 currently authenticated on the network?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: null
+- id: security-get-tls-version-nrf
+  text: What TLS version is in use on the SBI interface of NRF nrf-central-01?
+  domain: security
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: security-read-oran-fronthaul-auth
+  text: Is mutual authentication enabled on the O-RAN fronthaul interface of RU ru-sector-b-09?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-check-rogue-gnb-alerts
+  text: Have any rogue gNB detection alerts been triggered by the O-RAN near-RT RIC in the last 30 minutes?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-get-mmtc-slice-isolation
+  text: Is slice isolation enforced for the mMTC slice with NSSAI SST-3 on UPF upf-iot-02?
+  domain: security
+  expected_complexity: simple
+  criticality: med
+  slice_type: mmtc
+- id: security-read-audit-log-nssf
+  text: How many audit log entries were generated by NSSF nssf-main-01 in the last 15 minutes?
+  domain: security
+  expected_complexity: simple
+  criticality: low
+  slice_type: null
+- id: security-check-n2-interface-integrity
+  text: Is integrity protection currently active on the N2 interface between AMF amf-core-02 and gNB gnb-suburban-55?
+  domain: security
+  expected_complexity: simple
+  criticality: high
+  slice_type: null
+- id: security-detect-rogue-gnb-attach
+  text: An unknown gNB with identifier gNB-999 attempted to attach to the O-RAN near-RT RIC. Determine whether it is a rogue base station and isolate it from the xApp control plane.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-ausf-auth-failure-spike
+  text: AUSF-west-02 is reporting an abnormal surge in authentication failures over the last 30 minutes. Correlate the failure pattern with subscriber IMSIs and determine if a credential-stuffing attack is underway.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-n6-exfiltration-check
+  text: Unusual outbound traffic volumes are observed on the N6 interface of UPF-core-03 toward external IP 203.0.113.45. Assess whether data exfiltration is occurring and apply an egress ACL if confirmed.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: embb
+- id: security-smf-session-hijack-detect
+  text: SMF-central-01 has logged repeated PDU session modification requests for a single SUPI that do not match the UE's original session context. Investigate whether session hijacking is in progress and terminate the suspect sessions.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-slice-isolation-breach-urllc
+  text: Traffic telemetry shows packets from the eMBB slice leaking into the URLLC slice on UPF-edge-07. Verify the slice isolation policy and re-enforce the traffic separation rule.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: security-amf-dos-rate-limit
+  text: AMF-north-01 is receiving more than 5000 NAS registration requests per second from a concentrated set of source cells. Apply per-cell rate limiting to protect AMF availability.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-ipsec-tunnel-expiry-n3
+  text: The IPsec tunnel between gNB-221 and UPF-edge-04 on the N3 interface is approaching its rekey deadline with no renegotiation initiated. Trigger an IKEv2 rekey before the tunnel expires to maintain user-plane integrity.
+  domain: security
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: security-xapp-privilege-escalation
+  text: The conflict-mitigation xApp on near-RT RIC cluster ric-south-02 has requested write access to RAN slice policies beyond its declared scope. Revoke the excess permissions and flag the xApp for audit.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-imsi-catcher-indicator
+  text: Several UEs camped on gNB-114 are being forced to fall back to unprotected NAS messaging. Determine whether an IMSI catcher is present in the vicinity and trigger a cell barring procedure if the threat is confirmed.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-upf-gtp-tunnel-anomaly
+  text: UPF-core-02 is processing GTP-U packets with TEID values that do not match any active PDU session in SMF-central-02. Identify the source of the orphaned tunnels and drop them.
+  domain: security
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: security-certificate-expiry-amf
+  text: The TLS certificate used by AMF-east-03 for SBI communications expires in 48 hours. Initiate certificate rotation before expiry to prevent service disruption and maintain mutual authentication with NRF.
+  domain: security
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: security-mmtc-device-anomaly-flood
+  text: A cluster of mMTC devices registered under DNN iot-agri-01 is generating registration storms at 200 attach requests per minute each. Identify the compromised device group and enforce per-IMEI rate caps.
+  domain: security
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: security-nrf-unauthorized-nf-registration
+  text: NRF-central-01 has accepted a registration request from an NF instance claiming to be an SMF but presenting an unrecognized NF profile. Validate the NF identity against the operator's authorized NF inventory and deregister if invalid.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-ran-user-plane-integrity-failure
+  text: Integrity protection failures on the PDCP layer are being reported for multiple UEs on gNB-307. Determine whether the failures stem from a misconfigured security algorithm negotiation or an active attack and reconfigure if needed.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: embb
+- id: security-sepp-inter-plmn-filter
+  text: SEPP-01 is forwarding N32 messages from roaming partner PLMN 310-410 that contain unexpected IE fields not permitted by the inter-PLMN security policy. Enable strict IE filtering on SEPP-01 for that PLMN.
+  domain: security
+  expected_complexity: medium
+  criticality: med
+  slice_type: null
+- id: security-upf-n6-acl-misconfiguration
+  text: A recent change to the N6 ACL on UPF-edge-09 has inadvertently opened port 23 to the public internet. Identify the rule causing the exposure and revert it to block Telnet access.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-smf-urllc-policy-enforcement
+  text: SMF-edge-02 is not applying the mandatory user-plane security enforcement policy for the URLLC slice on sessions bound to DNN v2x-safety-01. Verify the PCC rules and push the correct security policy to the UPF.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: security-ausf-supi-enumeration-detect
+  text: A sequential pattern of SUCI-based authentication requests targeting AUSF-east-01 suggests automated SUPI enumeration. Correlate the request timing and source AMF to confirm the pattern and apply blocking rules.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-o1-interface-unauthorized-config
+  text: An unauthorized configuration push was attempted over the O1 interface targeting gNB-512's security parameters. Trace the originating SMO component and roll back any changes that were applied.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: security-embb-bearer-encryption-downgrade
+  text: Signaling traces show that the encryption algorithm for eMBB bearers on gNB-088 is being negotiated down to NEA0 (null encryption) for a subset of UEs. Identify whether this is a policy misconfiguration or an active downgrade attack and enforce NEA2 as the minimum.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: embb
+- id: security-nssf-slice-selection-abuse
+  text: NSSF-core-01 logs show repeated slice selection requests for the critical-infrastructure S-NSSAI 1:000001 originating from unverified UE contexts. Validate the requesting AMF's authorization for that S-NSSAI and block unauthorized selections.
+  domain: security
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: sec-ausf-compromise-multi-slice-reauth
+  text: AUSF instance ausf-02 in the home network shows signs of credential stuffing targeting 5G-AKA procedures across eMBB and URLLC slices simultaneously. Revoke all active authentication vectors issued by ausf-02 in the last 90 minutes, trigger re-authentication for affected UEs without breaking URLLC session continuity, redistribute authentication load to ausf-01 and ausf-03, and confirm that mMTC mass-device sessions remain uninterrupted while audit logs are preserved for forensic handoff.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-upf-n6-exfiltration-containment
+  text: Traffic analysis on UPF upf-edge-07 detects anomalous outbound data volumes on the N6 interface toward an unregistered external IP, consistent with data exfiltration from an enterprise eMBB slice. Block the offending flows at upf-edge-07, reroute legitimate enterprise traffic through upf-edge-09 without exceeding its 40 Gbps capacity ceiling, enforce deep-packet inspection policies on the rerouted path, and ensure that co-hosted URLLC industrial slice latency stays below 5 ms end-to-end throughout the remediation.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: sec-gnb-rogue-cell-detection-isolation
+  text: RF monitoring across cells gNB-101 through gNB-118 in the port industrial zone identifies a rogue base station spoofing gNB-114's PCI and SSB. Coordinate IMSI catcher mitigation by adjusting neighbor cell reselection priorities on gNB-112, gNB-113, gNB-115, and gNB-116, push updated forbidden-PLMN lists to affected UEs, maintain PRB utilization on the legitimate cells above 70 percent to suppress camping on the rogue, and validate that URLLC crane-control sessions never hand over to the spoofed cell.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: sec-smf-session-hijack-cross-slice-impact
+  text: SMF smf-central-03 logs indicate session binding anomalies suggesting PDU session hijacking affecting enterprise eMBB subscribers sharing infrastructure with a public safety URLLC slice. Terminate and re-establish suspect PDU sessions on smf-central-03, enforce strict UE IP address binding on the replacement sessions, verify that public safety URLLC QoS flows retain their GBR guarantees post-reallocation, and cross-check AMF amf-region-02 registration records to confirm no unauthorized re-registration has occurred.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-network-slice-tenant-isolation-breach
+  text: A tenant audit reveals that mMTC slice S-NSSAI 01-000003 is leaking telemetry metadata into eMBB slice S-NSSAI 01-000001 through a misconfigured shared UPF user-plane buffer. Reconfigure UPF upf-shared-05 to enforce strict per-slice memory partitioning, validate N3 GTP-U tunnel separation on all 14 gNBs serving the affected area, re-run isolation verification against ETSI NFV security baselines, and confirm that neither slice experiences throughput degradation exceeding 5 percent during reconfiguration.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-o-ran-near-rt-ric-policy-poisoning
+  text: Threat intelligence indicates a supply-chain compromise in the near-RT RIC xApp xapp-mlb-v2 deployed on ric-cluster-east, potentially injecting malicious load-balancing policies that could redirect URLLC traffic to under-resourced cells. Quarantine xapp-mlb-v2, roll back RAN policies on gNB-201 through gNB-215 to the last validated snapshot, promote the certified fallback xapp-mlb-v1 without causing PRB reallocation storms, and maintain URLLC packet loss below 0.001 percent during the transition while alerting the O-RAN security operations center.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: sec-ztna-core-sba-latency-budget
+  text: A new zero-trust network access policy mandates mutual TLS 1.3 and per-request authorization tokens on all service-based interface calls between AMF, SMF, PCF, and UDM in the core. Model the added cryptographic overhead per NF pair, identify the three NF-to-NF links where latency budget will be exceeded, propose hardware offload or session resumption optimizations for those links, and produce a phased enforcement schedule that keeps eMBB control-plane setup time under 100 ms and URLLC re-registration under 20 ms.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-massive-iot-ddos-ran-core-coordination
+  text: A coordinated DDoS originates from 85,000 compromised mMTC devices across cells gNB-301 through gNB-340, flooding the AMF amf-south-01 with registration storms while saturating N2 signaling bandwidth. Implement rate-limiting at the RAN level on gNB-301 through gNB-340 using per-cell NAS message throttling, activate AMF overload control on amf-south-01 per 3GPP TS 23.501 clause 5.19, shed low-priority mMTC registrations without disrupting the 2,300 active URLLC sessions on the same infrastructure, and coordinate with PCF pcf-01 to enforce dynamic admission control policies.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: mmtc
+- id: sec-inter-plmn-roaming-fraud-n9-isolation
+  text: Fraud analytics detect a pattern of subscription fraud on inbound roamers from PLMN 23415 transiting through N9 interfaces between vUPF and hUPF, generating unauthorized premium-rate traffic that inflates interconnect costs. Block the fraudulent N9 sessions at the border UPF upf-border-01, notify the home PLMN via the N32 interface, recalculate affected CDRs on CHF chf-01 to recover revenue leakage, and ensure that legitimate roamers from PLMN 23415 continue to receive eMBB service with no perceptible QoE degradation.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: sec-nrf-service-registry-tampering
+  text: Integrity monitoring on NRF nrf-central detects unauthorized NF profile modifications that redirect SMF service discovery toward a shadow UPF instance not in the approved inventory. Restore the NRF registry to the last cryptographically signed snapshot, revoke OAuth2 tokens issued to the shadow UPF, audit all NF registrations performed in the preceding 4-hour window across AMF, SMF, PCF, and NSSF, and harden NRF write-access policies to require dual-approval before any NF profile update, while keeping slice discovery latency under 10 ms.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-ran-jamming-adaptive-frequency-replan
+  text: Wideband jamming is detected across the 3.5 GHz band affecting gNB-401, gNB-402, and gNB-403 serving a stadium venue, degrading RSRP below -110 dBm on 60 percent of PRBs. Trigger dynamic spectrum reallocation to the 2.1 GHz fallback band on those three cells, recompute beamforming weights to maximize SINR for active URLLC medical-device sessions, adjust neighbor cell handover thresholds on gNB-400 and gNB-404 to absorb displaced eMBB load, and log the jamming event with geolocation data for regulatory reporting.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: sec-udr-data-breach-subscriber-pii-lockdown
+  text: A vulnerability scan reveals an exploitable API endpoint on UDR udr-region-north exposing subscriber PII and 5G subscription profiles to unauthenticated queries. Immediately restrict UDR access to whitelisted NF service consumers only, rotate all UDR access credentials across UDM, AUSF, and PCF, assess whether any subscriber records were exfiltrated by correlating UDR access logs with anomaly baselines, notify the data protection officer with a breach impact estimate, and restore full UDM authentication service within a 15-minute recovery window.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-e2e-slice-encryption-key-rotation
+  text: Regulatory compliance requires simultaneous rotation of user-plane encryption keys (128-EEA2) for all active PDU sessions across eMBB slice S-NSSAI 01-000001 and URLLC slice S-NSSAI 01-000002 before a 02:00 maintenance window closes. Orchestrate key rotation via AUSF and UDM without tearing down GBR flows, sequence the rotation across 32 UPF instances to avoid simultaneous re-keying storms, validate that URLLC round-trip latency does not spike above 10 ms during rotation, and produce a compliance attestation log referencing 3GPP TS 33.501 security profiles.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-pcf-policy-conflict-security-qos-arbitration
+  text: 'PCF pcf-region-02 receives conflicting policy rules: a security enforcement rule from the threat management system demands throttling of a subscriber group to 1 Mbps due to suspected C2 traffic, while an SLA policy guarantees that same group 50 Mbps eMBB throughput. Arbitrate the conflict by isolating the suspect flows using traffic steering rules at UPF upf-07 without blanket throttling, maintain aggregate SLA compliance for the non-suspect portion of the subscriber group, escalate the arbitration decision to the OSS with a risk-weighted recommendation, and ensure PCF rule consistency across all bound SMF sessions.'
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: sec-multisite-amf-signaling-anomaly-correlation
+  text: SIEM correlation across AMF instances amf-north-01, amf-central-02, and amf-south-03 reveals a coordinated low-and-slow authentication probing campaign targeting 5G-AKA SUCI decryption, spread to evade per-node thresholds. Implement a cross-AMF behavioral signature that aggregates SUCI submission rates, trigger adaptive SUPI concealment enforcement on all three AMFs simultaneously, coordinate with AUSF ausf-01 to deprioritize suspect authentication vectors, and ensure that the countermeasure does not increase legitimate UE authentication latency beyond 50 ms.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-vnf-hypervisor-escape-nfvi-containment
+  text: NFV infrastructure monitoring on nfvi-rack-07 detects a hypervisor escape attempt from a tenant VNF co-hosting eMBB UPF and mMTC SMF instances. Immediately live-migrate the eMBB UPF to nfvi-rack-09 and the mMTC SMF to nfvi-rack-10, apply CPU and memory hard partitioning on the destination racks, preserve all active GTP-U tunnels during migration to avoid session drops, validate post-migration isolation using ETSI NFV SEC 010 benchmarks, and quarantine nfvi-rack-07 for forensic analysis without impacting the remaining 18 VNFs hosted on the same physical cluster.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-open-ran-fronthaul-integrity-verification
+  text: O-RAN open fronthaul links between RU ru-sector-A1 through ru-sector-A8 and DU du-site-alpha are flagged for potential man-in-the-middle injection after timing anomalies appear in eCPRI frames. Activate MACsec encryption on all eight fronthaul links, re-synchronize IEEE 1588 PTP grandmaster timing through a verified path, validate that fronthaul latency remains within the 100 µs eCPRI budget post-encryption, and cross-check CQI and RSRP KPI stability on the 1,200 UEs served by those RUs to confirm no phantom interference has been injected.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-slice-admission-control-security-budget
+  text: A new high-security government eMBB tenant requests onboarding onto shared infrastructure already carrying two URLLC slices at 78 percent resource utilization. Evaluate whether the new tenant can be admitted while satisfying its mandatory end-to-end IPsec tunnel requirement on N3, maintaining existing URLLC latency SLAs below 5 ms, capping total UPF upf-gov-02 CPU load at 85 percent, and meeting GSMA FS.20 network slice security isolation requirements. If admission is feasible, produce the NST configuration; if not, identify the binding constraint and propose a remediation.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: sec-charging-fraud-chf-upf-cross-validation
+  text: Revenue assurance detects a discrepancy of 340 GB between UPF upf-billing-03 usage records and CHF chf-02 charging data records for eMBB subscribers over a 6-hour window, suggesting either a billing bypass exploit or a CDR manipulation attack. Correlate N4 session reports from upf-billing-03 with CHF chf-02 CDRs at per-session granularity, identify sessions with usage gaps exceeding 1 GB, cross-reference against PCF policy activations to detect unauthorized free-data policy injections, freeze affected sessions pending investigation, and restore billing integrity without terminating sessions belonging to unaffected subscribers.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: sec-gnb-cu-du-split-security-policy-enforcement
+  text: A security audit of the F1 interface between CU cu-regional-02 and its 12 associated DU instances (du-01 through du-12) finds that DTLS is not enforced on 4 of the 12 F1-C links, violating 3GPP TS 33.501 RAN security requirements. Enforce DTLS on the non-compliant F1-C links without restarting the affected DUs, sequence the enforcement to avoid simultaneous control-plane disruption across more than 2 DUs at a time, verify that handover success rates on the affected cells remain above 99.5 percent throughout, and update the security compliance dashboard with per-link attestation records.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: sec-multi-vendor-ran-core-threat-intel-fusion
+  text: Threat intelligence from three vendors indicates active exploitation of a signaling vulnerability affecting AMF amf-core-01, SMF smf-core-02, and gNB firmware versions prior to R17.3 on gNB-501 through gNB-520. Correlate the CVE impact across all three NF types simultaneously, prioritize patching order based on exposure score and live traffic load, schedule firmware upgrades on gNBs in rolling batches of five to preserve aggregate capacity above 60 percent, coordinate AMF and SMF patch application during the lowest-traffic window without violating URLLC SLA commitments, and validate post-patch KPIs including N2 setup success rate and PDU session establishment latency before closing the change record.
+  domain: security
+  expected_complexity: complex
+  criticality: high
+  slice_type: null
+- id: slice-read-status-embb-01
+  text: What is the current operational status of eMBB slice instance NSI-EMB-007?
+  domain: slice
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: slice-read-ssr-urllc
+  text: What is the session setup success rate for URLLC slice NSI-URL-003 right now?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-max-ues-mmtc
+  text: How many UEs are currently registered on mMTC slice NSI-MMT-011?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: slice-read-guaranteed-bitrate
+  text: What is the guaranteed bitrate configured for eMBB slice NSI-EMB-014?
+  domain: slice
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: slice-read-latency-urllc
+  text: What is the current end-to-end latency measured on URLLC slice NSI-URL-005?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-snssai-mapping
+  text: What S-NSSAI value is assigned to slice instance NSI-EMB-009?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: embb
+- id: slice-read-upf-assigned
+  text: Which UPF is currently serving URLLC slice NSI-URL-002?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-packet-loss-mmtc
+  text: What is the packet loss rate on mMTC slice NSI-MMT-004 at this moment?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: slice-read-activation-time
+  text: When was slice instance NSI-EMB-021 last activated?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: embb
+- id: slice-read-dl-throughput-embb
+  text: What is the current downlink throughput being delivered to eMBB slice NSI-EMB-033?
+  domain: slice
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: slice-read-isolation-level
+  text: What resource isolation level is configured for URLLC slice NSI-URL-008?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-smf-assigned
+  text: Which SMF instance is currently handling session management for slice NSI-MMT-006?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: slice-read-max-datarate-cap
+  text: What is the maximum data rate cap set on eMBB slice NSI-EMB-017?
+  domain: slice
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: slice-read-pdu-session-count
+  text: How many active PDU sessions exist on URLLC slice NSI-URL-010 right now?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-nsi-lifecycle-state
+  text: What is the lifecycle state of network slice instance NSI-MMT-019?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: slice-read-qos-profile
+  text: What QoS profile is associated with eMBB slice NSI-EMB-025?
+  domain: slice
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: slice-read-jitter-urllc
+  text: What is the current jitter value reported for URLLC slice NSI-URL-001?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-registered-imsi-count
+  text: How many IMSIs are currently registered under mMTC slice NSI-MMT-022?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: slice-read-amf-serving
+  text: Which AMF is currently serving slice instance NSI-EMB-030?
+  domain: slice
+  expected_complexity: simple
+  criticality: med
+  slice_type: embb
+- id: slice-read-ul-throughput-urllc
+  text: What is the uplink throughput currently observed on URLLC slice NSI-URL-007?
+  domain: slice
+  expected_complexity: simple
+  criticality: high
+  slice_type: urllc
+- id: slice-read-priority-label
+  text: What scheduling priority label is assigned to mMTC slice NSI-MMT-013?
+  domain: slice
+  expected_complexity: simple
+  criticality: low
+  slice_type: mmtc
+- id: slice-embb-prb-rebalance-congestion
+  text: The eMBB slice on cell NR-Cell-007 is consuming over 90% of its allocated PRB budget during peak hours, degrading throughput for other tenants. Rebalance the PRB allocation to relieve congestion.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-urllc-upf-latency-path
+  text: The URLLC slice serving the remote surgery pilot at site MEC-03 is showing end-to-end latency spikes above 8 ms on the N3 interface. Identify whether the UPF-17 forwarding path is the bottleneck and adjust accordingly.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: slice-mmtc-device-quota-exhaustion
+  text: The mMTC slice for the smart-city sensor tenant TENANT-SC-04 is approaching its maximum registered device quota of 500,000 endpoints. Extend the quota to accommodate the next deployment wave.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: slice-embb-qos-profile-downgrade
+  text: Tenant BROADBAND-ENT-02 on the eMBB slice is consistently receiving a lower 5QI-9 QoS profile instead of the contracted 5QI-7. Investigate the SMF-04 policy binding and correct the QoS profile assignment.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-urllc-admission-control-tighten
+  text: The URLLC slice for autonomous vehicle coordination at corridor AC-North is admitting more sessions than its guaranteed bit rate budget allows. Tighten the admission control policy on AMF-06 to enforce the SLA.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: slice-embb-n6-throughput-drop
+  text: Throughput on the N6 interface for the eMBB slice serving stadium tenant VENUE-11 has dropped by 40% compared to last weekend's baseline. Determine whether UPF-09 traffic shaping rules are the cause and restore normal throughput.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-mmtc-periodicity-misconfiguration
+  text: The mMTC slice for agricultural IoT tenant AGRO-07 is generating excessive signaling because device reporting periodicity is set to 10 seconds instead of the contracted 300 seconds. Reconfigure the slice parameters to enforce the correct periodicity.
+  domain: slice
+  expected_complexity: medium
+  criticality: low
+  slice_type: mmtc
+- id: slice-urllc-redundancy-path-activate
+  text: The primary transport path for URLLC slice SST-2 SD-0x000A serving the power-grid automation tenant has experienced two micro-interruptions this week. Activate the pre-configured redundant path to maintain sub-1 ms jitter compliance.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: slice-embb-cqi-threshold-adjustment
+  text: Average CQI on the eMBB slice for residential broadband tenant RESI-ZONE-B has fallen below 7 on gNB-031, indicating poor link adaptation. Adjust the CQI reporting threshold to trigger more aggressive MCS selection.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-isolation-breach-detection
+  text: Monitoring has flagged that traffic from mMTC slice SST-3 SD-0x0021 is leaking into the eMBB slice SST-1 SD-0x0005 on UPF-12. Verify the slice isolation configuration and restore proper traffic separation.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: null
+- id: slice-mmtc-ausf-auth-failure-rate
+  text: The AUSF-02 is logging a 15% authentication failure rate for devices on the mMTC slice for smart-metering tenant UTIL-METER-01. Identify whether an expired credential profile is causing the failures and refresh it.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: slice-embb-max-bitrate-cap-enforce
+  text: Tenant MEDIA-STREAM-03 on the eMBB slice is exceeding its contracted maximum aggregate bit rate of 10 Gbps during evening hours. Enforce the AMBR cap at SMF-07 to prevent impact on co-located tenants.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-urllc-smf-session-setup-delay
+  text: Session setup time for the URLLC slice used by drone-fleet tenant UAV-OPS-02 is averaging 120 ms at SMF-03, well above the 20 ms target. Diagnose the SMF-03 session establishment procedure and reduce setup latency.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: slice-embb-rsrp-coverage-gap
+  text: RSRP measurements on the eMBB slice for tenant CAMPUS-NET-05 show a persistent coverage gap below -110 dBm in building sector B of gNB-018. Reconfigure the slice beam management parameters to improve coverage in that sector.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-mmtc-paging-overload-mitigation
+  text: The mMTC slice for logistics tracking tenant LOGIS-09 is causing paging overload on AMF-04 due to simultaneous wake-up of 80,000 devices. Apply a staggered paging schedule to distribute the load within the slice.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: slice-urllc-gnb-resource-reservation
+  text: The URLLC slice for factory floor tenant MFACT-LINE-3 has no reserved mini-slot resources on gNB-055, forcing it to compete with eMBB traffic. Reserve dedicated mini-slot resources on that gNB to guarantee deterministic scheduling.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: slice-embb-handover-slice-context-loss
+  text: Users on the eMBB slice for tenant HOTSPOT-RETAIL-06 are losing slice context during handover between gNB-022 and gNB-023, causing session re-establishment delays. Verify and align the Xn-interface slice context transfer configuration between the two gNBs.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-mmtc-upf-anchor-relocation
+  text: The UPF anchor for the mMTC slice serving environmental monitoring tenant ENV-SENSE-02 is located at a central data center, adding 30 ms of unnecessary round-trip latency. Relocate the UPF anchor to the regional edge node EDGE-REG-04.
+  domain: slice
+  expected_complexity: medium
+  criticality: low
+  slice_type: mmtc
+- id: slice-embb-five-qi-mapping-error
+  text: Video conferencing traffic on the eMBB slice for enterprise tenant CORP-HQ-01 is being mapped to 5QI-8 instead of the required 5QI-2, causing unacceptable packet delay variation. Correct the 5QI mapping rule in SMF-05 for that tenant's DNN.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: embb
+- id: slice-urllc-sla-breach-root-cause
+  text: The URLLC slice SLA report for telemedicine tenant TELE-MED-01 shows three latency breaches in the past 24 hours, all occurring between 14:00 and 15:00. Correlate the breach timestamps with UPF-14 load metrics to identify the root cause.
+  domain: slice
+  expected_complexity: medium
+  criticality: high
+  slice_type: urllc
+- id: slice-mmtc-nssai-registration-mismatch
+  text: A batch of 3,000 newly deployed water-meter devices for tenant UTIL-WATER-03 is failing network registration because their S-NSSAI does not match the allowed NSSAI list on AMF-02. Update the AMF-02 allowed NSSAI configuration to include the correct slice descriptor.
+  domain: slice
+  expected_complexity: medium
+  criticality: med
+  slice_type: mmtc
+- id: slice-urllc-embb-coexistence-prb-arbitration
+  text: During peak hours on gNB cluster {gNB-101, gNB-102, gNB-103}, a new URLLC slice request for a remote-surgery application demands 99.999% reliability and sub-1ms user-plane latency, while two active eMBB slices for stadium streaming are consuming 70% of available PRBs. Arbitrate PRB allocation across all three slices, enforce strict air-interface isolation, and ensure the URLLC SLA is met without dropping eMBB throughput below the contracted 50 Mbps floor, all within a 5W per-cell power budget increase ceiling.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-energy-sla-multi-tenant-night
+  text: Between 02:00 and 05:00 local time, consolidate active eMBB and mMTC slices across gNB-201 through gNB-210 to minimize RAN energy consumption while guaranteeing that all active mMTC device registration latencies remain below 500ms, eMBB tenant SLA throughput floors are maintained, and no slice migration triggers a handover storm on the Xn interface exceeding 200 events per minute.
+  domain: slice
+  expected_complexity: complex
+  criticality: med
+  slice_type: mmtc
+- id: slice-multi-tenant-admission-revenue-cap
+  text: Four incoming slice requests (two eMBB, one URLLC, one mMTC) compete for capacity on a shared UPF-07 and AMF-03 pool that is already serving six tenants at 85% NF load. Evaluate admission for each request against available N3 throughput headroom, AMF signaling capacity, and per-tenant revenue weight, admitting the combination that maximises total revenue while keeping existing URLLC slice latency SLAs unviolated and UPF-07 CPU utilisation below 90%.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-roaming-handover-sla-continuity
+  text: A URLLC slice serving autonomous vehicle platooning is handed over from PLMN-001 to PLMN-002 as vehicles cross a national boundary. Coordinate with the visited AMF-V1 and SMF-V2 to re-anchor the UPF on the N9 interface, preserve sub-5ms end-to-end latency, maintain GTP-U tunnel continuity on N3, and ensure that the home AUSF authentication round-trip does not introduce a latency spike exceeding 2ms during re-authentication.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-isolation-breach-remediation-multiservice
+  text: Traffic monitoring detects that eMBB slice S-eMBB-09 is leaking user-plane packets onto the N6 segment shared with URLLC slice S-URLLC-03 due to a misconfigured UPF-11 forwarding rule. Re-isolate both slices by reconfiguring N6 VRF assignments, audit SMF-05 PDU session rules for all affected UEs, verify that mMTC slice S-mMTC-02 on the same gNB cluster is unaffected, and restore full isolation without interrupting active URLLC PDU sessions.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-dynamic-capacity-boost-event
+  text: A mass public event at venue-V3 is projected to increase eMBB demand by 300% within the next 30 minutes across gNB-301, gNB-302, and gNB-303. Pre-emptively scale the eMBB slice by instantiating additional UPF-V3-scale instances, expand PRB allocation from 40% to 75% on all three cells, renegotiate QoS flows with SMF-08, and ensure that the co-located URLLC slice for emergency-services communications retains its reserved 15% PRB guard band and sub-2ms latency guarantee throughout the event.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: slice-mmtc-massive-attach-storm-mitigation
+  text: An mMTC slice S-mMTC-07 experiences a device attach storm from 500,000 IoT sensors following a power restoration event, saturating AMF-04 signaling capacity at 95% and threatening to spill into the shared control plane serving two URLLC slices. Rate-limit mMTC attach requests at the RAN level on gNB-401 through gNB-415, redistribute AMF load to AMF-05 via NRF-based re-selection, and ensure URLLC control-plane signaling latency remains below 10ms during the mitigation window.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: mmtc
+- id: slice-cross-domain-qos-renegotiation
+  text: Tenant T-Bravo's eMBB slice is underperforming against its contracted 100 Mbps downlink SLA across three sites (gNB-501, gNB-502, gNB-503) due to simultaneous RAN congestion and UPF-12 uplink backhaul saturation on the N3 interface. Jointly optimise PRB scheduling weights on the RAN side and traffic shaping policies on UPF-12, renegotiate QoS flow descriptors via SMF-09, and confirm that the remediation does not degrade the co-tenant URLLC slice latency below its 1ms budget.
+  domain: slice
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: slice-network-function-failover-sla-preservation
+  text: SMF-03, serving active PDU sessions for two eMBB slices and one URLLC slice, reports imminent failure due to memory exhaustion. Seamlessly migrate all PDU sessions to SMF-06 and SMF-07 using N10 interface procedures, prioritise URLLC session migration to complete within 50ms, maintain eMBB session continuity with no more than 200ms interruption, and rebalance UPF-08 anchor assignments to avoid overloading the backup SMFs beyond 80% capacity.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-multi-cell-coverage-sla-reoptimization
+  text: Edge users on URLLC slice S-URLLC-05 across gNB-601, gNB-602, and gNB-603 are reporting RSRP values below -110 dBm and CQI below 4, causing reliability to drop to 99.95% against a 99.999% SLA. Jointly adjust antenna tilt and transmit power on the three gNBs, rebalance PRB allocation between URLLC and co-located eMBB slices, and verify that the coverage improvement does not cause inter-cell interference raising the eMBB slice's BLER above 1%.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-budget-constrained-scaling-multisite
+  text: Tenant T-Charlie requests a 50% capacity increase for its eMBB slice across five sites (gNB-701 through gNB-705) for a 6-hour sports broadcast window, subject to a hard OPEX cap of €200 for the period. Determine the optimal combination of PRB expansion, UPF horizontal scaling on UPF-15 and UPF-16, and SMF-10 QoS policy adjustment that maximises delivered throughput within the cost ceiling, while preserving the mMTC slice S-mMTC-04 device density SLA of 1 million connections per km².
+  domain: slice
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: slice-security-tenant-isolation-audit
+  text: Following a regulatory audit finding, verify and enforce cryptographic isolation between eMBB slice S-eMBB-12 (financial-services tenant) and all co-hosted slices on shared infrastructure spanning UPF-18, UPF-19, and gNB cluster {gNB-801, gNB-802}. Validate AUSF-based secondary authentication for all UEs on S-eMBB-12, confirm N3 GTP-U TEID space separation, and remediate any shared memory or CPU pinning violations on the UPF hosts without causing PDU session drops exceeding 0.1% of active sessions.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: embb
+- id: slice-drx-energy-latency-tradeoff-urllc
+  text: On gNB-901 and gNB-902, the URLLC slice S-URLLC-08 serving industrial automation must simultaneously meet a 500µs user-plane latency bound and a UE battery life target of 10 years for sensor devices. Configure DRX cycle parameters and scheduling request periodicity that satisfy both constraints, arbitrate with the co-located eMBB slice for PDCCH resource usage, and ensure the resulting configuration does not raise the eMBB slice's scheduling delay beyond 5ms.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-vnf-placement-latency-cost-optimisation
+  text: A new URLLC slice for drone-corridor management must be instantiated across three geographic zones (Zone-A, Zone-B, Zone-C), each served by a separate MEC host and a regional UPF (UPF-20, UPF-21, UPF-22). Determine VNF placement for SMF, UPF, and application-layer functions that minimises worst-case N3 latency to below 3ms, stays within a combined compute budget of 48 vCPUs, and maintains geographic redundancy so that any single MEC host failure does not interrupt more than 5% of active drone sessions.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-inter-slice-interference-prb-replan
+  text: Spectral efficiency measurements on gNB-1001 show that mMTC slice S-mMTC-09 and eMBB slice S-eMBB-14 are experiencing cross-slice interference due to overlapping PRB assignments in the 3.5 GHz band. Replan the PRB grid to eliminate overlap, re-derive MCS tables for affected UE groups, verify that URLLC slice S-URLLC-10 on the same cell retains its dedicated PRB reservation, and confirm that aggregate cell throughput does not drop below the operator's 800 Mbps target.
+  domain: slice
+  expected_complexity: complex
+  criticality: med
+  slice_type: mmtc
+- id: slice-sla-violation-root-cause-multi-nf
+  text: Tenant T-Delta's URLLC slice S-URLLC-11 is breaching its 2ms end-to-end latency SLA across gNB-1101 and gNB-1102. Correlate KPIs from RAN (PRB utilisation, HARQ retransmission rate), N3 transport (jitter, packet loss), UPF-23 processing delay, and SMF-11 session modification latency to identify the root cause, apply the minimum corrective action set that restores SLA compliance, and produce a ranked remediation plan that preserves eMBB slice S-eMBB-15 throughput above its 200 Mbps floor.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-capacity-rebalance-post-disaster
+  text: Following a natural disaster, gNB-1201 and gNB-1202 are offline, and their slice workloads (two eMBB slices, one URLLC slice for first-responders, one mMTC slice for utility sensors) must be redistributed to surviving gNB-1203, gNB-1204, and gNB-1205, which are already at 60% PRB utilisation. Prioritise the URLLC first-responder slice with guaranteed PRB reservation, maximise retained eMBB capacity within remaining headroom, and ensure mMTC device connectivity is maintained at no less than 80% of the pre-disaster session count.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-multi-operator-ran-sharing-sla
+  text: Under a multi-operator RAN sharing agreement on gNB cluster {gNB-1301, gNB-1302, gNB-1303}, Operator-A's eMBB slice and Operator-B's URLLC slice share physical layer resources. Operator-B reports URLLC latency degradation to 3.5ms against a 1ms SLA during Operator-A's peak traffic window. Arbitrate PRB and scheduler time-slot allocation between the two operators' slices, enforce the sharing SLA contract weights, and ensure Operator-A's eMBB contracted throughput floor of 150 Mbps is not violated during the rebalancing.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-lifecycle-upgrade-zero-downtime
+  text: Upgrade the UPF software from release 17.3 to 18.1 on UPF-25 and UPF-26, which jointly anchor PDU sessions for eMBB slice S-eMBB-17 (3,000 active sessions) and URLLC slice S-URLLC-13 (800 active sessions). Orchestrate a rolling upgrade that migrates sessions in batches via N9 path switching, ensures no URLLC session experiences more than 1ms additional latency during migration, limits eMBB session interruption to under 100ms per batch, and keeps total upgrade duration within a 20-minute maintenance window.
+  domain: slice
+  expected_complexity: complex
+  criticality: high
+  slice_type: urllc
+- id: slice-revenue-optimised-qos-degradation-ladder
+  text: UPF-27 is approaching 95% throughput capacity serving four eMBB tenants (T-Echo, T-Foxtrot, T-Golf, T-Hotel) with different contracted SLA tiers and ARPU values. Define and apply a QoS degradation ladder that sheds capacity from lowest-ARPU tenants first, in graduated steps, until UPF-27 load drops below 80%, while ensuring no tenant's throughput falls below 30% of their contracted floor, and that the total revenue impact of degradation is minimised across the four tenants simultaneously.
+  domain: slice
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb
+- id: slice-e2e-orchestration-multi-domain-latency
+  text: A new network slice for cloud gaming must be instantiated end-to-end spanning the RAN domain (gNB-1401, gNB-1402), transport domain (mid-haul router MH-07), and core domain (SMF-14, UPF-28, UPF-29 at two MEC sites). Jointly configure RAN scheduler weights, transport QoS DSCP markings, and UPF traffic steering rules so that 95th-percentile round-trip latency from UE to application server remains below 10ms, uplink and downlink throughput SLAs of 50 Mbps per UE are met for up to 2,000 concurrent users, and the slice remains within a combined energy budget of 1.2 kW across all domains.
+  domain: slice
+  expected_complexity: complex
+  criticality: med
+  slice_type: embb

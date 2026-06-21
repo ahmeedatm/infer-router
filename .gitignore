@@ -32,8 +32,9 @@ htmlcov/
 
 # --- Data (local-only: images, benchmarks, results) ---
 data/*
-# Exception : le jeu d'intents du spike est versionné (artefact validé)
+# Exception : les jeux d'intents versionnés (artefacts validés)
 !data/intents_spike.yaml
+!data/intents_dataset.yaml
 
 # --- Spike experiment outputs (local-only) ---
 experiments/results/
