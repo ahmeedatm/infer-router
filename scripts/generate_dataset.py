@@ -1,4 +1,4 @@
-"""Génération du dataset d'intents télécom par LLM (Plan 3 / ADR-007).
+"""Génération du dataset d'intents télécom par LLM.
 
 Produit ~250 intents équilibrés sur la matrice domaine x complexité
 (4 domaines x 3 complexités), au format de ``data/intents_spike.yaml``. La
@@ -10,7 +10,7 @@ Les fonctions pures (``build_generation_prompt``, ``parse_generated_intents``,
 ``main`` fait des appels OpenRouter réels et n'est déclenché que sous
 ``if __name__ == '__main__'`` — jamais par les tests, ni implicitement.
 
-Discipline de coût (cf. docs/testing-conventions.md) :
+Pour limiter les appels API :
   - reprenable : saute toute cellule déjà couverte au quota dans le fichier de sortie,
   - écriture incrémentale : le YAML est réécrit juste après chaque appel payant,
   - validable à bas coût : ``CELLS`` restreint le run à un sous-ensemble de cellules,
@@ -61,7 +61,7 @@ COMPLEXITIES: tuple[Complexity, ...] = ("simple", "medium", "complex")
 DEFAULT_N_PER_CELL: int = 21
 # Cap de tokens de complétion pour un lot. Les intents "complex" sont longs
 # (~300 tokens chacun) : 21 par cellule dépassent 4096. Cap relevé pour ne pas
-# tronquer les cellules complexes, tout en bornant le coût (règle 5).
+# tronquer les cellules complexes, tout en bornant le coût.
 GENERATION_MAX_TOKENS: int = 8192
 # Diversité voulue : on échantillonne, on ne cherche pas le déterminisme.
 GENERATION_TEMPERATURE: float = 0.7
@@ -86,8 +86,8 @@ class GenerationError(RuntimeError):
 # Fonctions pures (testables sans réseau)
 # ════════════════════════════════════════════════════════════════════════════
 
-# Consignes de gradient de complexité, alignées sur le ch.3 (n entités,
-# profondeur d'inférence p, domaines croisés |δ|) et l'en-tête du spike.
+# Consignes de gradient de complexité (n entités,
+# profondeur d'inférence p, domaines croisés |δ|).
 _COMPLEXITY_GUIDANCE: dict[str, str] = {
     "simple": (
         "SIMPLE: a state read or a direct query. Inference depth = 1, one single "
@@ -206,7 +206,7 @@ def _select_seeds(
 
     Priority: same domain and complexity, then same complexity, then same
     domain, then any. Aligning the few-shot on the target complexity matters
-    for the complexity gradient (cf. spike H-C).
+    for the complexity gradient (cf. embedding separability findings).
     """
     same_both = [s for s in seed_examples if s.domain == domain and s.expected_complexity == complexity]
     same_cx = [s for s in seed_examples if s.expected_complexity == complexity and s not in same_both]

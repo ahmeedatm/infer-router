@@ -1,6 +1,6 @@
-"""Immutable pydantic v2 models for the InferRouter-LLM spike.
+"""Immutable pydantic v2 models for InferRouter-LLM.
 
-These schemas describe the data crossing the post-pivot pipeline:
+These schemas describe the data crossing the pipeline:
 network intents, raw LLM responses, and judge scores. All models are
 frozen (immutable by default, per project coding-style rules).
 """
@@ -43,7 +43,7 @@ class ModelResponse(BaseModel):
 
 
 class JudgeScore(BaseModel):
-    """Quality score produced by the local LLM-Judge (used in Phase 3)."""
+    """Quality score produced by the local LLM-Judge."""
 
     model_config = ConfigDict(frozen=True)
 

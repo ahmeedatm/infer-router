@@ -1,4 +1,4 @@
-"""Expérience A du spike — fiabilité du LLM-Juge (hypothèse H-A).
+"""Fiabilité du LLM-Juge.
 
 Pour chaque intent du jeu : interroge le modèle light et le modèle heavy via
 OpenRouter, fait noter chaque réponse par le LLM-Juge local (gemma2:2b), puis

@@ -1,29 +1,23 @@
-annotated-types==0.7.0
-anyio==4.12.1
-async-timeout==5.0.1
-click==8.1.8
-exceptiongroup==1.3.1
-fastapi==0.128.7
-h11==0.16.0
+# LLM cibles (OpenRouter) et validation de données
 httpx==0.27.2
-idna==3.11
 pydantic==2.12.5
 pydantic_core==2.41.5
-redis==7.0.1
-starlette==0.49.3
+annotated-types==0.7.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
-uvicorn==0.39.0
-aio-pika==9.5.6
+anyio==4.12.1
+h11==0.16.0
+idna==3.11
+exceptiongroup==1.3.1
 requests==2.32.5
-matplotlib==3.9.4
-numpy==2.0.2
-pytest==8.4.2
-pytest-asyncio==1.2.0
-# ── Post-pivot — InferRouter-LLM spike (ADR-005) ──
 PyYAML==6.0.2
-pandas==2.2.3
-# Estimateur de complexité sémantique (Exp. H-C) : embeddings + classifier.
-# sentence-transformers tire torch (lourd) ; installé dans le venv.
+
+# Estimateur de complexité : embeddings + classifieur
 sentence-transformers==5.1.2
 scikit-learn==1.6.1
+numpy==2.0.2
+pandas==2.2.3
+matplotlib==3.9.4
+
+# Tests
+pytest==8.4.2

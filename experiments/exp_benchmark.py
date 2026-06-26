@@ -1,4 +1,4 @@
-"""Objectif 2 — benchmark des 4 stratégies de routage (Phase 5).
+"""Objectif 2 — benchmark des 4 stratégies de routage.
 
 Compare quatre politiques sur le même échantillon d'intents, dans les mêmes
 conditions (même ordre, même seed, mêmes modèles cibles) :
@@ -8,14 +8,14 @@ conditions (même ordre, même seed, mêmes modèles cibles) :
   - random       : tirage uniforme seedé dans le pool,
   - inferrouter  : la décision tri-critère du système (délègue à route()).
 
-Métriques par stratégie (ch.3) : qualité moyenne (AIQ = q moyen du juge),
+Métriques par stratégie : qualité moyenne (AIQ = q moyen du juge),
 coût-proxy agrégé moyen, latence P50/P99, distribution des modèles choisis.
 
 Coût-proxy : temps_inférence (s) × taille_modèle (milliards de paramètres),
 cf. config.MODEL_SIZE_B. Le spécialiste "<heavy>#<domain>" partage la taille
 et le model_id réseau du heavy de base.
 
-Optimisation de coût (RÈGLE DURE) : un cache (intent_id, base_model_id) ->
+Optimisation de coût : un cache (intent_id, base_model_id) ->
 résultat. Si plusieurs stratégies choisissent le même modèle pour le même
 intent, on ne l'exécute et ne le juge qu'UNE fois. choose_model et
 aggregate_benchmark sont PURES (testables sans réseau). Le runner est
@@ -130,7 +130,7 @@ def _base_model_id(model_id: str) -> str:
 
 
 def cost_proxy(model_id: str, latency_ms: float) -> float:
-    """Coût-proxy du ch.3 : temps_inférence (s) × taille_modèle (milliards).
+    """Coût-proxy : temps_inférence (s) × taille_modèle (milliards).
 
     Raises:
         StrategyError: taille du modèle absente de la grille (jamais d'estimation

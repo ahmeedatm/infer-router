@@ -1,13 +1,13 @@
-"""Corrections d'annotation du dataset, issues de la revue ingenieur-reseaux.
+"""Corrections d'annotation du dataset, issues de la revue d'expert réseau.
 
-Applique les corrections ciblées identifiées dans `dataset-review.md` (ADR-007),
-de façon tracée et reproductible plutôt qu'à la main. Conventions retenues :
+Applique les corrections ciblées de façon tracée et reproductible plutôt qu'à
+la main. Conventions retenues :
 
 - Criticité = impact de l'action. Une lecture de KPI ne dépasse pas `med`, sauf
   lectures de sécurité / compteurs d'échec (criticité intrinsèque, conservées).
 - Domaine au niveau complex = point d'entrée de l'intent. Seuls les intents
   clairement mal domainés sont reclassés ; les transverses gardent leur domaine.
-- Complexité selon n(e)/p(e)/|delta(e)| du chapitre 3.
+- Complexité selon n(e)/p(e)/|delta(e)|.
 
 Lancer :  .venv/bin/python -m scripts.fix_dataset_annotations
 """

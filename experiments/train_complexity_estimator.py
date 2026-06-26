@@ -1,9 +1,9 @@
-"""Phase 2 — train and benchmark the semantic-complexity estimator.
+"""Train and benchmark the semantic-complexity estimator.
 
 Goal: build the complexity estimator the router needs (``simple`` / ``medium``
 / ``complex``) and, just as important, **measure honestly** what carries the
-decision. The spike (Exp. H-C) found that raw embeddings do not beat the
-majority baseline; the chapter-3 thesis is that *calculated* attributes (proxy
+decision. Experiments found that raw embeddings do not beat the
+majority baseline; the thesis is that *calculated* attributes (proxy
 for n(e), p(e), |δ(e)|) do.
 
 Because the labels come from the generation cell, a classifier could latch onto
@@ -14,8 +14,8 @@ the runner compares six conditions under StratifiedKFold (k=5):
   2. length only (n_tokens) — a pure "form" detector;
   3. calculated attributes (all features.py features, standardised) with
      LogisticRegression and RandomForest;
-  4. embeddings only (all-MiniLM-L6-v2 → LogisticRegression) — re-tests H-C at
-     n = 252;
+  4. embeddings only (all-MiniLM-L6-v2 → LogisticRegression) — re-tests
+     embedding separability at n = 252;
   5. combined (attributes + embeddings).
 
 It prints a comparison table, per-class accuracy, the aggregated confusion

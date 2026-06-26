@@ -54,7 +54,7 @@ def _estimate_cost(model_id: str, prompt_tokens: int, completion_tokens: int) ->
     """Estimate USD cost from the config pricing grid.
 
     Unknown models return 0.0 by design: we prefer an explicit 0.0 over a
-    fabricated estimate. The spike surfaces this rather than guessing.
+    fabricated estimate, surfacing the gap rather than guessing.
     """
     pricing = config.MODEL_PRICING_USD_PER_1K.get(model_id)
     if pricing is None:

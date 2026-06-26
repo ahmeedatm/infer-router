@@ -1,9 +1,9 @@
-"""Local LLM-Judge wrapper (simplified RocketEval) for the spike.
+"""Local LLM-Judge wrapper (simplified RocketEval).
 
 RocketEval (ICLR 2025) grades a candidate answer against a checklist of
 verifiable criteria, each answered YES/NO by a small local model, then
 aggregates them into a scalar quality score. This module ships a
-*simplified* version for the spike: a fixed, generic 4-item checklist
+*simplified* version: a fixed, generic 4-item checklist
 scored by the Ollama judge model, aggregated as ``q = #YES / #total``.
 
 Design choices, per project rules:

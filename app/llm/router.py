@@ -1,13 +1,12 @@
-"""Pure routing decision for InferRouter-LLM (chapter 3 formalization).
+"""Pure routing decision for InferRouter-LLM.
 
-This module implements the routing logic formalized in chapter 3 of the
-memoir. It is a *pure* function of its inputs: no network call, no Ollama,
-no API key. Quality (``q``), cost and latency are assumed already
-estimated upstream (complexity estimator, judge, pricing model); this
-module only decides which model wins.
+This module implements the tri-criteria routing logic. It is a *pure*
+function of its inputs: no network call, no Ollama, no API key. Quality
+(``q``), cost and latency are assumed already estimated upstream
+(complexity estimator, judge, pricing model); this module only decides
+which model wins.
 
-Notation maps directly onto the report so that report and code stay
-traceable:
+Notation:
 
 - Admissibility set M(e): a candidate ``m`` is admissible for an intent
   ``e`` when ``latency_ms <= l_max`` and ``cost <= c_max``. Both bounds
@@ -28,7 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class RouteCandidate(BaseModel):
-    """An immutable routing candidate scored along the ch.3 criteria.
+    """An immutable routing candidate scored along the tri-criteria axes.
 
     Attributes:
         model_id: Identifier of the candidate model.
@@ -50,7 +49,7 @@ def admissible(
     l_max: float,
     c_max: float,
 ) -> tuple[RouteCandidate, ...]:
-    """Compute the admissibility set M(e) of chapter 3.
+    """Compute the admissibility set M(e).
 
     A candidate is admissible when it respects both SLA budgets:
     ``latency_ms <= l_max`` and ``cost <= c_max`` (inclusive bounds).
@@ -69,7 +68,7 @@ def admissible(
 
 
 def _tie_break_key(candidate: RouteCandidate) -> tuple[float, float, float]:
-    """Sort key implementing the ch.3 objective and Pareto tie-break.
+    """Sort key implementing the objective and Pareto tie-break.
 
     Highest ``q`` wins (negated for ascending sort), then cost ascending,
     then latency ascending. The minimum under this key is R*(e).
@@ -86,7 +85,7 @@ def select(
 
     Restricts the candidates to the admissibility set M(e) (see
     :func:`admissible`), then picks the highest-quality candidate. Ties on
-    ``q`` are broken by cost then latency (Pareto criterion of ch.3).
+    ``q`` are broken by cost then latency (Pareto criterion).
 
     Args:
         candidates: Candidate models, already scored.

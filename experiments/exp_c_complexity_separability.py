@@ -1,4 +1,4 @@
-"""Expérience H-C — séparabilité de la complexité des intents par embeddings.
+"""Séparabilité de la complexité des intents par embeddings.
 
 Hypothèse testée : la complexité d'un intent réseau (``simple`` / ``medium`` /
 ``complex``) est récupérable depuis le seul énoncé textuel, une fois encodé en

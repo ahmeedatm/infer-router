@@ -1,6 +1,6 @@
 """Re-calibration du SEUL modèle léger, en réutilisant heavy + checklists.
 
-Discipline de coût (règle 6) : le run llama a déjà produit q_heavy et la
+Pour limiter les appels API : le run llama a déjà produit q_heavy et la
 checklist par intent (dans calibration.json). On ne repaie donc ni le heavy ni
 la génération de checklist. On génère uniquement la réponse d'un NOUVEAU modèle
 léger (env MODEL_LIGHT2) et on la juge avec la checklist stockée, pour voir si

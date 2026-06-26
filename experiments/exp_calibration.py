@@ -1,4 +1,4 @@
-"""Objectif 1 — calibration de la qualité réelle (le cœur, Phase 5).
+"""Objectif 1 — calibration de la qualité réelle.
 
 Pour chaque intent de l'échantillon : exécute le tier LIGHT et le tier HEAVY
 (via OpenRouter), génère UNE checklist RocketEval propre à l'intent, puis note
@@ -7,15 +7,15 @@ qualité réelle q par tier, qu'on agrège en une matrice tier×complexité et u
 écart heavy-light par complexité.
 
 C'est cette matrice qui calibre l'heuristique `expected_quality` (app/llm/
-policy.py) et qui répond à H-B : sur les intents simples, le light suffit-il ?
-(écart heavy-light négligeable).
+policy.py) et qui éclaire la prémisse du routage : sur les intents simples, le
+light suffit-il ? (écart heavy-light négligeable).
 
 `aggregate_quality` est PURE (testable sans réseau). Le runner est reprenable
 et écrit de façon incrémentale dans experiments/results/calibration.json :
 une interruption ne fait pas repayer les intents déjà traités.
 
-Discipline de coût (cf. docs/testing-conventions.md) : valider sur un petit
-échantillon avant le run complet via SAMPLE_SIZE.
+Pour limiter les appels API : valider sur un petit échantillon avant le run
+complet via SAMPLE_SIZE.
 
 Usage :
     SAMPLE_SIZE=2 .venv/bin/python -m experiments.exp_calibration   # petit

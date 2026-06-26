@@ -1,4 +1,4 @@
-"""Loader for the spike intent set (``data/intents_spike.yaml``).
+"""Loader for the intent set (``data/intents_spike.yaml``).
 
 Reads a YAML file rooted on an ``intents:`` key, validates every entry
 against the frozen :class:`~app.llm.schema.Intent` model, and returns an
@@ -65,7 +65,7 @@ def _build_intent(entry: Any, index: int) -> Intent:
 
 
 def load_intents(path: Optional[str] = None) -> tuple[Intent, ...]:
-    """Load and validate the spike intents from a YAML file.
+    """Load and validate the intents from a YAML file.
 
     Args:
         path: Path to the YAML file. Defaults to ``config.INTENTS_SPIKE_PATH``.

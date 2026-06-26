@@ -1,4 +1,4 @@
-"""RocketEval checklist generation (full method, ADR-006 chantier 2).
+"""RocketEval checklist generation (full method).
 
 The full RocketEval (ICLR 2025) pipeline grades a candidate answer against a
 checklist of *intent-specific* verifiable criteria, rather than a fixed

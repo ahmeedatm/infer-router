@@ -1,11 +1,11 @@
-"""Model pool for the tri-criteria router (Phase 3).
+"""Model pool for the tri-criteria router.
 
 Describes the set of LLM targets the router chooses from. The prototype pool
-mirrors chapter 4 of the memoir: a cheap generic model, a strong generic
-model, and one domain-specialized model per network domain (ran, core,
-security, slice). Cost and latency profiles come from ``app.config`` so that
-nothing is hardcoded here; they are relative placeholders to be recalibrated
-on real measurements in Phase 5.
+holds a cheap generic model, a strong generic model, and one
+domain-specialized model per network domain (ran, core, security, slice).
+Cost and latency profiles come from ``app.config`` so that nothing is
+hardcoded here; they are relative placeholders to be recalibrated on real
+measurements.
 
 This module holds no decision logic: it only builds immutable candidates.
 """

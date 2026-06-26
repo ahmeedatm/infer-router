@@ -1,8 +1,8 @@
 """Semantic-complexity feature extractor for InferRouter-LLM.
 
-The spike (Exp. H-C) showed that raw sentence embeddings do **not** separate
+Experiments showed that raw sentence embeddings do **not** separate
 intent complexity (``simple`` / ``medium`` / ``complex``) at the accuracy of the
-majority baseline. The chapter-3 model instead grounds complexity on three
+majority baseline. The model instead grounds complexity on three
 explicit criteria:
 
 * ``n(e)``  — number of distinct entities the intent touches;
@@ -12,7 +12,7 @@ explicit criteria:
 This module computes **calculated proxies** of those criteria with pure regex
 heuristics (no model, no I/O). The point is to give the downstream classifier
 structured signal that embeddings lack, and to let us *measure* whether the
-estimator learns the chapter-3 substance (n / p / |δ|) or merely the surface
+estimator learns the structured substance (n / p / |δ|) or merely the surface
 form (length, count of SLAs). Every function is pure and returns new objects.
 """
 from __future__ import annotations

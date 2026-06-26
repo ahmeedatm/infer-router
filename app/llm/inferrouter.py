@@ -1,4 +1,4 @@
-"""Tri-criteria routing orchestrator (Phase 3, pure decision).
+"""Tri-criteria routing orchestrator (pure decision).
 
 Wires the existing building blocks into a single decision:
     complexity estimate + domain -> expected quality per candidate

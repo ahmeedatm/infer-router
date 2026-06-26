@@ -1,4 +1,4 @@
-"""Expérience A — accord juge ↔ référence (hypothèse H-A) + signal H-B.
+"""Accord juge ↔ référence (fiabilité du juge) + signal sur la prémisse du routage.
 
 `compute_agreement` est pure (pas d'I/O) donc testable. Le bloc __main__ lit
 les fichiers produits par exp_a_judge_reliability.py et un CSV de verdicts.
@@ -42,7 +42,7 @@ def reference_prefers_heavy(record: dict, verdict: str) -> str:
 
 
 def compute_agreement(responses: list[dict], verdicts: dict[str, str]) -> dict:
-    """Fonction pure. Retourne accord global, par complexité, et signal H-B."""
+    """Fonction pure. Retourne accord global, par complexité, et préférence de référence."""
     total = 0
     agree = 0
     by_level: dict[str, dict[str, int]] = {}

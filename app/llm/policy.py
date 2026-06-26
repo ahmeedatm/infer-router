@@ -1,4 +1,4 @@
-"""Expected-quality policy for the tri-criteria router (Phase 3).
+"""Expected-quality policy for the tri-criteria router.
 
 At runtime the router does NOT call every model to observe its quality. It
 estimates, per candidate, the quality it would *expect* from a policy
@@ -6,7 +6,7 @@ heuristic driven by the model profile, the estimated complexity, and the
 intent domain. ``router.select`` then picks the best admissible candidate.
 
 This is a prototype heuristic, deliberately coarse. It is meant to be
-recalibrated by the local LLM-Judge in Phase 5 (offline), which will replace
+recalibrated by the local LLM-Judge (offline), which will replace
 these hand-set constants with measured quality. The bareme lives in
 ``app.config`` so it can be tuned without touching this module.
 
@@ -55,7 +55,7 @@ def expected_quality(model: PoolModel, complexity: str, domain: str) -> float:
     """Estimate the quality ``model`` would yield on this intent, in [0, 1].
 
     Prototype heuristic (see module docstring), to be recalibrated by the
-    LLM-Judge in Phase 5. Does not call the model and has no side effects.
+    LLM-Judge. Does not call the model and has no side effects.
 
     Args:
         model: Candidate pool model.
