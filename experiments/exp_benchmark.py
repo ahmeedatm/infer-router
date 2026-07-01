@@ -40,6 +40,7 @@ from app.llm.checklist import generate_checklist
 from app.llm.inferrouter import route
 from app.llm.intents import load_intents
 from app.llm.judge import judge_rocketeval
+from app.llm.metrics import aiq, p50, p99
 from app.llm.openrouter_client import call_model
 from app.llm.pool import PoolModel, default_pool
 from app.llm.schema import Intent
@@ -173,34 +174,26 @@ def run_with_cache(
 # ── Agrégation pure des métriques ───────────────────────────────────────────
 
 
-def _percentile(sorted_values: list[float], pct: float) -> float:
-    """Percentile par interpolation linéaire (méthode 'linear', comme numpy)."""
-    if not sorted_values:
-        return 0.0
-    if len(sorted_values) == 1:
-        return sorted_values[0]
-    rank = (pct / 100.0) * (len(sorted_values) - 1)
-    low = int(rank)
-    high = min(low + 1, len(sorted_values) - 1)
-    frac = rank - low
-    return sorted_values[low] + frac * (sorted_values[high] - sorted_values[low])
-
-
 def _summarize(records: list[dict]) -> dict:
-    """Métriques d'une stratégie : AIQ, coût moyen, P50/P99, distribution."""
+    """Métriques d'une stratégie : AIQ, coût moyen, P50/P99, distribution.
+
+    AIQ et les percentiles de latence viennent de ``app.llm.metrics`` (formules
+    du chapitre 3), pour que l'application possède les formules et qu'elles
+    soient testées à part.
+    """
     n = len(records)
     qs = [r["q"] for r in records]
     costs = [r["cost_proxy"] for r in records]
-    latencies = sorted(r["latency_ms"] for r in records)
+    latencies = [r["latency_ms"] for r in records]
     distribution: dict[str, int] = {}
     for r in records:
         distribution[r["model_id"]] = distribution.get(r["model_id"], 0) + 1
     return {
         "n": n,
-        "aiq": sum(qs) / n if n else 0.0,
+        "aiq": aiq(qs),
         "cost_proxy_mean": sum(costs) / n if n else 0.0,
-        "latency_p50_ms": _percentile(latencies, 50.0),
-        "latency_p99_ms": _percentile(latencies, 99.0),
+        "latency_p50_ms": p50(latencies),
+        "latency_p99_ms": p99(latencies),
         "distribution": distribution,
     }
 
