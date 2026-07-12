@@ -62,6 +62,9 @@ data/
 experiments/            campagnes d'évaluation (calibration, benchmark, juge)
 scripts/                génération du dataset, utilitaires
 tests/                  tests unitaires et d'intégration
+
+docs/
+  InferRouter-LLM.pdf   rapport de mémoire (Master CNAM)
 ```
 
 ## Installation

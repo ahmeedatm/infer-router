@@ -54,6 +54,7 @@ DEMO.md
 
 # --- Large binary / generated files ---
 *.pdf
+!docs/InferRouter-LLM.pdf
 latex/
 presentation/
 
