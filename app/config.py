@@ -33,6 +33,10 @@ MODEL_PRICING_USD_PER_1K: dict[str, dict[str, float]] = {
 
 # LLM-Juge local (Ollama)
 OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+# Génération locale (modèle léger candidat via Ollama). Timeout large : un 7B
+# sur MacBook Air peut mettre plusieurs minutes sur un intent complexe.
+OLLAMA_GENERATION_TIMEOUT_S: float = float(os.getenv("OLLAMA_GENERATION_TIMEOUT_S", "600.0"))
+MODEL_LIGHT_LOCAL: str = os.getenv("MODEL_LIGHT_LOCAL", "qwen2.5:7b-instruct")
 JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemma2:2b")
 # Modèle fort qui génère la checklist RocketEval spécifique à chaque intent
 # (via OpenRouter). Réutilise le heavy par défaut.

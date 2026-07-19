@@ -169,17 +169,29 @@ def _select_intents(
 
 
 def _balanced_sample(intents: Sequence[Intent], n: int) -> tuple[Intent, ...]:
+    """Balanced draw whose RUN ORDER alternates complexity classes.
+
+    The order matters because the runner pays intents sequentially: a
+    class-by-class order (all complex, then medium, then simple) starves the
+    last class entirely when the budget dies mid-run. Round-robin interleaving
+    keeps every class near-equally covered at any interruption point.
+    """
     import random
+    from itertools import zip_longest
+
     rng = random.Random(42)
     by_cx: dict[str, list[Intent]] = {}
     for it in intents:
         by_cx.setdefault(it.expected_complexity, []).append(it)
     per = max(1, n // len(by_cx)) if by_cx else 0
-    out: list[Intent] = []
+    sampled: list[list[Intent]] = []
     for cx in sorted(by_cx):
         pool = sorted(by_cx[cx], key=lambda x: x.id)
-        out.extend(rng.sample(pool, min(per, len(pool))))
-    return tuple(out[:n])
+        sampled.append(rng.sample(pool, min(per, len(pool))))
+    interleaved = [
+        it for round_ in zip_longest(*sampled) for it in round_ if it is not None
+    ]
+    return tuple(interleaved[:n])
 
 
 def run(intents: Sequence[Intent]) -> list[dict]:
