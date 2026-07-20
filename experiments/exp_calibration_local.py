@@ -40,7 +40,11 @@ STORED_PATHS = (
     RESULTS_DIR / "calibration.json",
     RESULTS_DIR / "calibration_llama.json",
 )
-OUT_PATH = RESULTS_DIR / "calibration_local.json"
+# Sortie par défaut ; surchargée par run (un fichier PAR modèle léger testé,
+# sinon la reprise d'un modèle sauterait les intents déjà traités par l'autre).
+OUT_PATH = Path(
+    os.getenv("CALIBRATION_LOCAL_OUT", str(RESULTS_DIR / "calibration_local.json"))
+)
 
 _COMPLEXITY_ORDER = ("simple", "medium", "complex")
 
