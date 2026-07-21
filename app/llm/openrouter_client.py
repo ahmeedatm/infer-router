@@ -99,8 +99,17 @@ def _build_body(
     prompt: str,
     temperature: Optional[float],
     max_tokens: Optional[int],
+    provider: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
-    """Build the chat-completions request body (immutable per call)."""
+    """Build the chat-completions request body (immutable per call).
+
+    ``provider`` forwards OpenRouter's provider-routing object as-is (e.g.
+    ``{"ignore": ["novita"]}``) — used to exclude an upstream provider that
+    rejects a model/request combination other providers accept (observed
+    2026-07-21 on qwen/qwen-2.5-72b-instruct via Novita: HTTP 400
+    "does not support endpoint: completions", not reproduced on other
+    providers).
+    """
     body: dict[str, Any] = {
         "model": model_id,
         "messages": [{"role": "user", "content": prompt}],
@@ -109,6 +118,8 @@ def _build_body(
         body["temperature"] = temperature
     if max_tokens is not None:
         body["max_tokens"] = max_tokens
+    if provider is not None:
+        body["provider"] = provider
     return body
 
 
@@ -159,6 +170,7 @@ def call_model(
     *,
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
+    provider: Optional[dict[str, Any]] = None,
     client: Optional[httpx.Client] = None,
     max_retries: Optional[int] = None,
     backoff_s: Optional[float] = None,
@@ -178,6 +190,9 @@ def call_model(
         max_tokens: Optional generation budget (completion token cap).
             Forwarded only when provided (non-None); otherwise omitted. Set
             this to avoid truncated answers from models with a low default cap.
+        provider: Optional OpenRouter provider-routing object, forwarded
+            as-is (e.g. ``{"ignore": ["novita"]}`` to exclude a backend that
+            errors on a model other providers serve fine).
         client: Optional injected httpx.Client (for tests / connection reuse).
         max_retries: Extra attempts after the first on transient failures.
             Defaults to ``config.OPENROUTER_MAX_RETRIES``.
@@ -199,7 +214,7 @@ def call_model(
 
     owns_client = client is None
     active = client or _build_client()
-    body = _build_body(model_id, prompt, temperature, max_tokens)
+    body = _build_body(model_id, prompt, temperature, max_tokens, provider)
     total_attempts = max_retries + 1
 
     try:

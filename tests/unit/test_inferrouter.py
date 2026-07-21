@@ -29,8 +29,10 @@ def _intent(domain: str, complexity: str, criticality: str = "med") -> Intent:
 
 class TestRouteDecisionShape:
     def test_returns_route_decision(self):
+        # l_max généreux : au-delà de POOL_LIGHT_LATENCY_MS (~49.7s, léger
+        # local réel), pour que tout le pool reste admissible ici.
         intent = _intent("ran", "simple")
-        decision = route(intent, l_max=10_000.0, c_max=10.0, complexity="simple")
+        decision = route(intent, l_max=100_000.0, c_max=10.0, complexity="simple")
         assert isinstance(decision, RouteDecision)
         assert decision.complexity == "simple"
         assert decision.admissible_count == len(default_pool())
@@ -40,7 +42,7 @@ class TestRouteDecisionShape:
         from pydantic import ValidationError
 
         intent = _intent("ran", "simple")
-        decision = route(intent, l_max=10_000.0, c_max=10.0, complexity="simple")
+        decision = route(intent, l_max=100_000.0, c_max=10.0, complexity="simple")
         with pytest.raises(ValidationError):
             decision.model_id = "x"
 

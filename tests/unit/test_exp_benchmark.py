@@ -25,8 +25,23 @@ from experiments.exp_benchmark import (
     Budgets,
     aggregate_benchmark,
     choose_model,
+    is_local_model_id,
     run_with_cache,
 )
+
+
+class TestIsLocalModelId:
+    def test_ollama_tag_is_local(self):
+        assert is_local_model_id("qwen2.5:14b-instruct") is True
+
+    def test_openrouter_id_is_not_local(self):
+        assert is_local_model_id("anthropic/claude-sonnet-4.6") is False
+
+    def test_domain_suffixed_openrouter_id_is_not_local(self):
+        # is_local_model_id reçoit déjà le model_id sans suffixe de domaine
+        # (appelé sur _base_model_id(model_id) dans l'exécuteur) ; testé ici
+        # sur l'id brut pour vérifier qu'un '#' seul ne déclenche pas '":"'.
+        assert is_local_model_id("anthropic/claude-sonnet-4.6#ran") is False
 
 
 def _intent(domain="ran", complexity="simple"):

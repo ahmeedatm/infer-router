@@ -7,16 +7,16 @@ nouveau candidat léger (MODEL_LIGHT_LOCAL, défaut qwen2.5:7b-instruct), notée
 par le juge local avec la MÊME checklist. Total : 0 $.
 
 Sources fusionnées (voir merge_stored_records, pure et testée) :
-- experiments/results/calibration.json        (grand run, 45 intents, 0 simple)
-- experiments/results/calibration_llama.json  (run équilibré, 12 intents, 4 simples)
+- experiments/results/calibration.json             (grand run, 45 intents, 0 simple)
+- experiments/results/calibration_llama.json       (run équilibré, 12 intents, 4 simples)
+- experiments/results/calibration_new_simple.json  (2026-07-20, intents simples neufs,
+  produit par exp_calibration_new_simple.py ; absent tant qu'il n'a pas été exécuté)
 
 L'ordre d'exécution alterne les complexités (round-robin) : une interruption
 laisse chaque classe à couverture proche, là où l'ancien ordre par classe
 avait privé la classe simple de toute mesure.
 
-Limite assumée : n(simple)=4 tant qu'aucun crédit API ne permet de payer de
-nouvelles réponses heavy sur des intents simples. La latence mesurée est celle
-de CETTE machine (indicative, pas benchmark).
+La latence mesurée est celle de CETTE machine (indicative, pas benchmark).
 
 Usage :
     JUDGE_MODEL=gemma2:9b .venv/bin/python -m experiments.exp_calibration_local
@@ -39,6 +39,7 @@ RESULTS_DIR = Path("experiments/results")
 STORED_PATHS = (
     RESULTS_DIR / "calibration.json",
     RESULTS_DIR / "calibration_llama.json",
+    RESULTS_DIR / "calibration_new_simple.json",
 )
 # Sortie par défaut ; surchargée par run (un fichier PAR modèle léger testé,
 # sinon la reprise d'un modèle sauterait les intents déjà traités par l'autre).

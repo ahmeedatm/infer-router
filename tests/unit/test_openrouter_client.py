@@ -80,6 +80,32 @@ class TestCallModelTemperature:
         assert "temperature" not in captured["body"]
 
 
+class TestCallModelProvider:
+    def test_provider_included_when_provided(self):
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["body"] = json.loads(request.content)
+            return httpx.Response(200, json=_ok_payload())
+
+        with _make_client(handler) as client:
+            call_model("m", "p", provider={"ignore": ["novita"]}, client=client)
+
+        assert captured["body"]["provider"] == {"ignore": ["novita"]}
+
+    def test_provider_absent_when_not_provided(self):
+        captured = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["body"] = json.loads(request.content)
+            return httpx.Response(200, json=_ok_payload())
+
+        with _make_client(handler) as client:
+            call_model("m", "p", client=client)
+
+        assert "provider" not in captured["body"]
+
+
 class TestCallModelMaxTokens:
     def test_max_tokens_included_when_provided(self):
         captured = {}

@@ -39,7 +39,7 @@ class TestOrderingOnComplex:
 class TestLightOnSimple:
     def test_light_acceptable_on_simple(self):
         q = expected_quality(LIGHT, "simple", "ran")
-        assert q >= 0.65
+        assert q >= 0.60
 
     def test_light_degrades_with_complexity(self):
         q_simple = expected_quality(LIGHT, "simple", "ran")

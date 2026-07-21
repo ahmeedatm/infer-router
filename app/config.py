@@ -5,8 +5,16 @@ LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 # OpenRouter — LLM cibles
 OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-# Couple de modèles cibles (ajustables)
-MODEL_LIGHT: str = os.getenv("MODEL_LIGHT", "meta-llama/llama-3.2-3b-instruct")
+# Couple de modèles cibles (ajustables). MODEL_LIGHT = qwen2.5-72b-instruct
+# (OpenRouter), calibré le 2026-07-21 : parité avec le heavy sur les intents
+# simples (n=26, écart -0.04), confirmant à l'identique qwen2.5:14b-instruct
+# (local, testé d'abord, écart -0.08) là où llama-3.2-3b et gpt-4o-mini
+# restaient nettement en retrait. Le 14B n'étant pas hébergé sur OpenRouter,
+# le 72B est retenu pour la mesure finale : latence/coût mesurés en conditions
+# API réelles, sans dépendre du matériel de développement (cf. LOG.md
+# 2026-07-21). Le fournisseur Novita rejette ce modèle sur cet endpoint
+# (HTTP 400) ; exclu via provider={"ignore": ["novita"]} dans les appels.
+MODEL_LIGHT: str = os.getenv("MODEL_LIGHT", "qwen/qwen-2.5-72b-instruct")
 MODEL_HEAVY: str = os.getenv("MODEL_HEAVY", "anthropic/claude-sonnet-4.6")
 OPENROUTER_TIMEOUT_S: float = float(os.getenv("OPENROUTER_TIMEOUT_S", "60.0"))
 # Budget de génération (cap de tokens de complétion) des LLM cibles.
@@ -29,6 +37,7 @@ OPENROUTER_RETRY_BACKOFF_S: float = float(os.getenv("OPENROUTER_RETRY_BACKOFF_S"
 MODEL_PRICING_USD_PER_1K: dict[str, dict[str, float]] = {
     "meta-llama/llama-3.2-3b-instruct": {"prompt": 0.000051, "completion": 0.000335},
     "anthropic/claude-sonnet-4.6": {"prompt": 0.003, "completion": 0.015},
+    "qwen/qwen-2.5-72b-instruct": {"prompt": 0.00036, "completion": 0.0004},
 }
 
 # LLM-Juge local (Ollama)
@@ -37,7 +46,10 @@ OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 # sur MacBook Air peut mettre plusieurs minutes sur un intent complexe.
 OLLAMA_GENERATION_TIMEOUT_S: float = float(os.getenv("OLLAMA_GENERATION_TIMEOUT_S", "600.0"))
 MODEL_LIGHT_LOCAL: str = os.getenv("MODEL_LIGHT_LOCAL", "qwen2.5:7b-instruct")
-JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemma2:2b")
+# gemma2:9b par défaut (validé : 100% en discrimination grossière, cf.
+# LOG.md 2026-06-21) ; gemma2:2b s'est montré peu fiable (40-50% d'accord) et
+# ne doit plus être le défaut silencieux d'un script lancé sans variable.
+JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemma2:9b")
 # Modèle fort qui génère la checklist RocketEval spécifique à chaque intent
 # (via OpenRouter). Réutilise le heavy par défaut.
 CHECKLIST_MODEL: str = os.getenv("CHECKLIST_MODEL", MODEL_HEAVY)
@@ -60,33 +72,47 @@ DATASET_PATH: str = os.getenv("DATASET_PATH", "data/intents_dataset.yaml")
 # Routeur tri-critère (décision pure, sans réseau)
 # ────────────────────────────────────────────────────────────────────────────
 
-# Profils coût/latence par tier du pool prototype. Valeurs relatives
-# (le couple light/heavy par défaut). Le coût reprend l'ordre de grandeur de
-# la grille tarifaire ci-dessus (USD par appel typique) ; la latence est en ms.
-# À recalibrer sur mesures réelles. Surchargeable par env pour les tests.
-POOL_LIGHT_COST: float = float(os.getenv("POOL_LIGHT_COST", "0.0004"))
-POOL_LIGHT_LATENCY_MS: float = float(os.getenv("POOL_LIGHT_LATENCY_MS", "300.0"))
+# Profils coût/latence par tier du pool. Le light étant servi par
+# l'API OpenRouter (qwen2.5-72b-instruct), coût et latence sont la moyenne
+# mesurée sur 74 appels réels (calibration_api_light.json, 2026-07-21) :
+# coût moyen $0.000168/appel, latence moyenne 11.1s. Mesure en conditions de
+# service réelles, contrairement au 14B local (MacBook, non représentatif).
+POOL_LIGHT_COST: float = float(os.getenv("POOL_LIGHT_COST", "0.000168"))
+POOL_LIGHT_LATENCY_MS: float = float(os.getenv("POOL_LIGHT_LATENCY_MS", "11076.0"))
 POOL_HEAVY_COST: float = float(os.getenv("POOL_HEAVY_COST", "0.018"))
 POOL_HEAVY_LATENCY_MS: float = float(os.getenv("POOL_HEAVY_LATENCY_MS", "1200.0"))
 
 # Domaines réseau spécialisés du pool (un modèle spécialisé par domaine).
 POOL_DOMAINS: tuple[str, ...] = ("ran", "core", "security", "slice")
 
-# Barème de qualité attendue (heuristique de prototype, app/llm/policy.py).
-# Toutes les valeurs sont dans [0, 1]. À calibrer par le LLM-Juge.
-# Spécialiste sur le domaine de l'intent : forte qualité quelle que soit la complexité.
-QUALITY_SPECIALIST_ON_DOMAIN: float = float(os.getenv("QUALITY_SPECIALIST_ON_DOMAIN", "0.92"))
-# Heavy générique : bonne qualité générale, stable sur toutes les complexités.
-QUALITY_HEAVY_GENERIC: float = float(os.getenv("QUALITY_HEAVY_GENERIC", "0.80"))
-# Light générique : base correcte sur intent simple…
-QUALITY_LIGHT_BASE: float = float(os.getenv("QUALITY_LIGHT_BASE", "0.70"))
-# …mais pénalité croissante avec la complexité (soustraite par cran au-dessus de simple).
+# Barème de qualité attendue (app/llm/policy.py). Toutes les valeurs dans
+# [0, 1]. QUALITY_HEAVY_GENERIC et QUALITY_LIGHT_BASE/PENALTY calibrés sur la
+# matrice qualité réelle du 2026-07-21 (juge gemma2:9b, qwen2.5-72b-instruct
+# API vs claude-sonnet-4.6), qui confirme celle du 14B local (2026-07-20) :
+#   simple  n=26  light=0.64  heavy=0.60
+#   medium  n=24  light=0.39  heavy=0.50
+#   complex n=24  light=0.32  heavy=0.24  (juge non fiable sur ce régime,
+#     cf. docs/analyses/2026-07-20-paires-complexes-14b-vs-heavy.md —
+#     valeur EXCLUE de la calibration, on garde l'extrapolation linéaire)
+# QUALITY_HEAVY_GENERIC = moyenne des paliers fiables (simple, medium) :
+# le modèle reste plat par complexité (limite connue, pas recalibrée ici).
+QUALITY_HEAVY_GENERIC: float = float(os.getenv("QUALITY_HEAVY_GENERIC", "0.55"))
+# QUALITY_LIGHT_BASE = qualité mesurée sur simple.
+QUALITY_LIGHT_BASE: float = float(os.getenv("QUALITY_LIGHT_BASE", "0.64"))
+# Pénalité par cran = chute mesurée simple->medium (0.64-0.39=0.25) ; le palier
+# complex measuré (0.32) n'est PAS utilisé pour caler ce paramètre (juge non
+# fiable à ce niveau), on extrapole donc la pénalité linéaire au-delà.
 QUALITY_LIGHT_COMPLEXITY_PENALTY: float = float(
-    os.getenv("QUALITY_LIGHT_COMPLEXITY_PENALTY", "0.18")
+    os.getenv("QUALITY_LIGHT_COMPLEXITY_PENALTY", "0.25")
 )
-# Spécialiste hors-domaine : se comporte comme un heavy générique (même base model).
+# Spécialistes de domaine : jamais mesurés (pool à 1 spécialiste par domaine
+# non instancié dans les runs de calibration/benchmark actuels) ; valeurs de
+# prototype non calibrées, cf. app/llm/policy.py.
+QUALITY_SPECIALIST_ON_DOMAIN: float = float(os.getenv("QUALITY_SPECIALIST_ON_DOMAIN", "0.92"))
+# Doit valoir QUALITY_HEAVY_GENERIC par construction (même modèle de base,
+# sans bonus de domaine) : synchroniser si l'un des deux est recalibré.
 QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
-    os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.80")
+    os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.55")
 )
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -101,6 +127,8 @@ QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
 MODEL_SIZE_B: dict[str, float] = {
     "meta-llama/llama-3.2-3b-instruct": 3.0,
     "anthropic/claude-sonnet-4.6": 200.0,
+    "qwen2.5:14b-instruct": 14.0,
+    "qwen/qwen-2.5-72b-instruct": 72.0,
 }
 
 # Budgets SLA par défaut du benchmark InferRouter (latence ms, coût USD/appel).

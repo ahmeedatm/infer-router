@@ -21,6 +21,12 @@ intent, on ne l'exécute et ne le juge qu'UNE fois. choose_model et
 aggregate_benchmark sont PURES (testables sans réseau). Le runner est
 reprenable et écrit de façon incrémentale.
 
+Le tier léger par défaut (config.MODEL_LIGHT) est un modèle LOCAL servi par
+Ollama (aucun équivalent hébergé sur OpenRouter au 2026-07-20) : il est routé
+vers app.llm.ollama_client plutôt qu'app.llm.openrouter_client (cf.
+is_local_model_id). cost_proxy n'en est pas affecté : c'est un proxy de calcul
+(temps × taille), pas un prix, donc indépendant de l'hébergement.
+
 Usage :
     SAMPLE_SIZE=2 .venv/bin/python -m experiments.exp_benchmark    # petit
     SAMPLE_SIZE=20 .venv/bin/python -m experiments.exp_benchmark   # complet
@@ -39,10 +45,11 @@ from app import config
 from app.llm.checklist import generate_checklist
 from app.llm.inferrouter import route
 from app.llm.intents import load_intents
+from app.llm.ollama_client import call_model as call_local_model
 from app.llm.judge import judge_rocketeval
 from app.llm.metrics import aiq, p50, p99
-from app.llm.openrouter_client import call_model
-from app.llm.pool import PoolModel, default_pool
+from app.llm.openrouter_client import call_model as call_api_model
+from app.llm.pool import PoolModel, generic_pool
 from app.llm.schema import Intent
 
 RESULTS_DIR = Path("experiments/results")
@@ -128,6 +135,13 @@ def choose_model(
 def _base_model_id(model_id: str) -> str:
     """Retire le suffixe de domaine : '<heavy>#ran' -> '<heavy>' (id réseau réel)."""
     return model_id.split("#", 1)[0]
+
+
+def is_local_model_id(model_id: str) -> bool:
+    """Convention : un tag Ollama contient ':' (ex. 'qwen2.5:14b-instruct'),
+    un model_id OpenRouter contient '/' (ex. 'anthropic/claude-sonnet-4.6').
+    """
+    return ":" in model_id
 
 
 def cost_proxy(model_id: str, latency_ms: float) -> float:
@@ -233,10 +247,20 @@ def _make_executor(
 
     def execute(intent_id: str, model_id: str) -> dict:
         intent = intents_by_id[intent_id]
-        resp = call_model(
-            _base_model_id(model_id), build_prompt(intent),
-            temperature=0.0, max_tokens=config.RESPONSE_MAX_TOKENS,
-        )
+        base = _base_model_id(model_id)
+        prompt = build_prompt(intent)
+        if is_local_model_id(base):
+            resp = call_local_model(
+                base, prompt, temperature=0.0, max_tokens=config.RESPONSE_MAX_TOKENS,
+            )
+        else:
+            # Novita rejette qwen2.5-72b-instruct sur cet endpoint (HTTP 400 /
+            # réponse sans 'choices', 2026-07-21) ; d'autres fournisseurs le
+            # servent sans souci, cf. experiments/exp_calibration_api_light.py.
+            resp = call_api_model(
+                base, prompt, temperature=0.0, max_tokens=config.RESPONSE_MAX_TOKENS,
+                provider={"ignore": ["novita"]},
+            )
         if intent_id not in checklist_cache:
             checklist_cache[intent_id] = generate_checklist(intent)
         checklist = checklist_cache[intent_id]
@@ -299,7 +323,10 @@ def run(intents: Sequence[Intent], budgets: Budgets) -> list[dict]:
 
     intents_by_id = {it.id: it for it in intents}
     checklist_cache: dict[str, tuple[str, ...]] = {}
-    pool = default_pool()
+    # generic_pool (pas default_pool) : les 4 "spécialistes" partagent le
+    # modèle heavy et une qualité jamais mesurée (0.92) qui dominerait tout
+    # comparatif light/heavy calibré. Cf. app.llm.pool.generic_pool.
+    pool = generic_pool()
     rng = random.Random(config.BENCH_SEED)
 
     for i, intent in enumerate(intents, 1):
