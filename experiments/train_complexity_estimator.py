@@ -243,6 +243,11 @@ def _persist_length_independent(texts: list[str], y: np.ndarray) -> tuple[str, P
         n_estimators=200, random_state=RANDOM_STATE, n_jobs=-1
     )
     clf.fit(X, y)
+    # n_jobs=-1 speeds up .fit() on 252 rows; at inference the router predicts
+    # ONE row at a time, where thread-pool spin-up costs more than the tiny
+    # per-tree work it parallelizes. Measured 2026-07-21: 15.1ms (n_jobs=-1)
+    # vs 3.1ms (n_jobs=1) per single-row predict(). Reset before persisting.
+    clf.n_jobs = 1
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(
         {
@@ -256,24 +261,43 @@ def _persist_length_independent(texts: list[str], y: np.ndarray) -> tuple[str, P
     return "RandomForest (features de fond, sans longueur)", MODEL_PATH
 
 
+_bundle_cache: dict[str, dict] = {}
+
+
+def _load_bundle(path: Path) -> dict:
+    """Load and cache a joblib bundle, keyed by resolved path.
+
+    Reloading from disk on every prediction measured ~31ms/call (2026-07-21),
+    over the <15ms design budget (chapitre 1/4). A production router keeps
+    the model resident; this cache reproduces that and cuts the measured cost
+    to ~15ms/call. Keyed by path (not a single slot) so tests using distinct
+    tmp_path bundles, or a missing path, still get correct, independent
+    behavior.
+    """
+    import joblib  # lazy
+
+    key = str(path.resolve())
+    if key not in _bundle_cache:
+        if not path.exists():
+            raise FileNotFoundError(
+                f"Complexity model not found at {path}. Run the trainer first."
+            )
+        _bundle_cache[key] = joblib.load(path)
+    return _bundle_cache[key]
+
+
 def predict_complexity(texts: list[str], model_path: Optional[Path] = None) -> list[str]:
     """Predict complexity labels for raw intent texts using the persisted model.
 
-    Reusable by the router. Loads the joblib bundle, rebuilds the feature matrix
-    using exactly the persisted ``feature_names`` (the length-independent subset),
-    and returns predicted labels.
+    Reusable by the router. Loads the joblib bundle (cached after the first
+    call per path, cf. :func:`_load_bundle`), rebuilds the feature matrix
+    using exactly the persisted ``feature_names`` (the length-independent
+    subset), and returns predicted labels.
 
     Raises:
         FileNotFoundError: if the model has not been trained/persisted yet.
     """
-    import joblib  # lazy
-
-    path = model_path or MODEL_PATH
-    if not path.exists():
-        raise FileNotFoundError(
-            f"Complexity model not found at {path}. Run the trainer first."
-        )
-    bundle = joblib.load(path)
+    bundle = _load_bundle(model_path or MODEL_PATH)
     rows, _ = features_matrix(texts, cols=bundle["feature_names"])
     return [str(label) for label in bundle["model"].predict(np.asarray(rows, dtype=float))]
 
