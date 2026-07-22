@@ -6,6 +6,7 @@ orchestrator wires the pool, the policy and router.select correctly, and
 emits a coherent RouteDecision (including the degenerate no-admissible case).
 """
 from app.config import (
+    MODEL_HEAVY,
     MODEL_LIGHT,
     POOL_HEAVY_COST,
     POOL_HEAVY_LATENCY_MS,
@@ -13,7 +14,7 @@ from app.config import (
     POOL_LIGHT_LATENCY_MS,
 )
 from app.llm.inferrouter import RouteDecision, route
-from app.llm.pool import default_pool
+from app.llm.pool import default_pool, generic_pool
 from app.llm.schema import Intent
 
 
@@ -62,18 +63,34 @@ class TestSimpleSmallBudget:
         assert decision.admissible_count == 1
 
 
-class TestComplexSecurityLargeBudget:
-    def test_complex_security_large_budget_picks_specialist(self):
+class TestQualityFloorRouting:
+    def test_simple_low_criticality_picks_light_for_cost(self):
+        # simple + low (q_min=0.35): light (0.64) clears the floor and is
+        # cheapest -> chosen, the cost-minimising objective.
+        intent = _intent("ran", "simple", criticality="low")
+        decision = route(
+            intent, generic_pool(), l_max=1e9, c_max=1e9, complexity="simple",
+        )
+        assert decision.model_id == MODEL_LIGHT
+
+    def test_complex_high_criticality_forces_heavy(self):
+        # complex + high (q_min=0.70): light quality (0.32) is far below the
+        # floor -> only the heavy clears it, chosen despite the higher cost.
         intent = _intent("security", "complex", criticality="high")
         decision = route(
-            intent,
-            l_max=POOL_HEAVY_LATENCY_MS,
-            c_max=POOL_HEAVY_COST,
-            complexity="complex",
+            intent, generic_pool(), l_max=1e9, c_max=1e9, complexity="complex",
         )
-        assert decision.model_id is not None
-        assert "security" in decision.model_id
-        assert "security" in decision.rationale
+        assert decision.model_id == MODEL_HEAVY
+
+    def test_explicit_qmin_overrides_criticality(self):
+        # a high q_min passed explicitly forces the heavy even on a simple
+        # low-criticality intent (used for quality-floor sensitivity sweeps).
+        intent = _intent("ran", "simple", criticality="low")
+        decision = route(
+            intent, generic_pool(), l_max=1e9, c_max=1e9,
+            complexity="simple", q_min=0.90,
+        )
+        assert decision.model_id == MODEL_HEAVY
 
 
 class TestDegenerate:

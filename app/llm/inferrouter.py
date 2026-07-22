@@ -2,7 +2,8 @@
 
 Wires the existing building blocks into a single decision:
     complexity estimate + domain -> expected quality per candidate
-    -> admissibility + argmax-q (router.select) -> chosen model.
+    -> quality floor from criticality -> cost-minimising choice under that
+       floor and the SLA budgets (router.select) -> chosen model.
 
 No network and no Ollama call: the decision is a pure function of the intent,
 the pool, the SLA budgets and the complexity label. The complexity estimator
@@ -15,10 +16,22 @@ from typing import Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app import config
 from app.llm.policy import expected_quality
 from app.llm.pool import PoolModel, default_pool
 from app.llm.router import RouteCandidate, admissible, select
 from app.llm.schema import Intent
+
+
+def quality_floor(criticality: str) -> float:
+    """Minimum acceptable quality (q_min) for an intent, from its criticality.
+
+    A higher criticality demands a higher floor, so the router is less willing
+    to trade quality for cost. Unknown values fall back to the ``med`` floor.
+    """
+    return config.QMIN_BY_CRITICALITY.get(
+        criticality, config.QMIN_BY_CRITICALITY["med"]
+    )
 
 
 class RouteDecision(BaseModel):
@@ -82,8 +95,10 @@ def route(
     l_max: float,
     c_max: float,
     complexity: Optional[str] = None,
+    q_min: Optional[float] = None,
 ) -> RouteDecision:
-    """Decide which model should serve ``intent`` under SLA budgets.
+    """Decide which model should serve ``intent``: cheapest one meeting the
+    quality floor, under the SLA budgets.
 
     Args:
         intent: The network intent to route.
@@ -92,18 +107,22 @@ def route(
         c_max: Maximum tolerated cost for the intent SLA.
         complexity: Pre-estimated complexity label. When omitted, it is
             estimated from ``intent.text`` (loads the persisted model lazily).
+        q_min: Minimum acceptable quality. When omitted, it is derived from
+            ``intent.criticality`` via :func:`quality_floor`. An explicit
+            value overrides it (used for quality-floor sensitivity sweeps).
 
     Returns:
         An immutable :class:`RouteDecision`. ``model_id`` is ``None`` in the
-        degenerate case where no candidate is admissible.
+        degenerate case where no candidate satisfies the hard SLA budgets.
     """
     models = tuple(pool) if pool is not None else default_pool()
     label = complexity if complexity is not None else _estimate_complexity(intent.text)
     domain = intent.domain
+    floor = q_min if q_min is not None else quality_floor(intent.criticality)
 
     candidates = tuple(_to_candidate(m, label, domain) for m in models)
     feasible = admissible(candidates, l_max, c_max)
-    chosen_id = select(candidates, l_max, c_max)
+    chosen_id = select(candidates, floor, l_max, c_max)
     chosen = next((m for m in models if m.model_id == chosen_id), None)
 
     return RouteDecision(

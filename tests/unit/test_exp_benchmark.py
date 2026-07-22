@@ -19,7 +19,7 @@ from app.config import (
     POOL_LIGHT_COST,
     POOL_LIGHT_LATENCY_MS,
 )
-from app.llm.pool import default_pool
+from app.llm.pool import default_pool, generic_pool
 from app.llm.schema import Intent
 from experiments.exp_benchmark import (
     Budgets,
@@ -102,14 +102,23 @@ class TestChooseModel:
         )
         assert m == MODEL_LIGHT
 
-    def test_inferrouter_complex_security_picks_specialist(self):
-        wide_heavy = Budgets(l_max=POOL_HEAVY_LATENCY_MS, c_max=POOL_HEAVY_COST)
+    def test_inferrouter_simple_med_picks_light_for_cost(self):
+        # simple + med (q_min=0.50): light (0.64) clears the floor and is
+        # cheapest -> chosen over the heavy, per the cost-minimising objective.
         m = choose_model(
-            "inferrouter", _intent("security", "complex"), default_pool(),
-            wide_heavy, random.Random(0), complexity="complex",
+            "inferrouter", _intent("ran", "simple"), generic_pool(),
+            _WIDE, random.Random(0), complexity="simple",
         )
-        assert m is not None
-        assert "security" in m
+        assert m == MODEL_LIGHT
+
+    def test_inferrouter_complex_med_falls_back_to_heavy(self):
+        # complex + med (q_min=0.50): light quality (0.14) is below the floor,
+        # so only the heavy clears it -> heavy chosen despite higher cost.
+        m = choose_model(
+            "inferrouter", _intent("security", "complex"), generic_pool(),
+            _WIDE, random.Random(0), complexity="complex",
+        )
+        assert m == MODEL_HEAVY
 
     def test_unknown_strategy_raises(self):
         import pytest

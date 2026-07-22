@@ -6,18 +6,31 @@ function of its inputs: no network call, no Ollama, no API key. Quality
 (complexity estimator, judge, pricing model); this module only decides
 which model wins.
 
+Objective (revised 2026-07-22). The router does NOT maximise quality. With a
+strong heavy model, quality-maximisation always picks the heavy one and the
+routing collapses into always-heavy. Instead the router minimises cost while
+guaranteeing a minimum acceptable quality:
+
+    minimise cost   subject to   q(m) >= q_min   and   SLA budgets.
+
+``q_min`` is the operator's quality floor, set per intent from its criticality
+(a critical intent demands a higher floor). This is the primal-dual flip of
+the earlier "argmax q under budget" formulation, and it matches an operational
+SLA: guarantee a quality level, then serve it as cheaply as possible.
+
 Notation:
 
-- Admissibility set M(e): a candidate ``m`` is admissible for an intent
-  ``e`` when ``latency_ms <= l_max`` and ``cost <= c_max``. Both bounds
-  are SLA budgets and the comparison is inclusive. See :func:`admissible`.
-- Objective R*(e) = argmax_{m in M(e)} q(m): among admissible candidates,
-  pick the one of highest estimated quality. See :func:`select`.
-- Degenerate case ⊥: when M(e) is empty, the intent is not routable
-  without violating an SLA, so :func:`select` returns ``None`` rather than
-  forcing a non-compliant choice.
-- Pareto tie-break: ties on ``q`` are resolved lexicographically by cost
-  ascending, then latency ascending (cheaper and faster preferred).
+- SLA admissibility M_sla(e): a candidate ``m`` respects the hard budgets
+  ``latency_ms <= l_max`` and ``cost <= c_max`` (inclusive). See
+  :func:`admissible`.
+- Quality-feasible set: among SLA-admissible candidates, those with
+  ``q >= q_min``.
+- Objective: among quality-feasible candidates, pick the cheapest (then
+  fastest). If none reaches ``q_min`` but the SLA set is non-empty, fall back
+  to best-effort (highest ``q`` available) rather than refuse a routable
+  intent. See :func:`select`.
+- Degenerate case bottom: when M_sla(e) itself is empty, the intent cannot be
+  served without violating a hard budget, so :func:`select` returns ``None``.
 """
 from __future__ import annotations
 
@@ -49,7 +62,7 @@ def admissible(
     l_max: float,
     c_max: float,
 ) -> tuple[RouteCandidate, ...]:
-    """Compute the admissibility set M(e).
+    """Compute the hard-SLA admissibility set M_sla(e).
 
     A candidate is admissible when it respects both SLA budgets:
     ``latency_ms <= l_max`` and ``cost <= c_max`` (inclusive bounds).
@@ -67,36 +80,47 @@ def admissible(
     )
 
 
-def _tie_break_key(candidate: RouteCandidate) -> tuple[float, float, float]:
-    """Sort key implementing the objective and Pareto tie-break.
+def _cost_key(candidate: RouteCandidate) -> tuple[float, float]:
+    """Cost-minimising sort key: cheaper first, then faster."""
+    return (candidate.cost, candidate.latency_ms)
 
-    Highest ``q`` wins (negated for ascending sort), then cost ascending,
-    then latency ascending. The minimum under this key is R*(e).
-    """
+
+def _best_effort_key(candidate: RouteCandidate) -> tuple[float, float, float]:
+    """Best-effort key when no candidate reaches q_min: highest q, then
+    cheaper, then faster (negations give a min-sortable tuple)."""
     return (-candidate.q, candidate.cost, candidate.latency_ms)
 
 
 def select(
     candidates: Sequence[RouteCandidate],
+    q_min: float,
     l_max: float,
     c_max: float,
 ) -> Optional[str]:
-    """Select R*(e) = argmax_{m in M(e)} q, or ⊥ when M(e) is empty.
+    """Select the cheapest model guaranteeing ``q >= q_min`` under SLA budgets.
 
-    Restricts the candidates to the admissibility set M(e) (see
-    :func:`admissible`), then picks the highest-quality candidate. Ties on
-    ``q`` are broken by cost then latency (Pareto criterion).
+    Steps:
+      1. Restrict to the hard-SLA admissible set (see :func:`admissible`).
+         If empty, return ``None`` (bottom: unroutable within budget).
+      2. Among those, keep candidates with ``q >= q_min``. If any, return the
+         cheapest (ties broken by latency).
+      3. If none reaches ``q_min``, best-effort: return the highest-quality
+         SLA-admissible candidate rather than refuse a routable intent.
 
     Args:
         candidates: Candidate models, already scored.
+        q_min: Minimum acceptable quality (the operator's quality floor).
         l_max: Maximum tolerated latency (ms) for the intent's SLA.
         c_max: Maximum tolerated cost for the intent's SLA.
 
     Returns:
-        The selected ``model_id``, or ``None`` for the degenerate case ⊥
-        where no candidate satisfies the SLA budgets.
+        The selected ``model_id``, or ``None`` when no candidate satisfies
+        the hard SLA budgets.
     """
     feasible = admissible(candidates, l_max, c_max)
     if not feasible:
         return None
-    return min(feasible, key=_tie_break_key).model_id
+    meets_quality = tuple(c for c in feasible if c.q >= q_min)
+    if meets_quality:
+        return min(meets_quality, key=_cost_key).model_id
+    return min(feasible, key=_best_effort_key).model_id

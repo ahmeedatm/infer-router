@@ -91,8 +91,9 @@ def generic_pool() -> tuple[PoolModel, ...]:
     """Light-generic + heavy-generic only, no domain specialist.
 
     Use this pool where the routing decision must reflect ONLY what has been
-    empirically calibrated (app.config QUALITY_LIGHT_BASE/QUALITY_HEAVY_GENERIC,
-    cf. calibration du 2026-07-20). The 4 domain specialists of default_pool()
+    empirically calibrated (app.config QUALITY_LIGHT_BY_COMPLEXITY /
+    QUALITY_HEAVY_GENERIC, cf. calibration du 2026-07-22). The 4 domain
+    specialists of default_pool()
     share the heavy base model and rely on QUALITY_SPECIALIST_ON_DOMAIN
     (0.92), a prototype value never measured on a real specialized model — it
     dominates any light/heavy comparison and would mask the calibrated

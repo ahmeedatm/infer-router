@@ -1,9 +1,11 @@
 """Unit tests for app.llm.router (pure routing decision, ch.3 formalization).
 
-These tests are fully synthetic: no network, no Ollama, no API key. They
-pin the chapter 3 equations: admissibility M(e), objective R*(e) = argmax q,
-the degenerate case (no admissible candidate -> None), and the Pareto
-tie-break (cost asc, then latency asc).
+These tests are fully synthetic: no network, no Ollama, no API key. They pin
+the (revised) chapter 3 objective: minimise cost subject to q >= q_min and
+the hard SLA budgets. Covered: SLA admissibility M_sla(e), the cost-minimising
+choice among quality-feasible candidates, the best-effort fallback when none
+reaches q_min, the degenerate case (no SLA-admissible candidate -> None), and
+the latency tie-break at equal cost.
 """
 import pytest
 from pydantic import ValidationError
@@ -75,42 +77,62 @@ class TestAdmissible:
 
 
 class TestSelect:
-    def test_nominal_picks_best_admissible_q(self):
+    def test_picks_cheapest_meeting_floor(self):
+        # light and heavy both clear q_min=0.60 -> cheapest (light) wins,
+        # even though heavy has higher quality.
         cands = (
-            _c("low", 0.5, 0.001, 100.0),
-            _c("best", 0.9, 0.001, 100.0),
-            _c("mid", 0.7, 0.001, 100.0),
+            _c("light", 0.64, 0.0002, 8000.0),
+            _c("heavy", 0.94, 0.02, 41000.0),
         )
-        assert select(cands, l_max=500.0, c_max=0.01) == "best"
+        assert select(cands, q_min=0.60, l_max=1e9, c_max=1e9) == "light"
 
-    def test_top_q_over_latency_budget_is_skipped(self):
+    def test_floor_forces_costlier_model(self):
+        # light is cheap but below floor -> the pricier heavy that clears it wins.
         cands = (
-            _c("fast-good", 0.8, 0.001, 100.0),
-            _c("slow-best", 0.95, 0.001, 900.0),
+            _c("light", 0.39, 0.0002, 8000.0),
+            _c("heavy", 0.86, 0.02, 41000.0),
         )
-        assert select(cands, l_max=500.0, c_max=0.01) == "fast-good"
+        assert select(cands, q_min=0.60, l_max=1e9, c_max=1e9) == "heavy"
 
-    def test_all_over_budget_returns_none(self):
+    def test_low_floor_lets_cheapest_win_despite_gap(self):
+        # with a low floor, even a weak-but-passing light is chosen for cost.
+        cands = (
+            _c("light", 0.32, 0.0002, 8000.0),
+            _c("heavy", 0.84, 0.02, 41000.0),
+        )
+        assert select(cands, q_min=0.30, l_max=1e9, c_max=1e9) == "light"
+
+    def test_best_effort_when_none_meets_floor(self):
+        # floor unreachable by all -> fall back to the highest-quality model.
+        cands = (
+            _c("light", 0.32, 0.0002, 8000.0),
+            _c("heavy", 0.84, 0.02, 41000.0),
+        )
+        assert select(cands, q_min=0.95, l_max=1e9, c_max=1e9) == "heavy"
+
+    def test_sla_budget_is_hard_even_if_floor_met(self):
+        # heavy clears the floor but violates the latency budget -> excluded;
+        # light (also clears floor) is chosen.
+        cands = (
+            _c("light", 0.64, 0.0002, 8000.0),
+            _c("heavy", 0.94, 0.02, 41000.0),
+        )
+        assert select(cands, q_min=0.60, l_max=10000.0, c_max=1e9) == "light"
+
+    def test_all_over_sla_budget_returns_none(self):
         cands = (
             _c("slow", 0.95, 0.001, 900.0),
             _c("expensive", 0.9, 0.5, 100.0),
         )
-        assert select(cands, l_max=500.0, c_max=0.01) is None
+        assert select(cands, q_min=0.5, l_max=500.0, c_max=0.01) is None
 
     def test_empty_candidates_returns_none(self):
-        assert select((), l_max=500.0, c_max=0.01) is None
+        assert select((), q_min=0.5, l_max=500.0, c_max=0.01) is None
 
-    def test_tie_on_q_breaks_by_cost_then_latency(self):
-        cands = (
-            _c("expensive", 0.9, 0.005, 100.0),
-            _c("cheap-slow", 0.9, 0.001, 400.0),
-            _c("cheap-fast", 0.9, 0.001, 200.0),
-        )
-        assert select(cands, l_max=500.0, c_max=0.01) == "cheap-fast"
-
-    def test_tie_on_q_and_cost_breaks_by_latency(self):
+    def test_tie_on_cost_breaks_by_latency(self):
+        # two models clear the floor at equal cost -> the faster wins.
         cands = (
             _c("slow", 0.9, 0.001, 400.0),
             _c("fast", 0.9, 0.001, 200.0),
         )
-        assert select(cands, l_max=500.0, c_max=0.01) == "fast"
+        assert select(cands, q_min=0.5, l_max=500.0, c_max=0.01) == "fast"

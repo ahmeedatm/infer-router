@@ -16,18 +16,13 @@ Bareme (all values in [0, 1], from config):
     - Heavy generic -> QUALITY_HEAVY_GENERIC (good general quality, flat).
     - Specialist OFF its domain -> QUALITY_SPECIALIST_OFF_DOMAIN (no domain
       bonus, behaves like a heavy generic since it is the same base model).
-    - Light generic -> QUALITY_LIGHT_BASE on ``simple``, minus
-      QUALITY_LIGHT_COMPLEXITY_PENALTY for each complexity rank above simple
-      (so it degrades on ``medium`` and further on ``complex``).
+    - Light generic -> QUALITY_LIGHT_BY_COMPLEXITY[label], the measured
+      quality per complexity level (non-linear drop, calibrated 2026-07-22).
 """
 from __future__ import annotations
 
 from app import config
 from app.llm.pool import PoolModel
-
-# Complexity rank: how far above ``simple`` a label sits (penalty multiplier).
-_COMPLEXITY_RANK = {"simple": 0, "medium": 1, "complex": 2}
-
 
 def _clamp_unit(value: float) -> float:
     """Clamp a score into the [0, 1] interval."""
@@ -35,11 +30,15 @@ def _clamp_unit(value: float) -> float:
 
 
 def _light_quality(complexity: str) -> float:
-    """Light generic: solid on simple, degrades with complexity."""
-    rank = _COMPLEXITY_RANK.get(complexity, _COMPLEXITY_RANK["complex"])
-    return _clamp_unit(
-        config.QUALITY_LIGHT_BASE - rank * config.QUALITY_LIGHT_COMPLEXITY_PENALTY
-    )
+    """Light generic: measured quality per complexity level.
+
+    Values come directly from the calibration matrix (config
+    QUALITY_LIGHT_BY_COMPLEXITY), not a base/penalty model: the real drop is
+    non-linear (steep simple->medium, shallow medium->complex). Unknown labels
+    fall back to the worst (complex) level.
+    """
+    table = config.QUALITY_LIGHT_BY_COMPLEXITY
+    return _clamp_unit(table.get(complexity, table["complex"]))
 
 
 def _heavy_quality(model: PoolModel, domain: str) -> float:

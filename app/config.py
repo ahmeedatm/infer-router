@@ -5,17 +5,17 @@ LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 # OpenRouter — LLM cibles
 OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-# Couple de modèles cibles (ajustables). MODEL_LIGHT = qwen2.5-72b-instruct
-# (OpenRouter), calibré le 2026-07-21 : parité avec le heavy sur les intents
-# simples (n=26, écart -0.04), confirmant à l'identique qwen2.5:14b-instruct
-# (local, testé d'abord, écart -0.08) là où llama-3.2-3b et gpt-4o-mini
-# restaient nettement en retrait. Le 14B n'étant pas hébergé sur OpenRouter,
-# le 72B est retenu pour la mesure finale : latence/coût mesurés en conditions
-# API réelles, sans dépendre du matériel de développement (cf. LOG.md
-# 2026-07-21). Le fournisseur Novita rejette ce modèle sur cet endpoint
-# (HTTP 400) ; exclu via provider={"ignore": ["novita"]} dans les appels.
+# Couple de modèles cibles. MODEL_LIGHT = qwen2.5-72b-instruct (OpenRouter),
+# retenu après un gradient d'expérimentation (llama-3.2-3b -> gpt-4o-mini ->
+# qwen 7B -> 14B -> 72B). MODEL_HEAVY = claude-opus-4.8 depuis le 2026-07-22 :
+# le test de robustesse du lourd a montré que claude-sonnet-4.6 était trop
+# proche du léger (quasi-parité) pour que le routage ait du sens, alors qu'Opus
+# crée un écart réel et croissant avec la complexité (simple +0.30, medium
+# +0.47, complex +0.52) — le différentiel de qualité que le routage exploite.
+# Le fournisseur Novita rejette qwen-72b sur cet endpoint (HTTP 400) ; exclu
+# via provider={"ignore": ["novita"]} dans les appels.
 MODEL_LIGHT: str = os.getenv("MODEL_LIGHT", "qwen/qwen-2.5-72b-instruct")
-MODEL_HEAVY: str = os.getenv("MODEL_HEAVY", "anthropic/claude-sonnet-4.6")
+MODEL_HEAVY: str = os.getenv("MODEL_HEAVY", "anthropic/claude-opus-4.8")
 OPENROUTER_TIMEOUT_S: float = float(os.getenv("OPENROUTER_TIMEOUT_S", "60.0"))
 # Budget de génération (cap de tokens de complétion) des LLM cibles.
 # Cap généreux : borne le coût sans tronquer (le modèle lourd monte à ~2700
@@ -38,6 +38,8 @@ MODEL_PRICING_USD_PER_1K: dict[str, dict[str, float]] = {
     "meta-llama/llama-3.2-3b-instruct": {"prompt": 0.000051, "completion": 0.000335},
     "anthropic/claude-sonnet-4.6": {"prompt": 0.003, "completion": 0.015},
     "qwen/qwen-2.5-72b-instruct": {"prompt": 0.00036, "completion": 0.0004},
+    "anthropic/claude-opus-4.8": {"prompt": 0.005, "completion": 0.025},
+    "openai/gpt-4o-mini": {"prompt": 0.00015, "completion": 0.0006},
 }
 
 # LLM-Juge local (Ollama)
@@ -51,8 +53,11 @@ MODEL_LIGHT_LOCAL: str = os.getenv("MODEL_LIGHT_LOCAL", "qwen2.5:7b-instruct")
 # ne doit plus être le défaut silencieux d'un script lancé sans variable.
 JUDGE_MODEL: str = os.getenv("JUDGE_MODEL", "gemma2:9b")
 # Modèle fort qui génère la checklist RocketEval spécifique à chaque intent
-# (via OpenRouter). Réutilise le heavy par défaut.
-CHECKLIST_MODEL: str = os.getenv("CHECKLIST_MODEL", MODEL_HEAVY)
+# (via OpenRouter). Fixé sur claude-sonnet-4.6, découplé de MODEL_HEAVY par
+# NEUTRALITÉ : ni le léger (qwen-72b) ni le lourd (opus-4.8) évalués ne doit
+# générer ses propres critères, sinon il serait juge et partie. Sonnet est un
+# tiers fort, distinct des deux modèles du pool.
+CHECKLIST_MODEL: str = os.getenv("CHECKLIST_MODEL", "anthropic/claude-sonnet-4.6")
 # Borne de génération (tokens) pour la production de la checklist.
 CHECKLIST_MAX_TOKENS: int = int(os.getenv("CHECKLIST_MAX_TOKENS", "512"))
 
@@ -72,39 +77,38 @@ DATASET_PATH: str = os.getenv("DATASET_PATH", "data/intents_dataset.yaml")
 # Routeur tri-critère (décision pure, sans réseau)
 # ────────────────────────────────────────────────────────────────────────────
 
-# Profils coût/latence par tier du pool. Le light étant servi par
-# l'API OpenRouter (qwen2.5-72b-instruct), coût et latence sont la moyenne
-# mesurée sur 74 appels réels (calibration_api_light.json, 2026-07-21) :
-# coût moyen $0.000168/appel, latence moyenne 11.1s. Mesure en conditions de
-# service réelles, contrairement au 14B local (MacBook, non représentatif).
+# Profils coût/latence par tier du pool, mesurés sur appels API réels.
+# Léger (qwen2.5-72b) : coût moyen $0.000168/appel, latence 11.1s
+# (calibration_api_light.json, 74 appels, 2026-07-21). Lourd (opus-4.8) : coût
+# moyen $0.0285/appel (heavy_robustness.json, 74 appels, 2026-07-22), latence
+# indicative ~15s. Rapport de coût réel léger/lourd ~170x.
 POOL_LIGHT_COST: float = float(os.getenv("POOL_LIGHT_COST", "0.000168"))
 POOL_LIGHT_LATENCY_MS: float = float(os.getenv("POOL_LIGHT_LATENCY_MS", "11076.0"))
-POOL_HEAVY_COST: float = float(os.getenv("POOL_HEAVY_COST", "0.018"))
-POOL_HEAVY_LATENCY_MS: float = float(os.getenv("POOL_HEAVY_LATENCY_MS", "1200.0"))
+POOL_HEAVY_COST: float = float(os.getenv("POOL_HEAVY_COST", "0.0285"))
+POOL_HEAVY_LATENCY_MS: float = float(os.getenv("POOL_HEAVY_LATENCY_MS", "15000.0"))
 
 # Domaines réseau spécialisés du pool (un modèle spécialisé par domaine).
 POOL_DOMAINS: tuple[str, ...] = ("ran", "core", "security", "slice")
 
 # Barème de qualité attendue (app/llm/policy.py). Toutes les valeurs dans
-# [0, 1]. QUALITY_HEAVY_GENERIC et QUALITY_LIGHT_BASE/PENALTY calibrés sur la
-# matrice qualité réelle du 2026-07-21 (juge gemma2:9b, qwen2.5-72b-instruct
-# API vs claude-sonnet-4.6), qui confirme celle du 14B local (2026-07-20) :
-#   simple  n=26  light=0.64  heavy=0.60
-#   medium  n=24  light=0.39  heavy=0.50
-#   complex n=24  light=0.32  heavy=0.24  (juge non fiable sur ce régime,
-#     cf. docs/analyses/2026-07-20-paires-complexes-14b-vs-heavy.md —
-#     valeur EXCLUE de la calibration, on garde l'extrapolation linéaire)
-# QUALITY_HEAVY_GENERIC = moyenne des paliers fiables (simple, medium) :
-# le modèle reste plat par complexité (limite connue, pas recalibrée ici).
-QUALITY_HEAVY_GENERIC: float = float(os.getenv("QUALITY_HEAVY_GENERIC", "0.55"))
-# QUALITY_LIGHT_BASE = qualité mesurée sur simple.
-QUALITY_LIGHT_BASE: float = float(os.getenv("QUALITY_LIGHT_BASE", "0.64"))
-# Pénalité par cran = chute mesurée simple->medium (0.64-0.39=0.25) ; le palier
-# complex measuré (0.32) n'est PAS utilisé pour caler ce paramètre (juge non
-# fiable à ce niveau), on extrapole donc la pénalité linéaire au-delà.
-QUALITY_LIGHT_COMPLEXITY_PENALTY: float = float(
-    os.getenv("QUALITY_LIGHT_COMPLEXITY_PENALTY", "0.25")
-)
+# [0, 1], calibrées sur la matrice qualité réelle du 2026-07-22 (juge
+# gemma2:9b, checklists neutres par claude-sonnet-4.6, léger qwen2.5-72b vs
+# lourd claude-opus-4.8, n=74) :
+#   simple  light=0.64  opus=0.94
+#   medium  light=0.39  opus=0.86
+#   complex light=0.32  opus=0.84
+# La qualité du léger par complexité vient DIRECTEMENT de la mesure (pas d'une
+# extrapolation linéaire) : la chute n'est pas linéaire (forte simple->medium,
+# faible medium->complex), un modèle base-pénalité la déformerait.
+QUALITY_LIGHT_BY_COMPLEXITY: dict[str, float] = {
+    "simple": float(os.getenv("QUALITY_LIGHT_SIMPLE", "0.64")),
+    "medium": float(os.getenv("QUALITY_LIGHT_MEDIUM", "0.39")),
+    "complex": float(os.getenv("QUALITY_LIGHT_COMPLEX", "0.32")),
+}
+# Lourd (Opus) : moyenne des trois paliers mesurés (0.94/0.86/0.84). Traité
+# comme plat par complexité (il reste fort partout ; la légère décroissance est
+# dans le bruit du juge).
+QUALITY_HEAVY_GENERIC: float = float(os.getenv("QUALITY_HEAVY_GENERIC", "0.88"))
 # Spécialistes de domaine : jamais mesurés (pool à 1 spécialiste par domaine
 # non instancié dans les runs de calibration/benchmark actuels) ; valeurs de
 # prototype non calibrées, cf. app/llm/policy.py.
@@ -112,8 +116,24 @@ QUALITY_SPECIALIST_ON_DOMAIN: float = float(os.getenv("QUALITY_SPECIALIST_ON_DOM
 # Doit valoir QUALITY_HEAVY_GENERIC par construction (même modèle de base,
 # sans bonus de domaine) : synchroniser si l'un des deux est recalibré.
 QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
-    os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.55")
+    os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.88")
 )
+
+# Plancher de qualité minimale par criticité (q_min), consommé par le routeur
+# (app/llm/router.py:select). Le routeur MINIMISE le coût sous contrainte
+# q >= q_min (et non plus argmax q) : un intent critique exige un plancher plus
+# haut, donc bascule plus volontiers vers le lourd. Calibré sur la matrice
+# qualité 2026-07-22 (léger qwen-72b : simple 0.64 / medium 0.39 / complex 0.32,
+# lourd Opus : ~0.88) pour que :
+#   low  -> léger tant qu'il dépasse un plancher bas (priorité économie)
+#   med  -> léger acceptable sur le simple seulement
+#   high -> exige quasi toujours le lourd (priorité qualité)
+# Seuils surchargeables par env pour tracer la sensibilité au plancher.
+QMIN_BY_CRITICALITY: dict[str, float] = {
+    "low": float(os.getenv("QMIN_LOW", "0.35")),
+    "med": float(os.getenv("QMIN_MED", "0.50")),
+    "high": float(os.getenv("QMIN_HIGH", "0.70")),
+}
 
 # ────────────────────────────────────────────────────────────────────────────
 # Benchmark & calibration (harnais d'évaluation)
@@ -127,6 +147,10 @@ QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
 MODEL_SIZE_B: dict[str, float] = {
     "meta-llama/llama-3.2-3b-instruct": 3.0,
     "anthropic/claude-sonnet-4.6": 200.0,
+    # Tailles Claude non publiées : estimations. Opus > Sonnet (le tarif API
+    # est ~1.67x), estimée à 340 Mds. Le coût-proxy (temps × taille) est de
+    # toute façon secondaire face au coût $ réel désormais mesuré.
+    "anthropic/claude-opus-4.8": 340.0,
     "qwen2.5:14b-instruct": 14.0,
     "qwen/qwen-2.5-72b-instruct": 72.0,
 }
