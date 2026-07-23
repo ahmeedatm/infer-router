@@ -111,24 +111,24 @@ class TestChooseModel:
         )
         assert m == MODEL_LIGHT
 
-    def test_inferrouter_complex_med_stays_light(self):
-        # complex + med (q_min=0.50): the flat light (deepseek 0.58 on complex)
-        # clears the floor even on a complex intent, so it is kept for cost.
-        # This is the DeepSeek profile: no collapse on complexity.
+    def test_inferrouter_complex_med_falls_back_to_heavy(self):
+        # complex + med (q_min=0.50): the decreasing light (qwen 0.32 on
+        # complex) is below the floor, so the heavy is chosen. The router
+        # exploits the light's complexity-dependent weakness.
         m = choose_model(
             "inferrouter", _intent("security", "complex"), generic_pool(),
             _WIDE, random.Random(0), complexity="complex",
         )
-        assert m == MODEL_LIGHT
-
-    def test_inferrouter_high_criticality_forces_heavy(self):
-        # high criticality raises q_min to 0.70; the light (0.58 on complex)
-        # falls below it, so the heavy is chosen despite its cost.
-        m = choose_model(
-            "inferrouter", _intent("security", "complex", criticality="high"),
-            generic_pool(), _WIDE, random.Random(0), complexity="complex",
-        )
         assert m == MODEL_HEAVY
+
+    def test_inferrouter_simple_med_stays_light(self):
+        # simple + med (q_min=0.50): the light is strong on simple (qwen 0.64),
+        # clears the floor, and is cheapest -> kept.
+        m = choose_model(
+            "inferrouter", _intent("ran", "simple"), generic_pool(),
+            _WIDE, random.Random(0), complexity="simple",
+        )
+        assert m == MODEL_LIGHT
 
     def test_unknown_strategy_raises(self):
         import pytest

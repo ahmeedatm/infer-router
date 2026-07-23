@@ -44,14 +44,16 @@ class TestLightQualityProfile:
             q = expected_quality(LIGHT, cx, "ran")
             assert 0.0 <= q <= 1.0
 
-    def test_light_is_flat_and_robust(self):
-        # The current light (deepseek-v3.2) has a FLAT profile: it does not
-        # collapse on complex intents, unlike the earlier decreasing light.
-        # This is a measured finding, pinned here so a regression to a
-        # decreasing model is caught.
+    def test_light_decreases_with_complexity(self):
+        # The system light (qwen-2.5-72b) has a DECREASING profile: its
+        # weakness follows complexity, which is exactly the signal the router
+        # exploits (route complex intents to the heavy). A flat light such as
+        # deepseek was measured better in absolute terms but made routing
+        # useless (cf. ch.5 finding); this test pins the decreasing profile.
         q_simple = expected_quality(LIGHT, "simple", "ran")
+        q_medium = expected_quality(LIGHT, "medium", "ran")
         q_complex = expected_quality(LIGHT, "complex", "ran")
-        assert abs(q_simple - q_complex) < 0.20
+        assert q_simple > q_medium > q_complex
 
 
 class TestSpecialistOffDomain:
