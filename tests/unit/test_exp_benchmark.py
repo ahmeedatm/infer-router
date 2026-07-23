@@ -44,13 +44,13 @@ class TestIsLocalModelId:
         assert is_local_model_id("anthropic/claude-sonnet-4.6#ran") is False
 
 
-def _intent(domain="ran", complexity="simple"):
+def _intent(domain="ran", complexity="simple", criticality="med"):
     return Intent(
         id=f"i-{domain}-{complexity}",
         text=f"a {complexity} {domain} intent",
         domain=domain,
         expected_complexity=complexity,
-        criticality="med",
+        criticality=criticality,
     )
 
 
@@ -111,12 +111,22 @@ class TestChooseModel:
         )
         assert m == MODEL_LIGHT
 
-    def test_inferrouter_complex_med_falls_back_to_heavy(self):
-        # complex + med (q_min=0.50): light quality (0.14) is below the floor,
-        # so only the heavy clears it -> heavy chosen despite higher cost.
+    def test_inferrouter_complex_med_stays_light(self):
+        # complex + med (q_min=0.50): the flat light (deepseek 0.58 on complex)
+        # clears the floor even on a complex intent, so it is kept for cost.
+        # This is the DeepSeek profile: no collapse on complexity.
         m = choose_model(
             "inferrouter", _intent("security", "complex"), generic_pool(),
             _WIDE, random.Random(0), complexity="complex",
+        )
+        assert m == MODEL_LIGHT
+
+    def test_inferrouter_high_criticality_forces_heavy(self):
+        # high criticality raises q_min to 0.70; the light (0.58 on complex)
+        # falls below it, so the heavy is chosen despite its cost.
+        m = choose_model(
+            "inferrouter", _intent("security", "complex", criticality="high"),
+            generic_pool(), _WIDE, random.Random(0), complexity="complex",
         )
         assert m == MODEL_HEAVY
 

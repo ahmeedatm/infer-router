@@ -34,7 +34,11 @@ from experiments.exp_calibration_local import (
     merge_stored_records,
 )
 
-OUT_PATH = Path("experiments/results/calibration_api_light.json")
+# Sortie paramétrable : un fichier par léger testé, sinon la reprise sauterait
+# les intents déjà traités par un autre modèle.
+OUT_PATH = Path(
+    os.getenv("CALIBRATION_API_OUT", "experiments/results/calibration_api_light.json")
+)
 
 
 def _load_sources() -> dict[str, dict]:

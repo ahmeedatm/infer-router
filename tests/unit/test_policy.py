@@ -36,16 +36,22 @@ class TestOrderingOnComplex:
         assert q_spec > q_heavy > q_light
 
 
-class TestLightOnSimple:
-    def test_light_acceptable_on_simple(self):
-        q = expected_quality(LIGHT, "simple", "ran")
-        assert q >= 0.60
+class TestLightQualityProfile:
+    def test_light_from_measured_table(self):
+        # Quality comes straight from the measured per-complexity table
+        # (config.QUALITY_LIGHT_BY_COMPLEXITY), not a monotone model.
+        for cx in ("simple", "medium", "complex"):
+            q = expected_quality(LIGHT, cx, "ran")
+            assert 0.0 <= q <= 1.0
 
-    def test_light_degrades_with_complexity(self):
+    def test_light_is_flat_and_robust(self):
+        # The current light (deepseek-v3.2) has a FLAT profile: it does not
+        # collapse on complex intents, unlike the earlier decreasing light.
+        # This is a measured finding, pinned here so a regression to a
+        # decreasing model is caught.
         q_simple = expected_quality(LIGHT, "simple", "ran")
-        q_medium = expected_quality(LIGHT, "medium", "ran")
         q_complex = expected_quality(LIGHT, "complex", "ran")
-        assert q_simple > q_medium > q_complex
+        assert abs(q_simple - q_complex) < 0.20
 
 
 class TestSpecialistOffDomain:

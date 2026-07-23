@@ -5,16 +5,19 @@ LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 # OpenRouter — LLM cibles
 OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-# Couple de modèles cibles. MODEL_LIGHT = qwen2.5-72b-instruct (OpenRouter),
-# retenu après un gradient d'expérimentation (llama-3.2-3b -> gpt-4o-mini ->
-# qwen 7B -> 14B -> 72B). MODEL_HEAVY = claude-opus-4.8 depuis le 2026-07-22 :
-# le test de robustesse du lourd a montré que claude-sonnet-4.6 était trop
-# proche du léger (quasi-parité) pour que le routage ait du sens, alors qu'Opus
-# crée un écart réel et croissant avec la complexité (simple +0.30, medium
-# +0.47, complex +0.52) — le différentiel de qualité que le routage exploite.
-# Le fournisseur Novita rejette qwen-72b sur cet endpoint (HTTP 400) ; exclu
-# via provider={"ignore": ["novita"]} dans les appels.
-MODEL_LIGHT: str = os.getenv("MODEL_LIGHT", "qwen/qwen-2.5-72b-instruct")
+# Couple de modèles cibles. MODEL_LIGHT = deepseek-v3.2 depuis le 2026-07-23 :
+# étude comparée de 6 modèles sur nos 74 intents (juge gemma2:9b, checklists
+# neutres) — deepseek gagne le rapport qualité/coût réel (0.53/0.52/0.58,
+# $0.00013/appel, profil plat robuste). Il remplace qwen-2.5-72b (moins bon ET
+# plus cher). Leçon : le prix par token trompe (qwen3.5-flash, le moins cher au
+# token, coûtait 20x plus en réel par verbosité). MODEL_HEAVY = claude-opus-4.8
+# depuis le 2026-07-22 (le test de robustesse a montré que Sonnet était trop
+# proche du léger ; Opus crée l'écart de qualité que le routage exploite).
+# Aucun modèle intermédiaire ne s'insère entre le léger (~0.5) et Opus (~0.88) :
+# tous les modèles de milieu de gamme plafonnent, le juge local ne « craque »
+# qu'avec un modèle frontière — qualité utilisable quasi-binaire (finding).
+# Novita est exclu via provider={"ignore": ["novita"]} dans les appels API.
+MODEL_LIGHT: str = os.getenv("MODEL_LIGHT", "deepseek/deepseek-v3.2")
 MODEL_HEAVY: str = os.getenv("MODEL_HEAVY", "anthropic/claude-opus-4.8")
 OPENROUTER_TIMEOUT_S: float = float(os.getenv("OPENROUTER_TIMEOUT_S", "60.0"))
 # Budget de génération (cap de tokens de complétion) des LLM cibles.
@@ -40,6 +43,10 @@ MODEL_PRICING_USD_PER_1K: dict[str, dict[str, float]] = {
     "qwen/qwen-2.5-72b-instruct": {"prompt": 0.00036, "completion": 0.0004},
     "anthropic/claude-opus-4.8": {"prompt": 0.005, "completion": 0.025},
     "openai/gpt-4o-mini": {"prompt": 0.00015, "completion": 0.0006},
+    "deepseek/deepseek-v3.2": {"prompt": 0.000269, "completion": 0.0004},
+    "qwen/qwen3.5-flash-02-23": {"prompt": 0.000065, "completion": 0.00026},
+    "google/gemini-2.5-flash-lite": {"prompt": 0.0001, "completion": 0.0004},
+    "google/gemini-2.5-flash": {"prompt": 0.0003, "completion": 0.0025},
 }
 
 # LLM-Juge local (Ollama)
@@ -78,12 +85,12 @@ DATASET_PATH: str = os.getenv("DATASET_PATH", "data/intents_dataset.yaml")
 # ────────────────────────────────────────────────────────────────────────────
 
 # Profils coût/latence par tier du pool, mesurés sur appels API réels.
-# Léger (qwen2.5-72b) : coût moyen $0.000168/appel, latence 11.1s
-# (calibration_api_light.json, 74 appels, 2026-07-21). Lourd (opus-4.8) : coût
+# Léger (deepseek-v3.2) : coût moyen $0.00013/appel, latence P50 9.9s
+# (calibration_deepseek.json, 74 appels, 2026-07-23). Lourd (opus-4.8) : coût
 # moyen $0.0285/appel (heavy_robustness.json, 74 appels, 2026-07-22), latence
-# indicative ~15s. Rapport de coût réel léger/lourd ~170x.
-POOL_LIGHT_COST: float = float(os.getenv("POOL_LIGHT_COST", "0.000168"))
-POOL_LIGHT_LATENCY_MS: float = float(os.getenv("POOL_LIGHT_LATENCY_MS", "11076.0"))
+# indicative ~15s. Rapport de coût réel léger/lourd ~220x.
+POOL_LIGHT_COST: float = float(os.getenv("POOL_LIGHT_COST", "0.00013"))
+POOL_LIGHT_LATENCY_MS: float = float(os.getenv("POOL_LIGHT_LATENCY_MS", "9859.0"))
 POOL_HEAVY_COST: float = float(os.getenv("POOL_HEAVY_COST", "0.0285"))
 POOL_HEAVY_LATENCY_MS: float = float(os.getenv("POOL_HEAVY_LATENCY_MS", "15000.0"))
 
@@ -91,19 +98,21 @@ POOL_HEAVY_LATENCY_MS: float = float(os.getenv("POOL_HEAVY_LATENCY_MS", "15000.0
 POOL_DOMAINS: tuple[str, ...] = ("ran", "core", "security", "slice")
 
 # Barème de qualité attendue (app/llm/policy.py). Toutes les valeurs dans
-# [0, 1], calibrées sur la matrice qualité réelle du 2026-07-22 (juge
-# gemma2:9b, checklists neutres par claude-sonnet-4.6, léger qwen2.5-72b vs
+# [0, 1], calibrées sur la matrice qualité réelle du 2026-07-23 (juge
+# gemma2:9b, checklists neutres par claude-sonnet-4.6, léger deepseek-v3.2 vs
 # lourd claude-opus-4.8, n=74) :
-#   simple  light=0.64  opus=0.94
-#   medium  light=0.39  opus=0.86
-#   complex light=0.32  opus=0.84
-# La qualité du léger par complexité vient DIRECTEMENT de la mesure (pas d'une
-# extrapolation linéaire) : la chute n'est pas linéaire (forte simple->medium,
-# faible medium->complex), un modèle base-pénalité la déformerait.
+#   simple  light=0.53  opus=0.94
+#   medium  light=0.52  opus=0.86
+#   complex light=0.58  opus=0.84
+# La qualité du léger par complexité vient DIRECTEMENT de la mesure. DeepSeek a
+# un profil PLAT (~0.54 partout, robuste au complexe), contrairement à l'ancien
+# léger qwen-72b (décroissant 0.64->0.32) : le routage léger/lourd est donc
+# piloté surtout par la criticité (le plancher q_min), la complexité jouant peu
+# puisque le léger ne s'effondre pas.
 QUALITY_LIGHT_BY_COMPLEXITY: dict[str, float] = {
-    "simple": float(os.getenv("QUALITY_LIGHT_SIMPLE", "0.64")),
-    "medium": float(os.getenv("QUALITY_LIGHT_MEDIUM", "0.39")),
-    "complex": float(os.getenv("QUALITY_LIGHT_COMPLEX", "0.32")),
+    "simple": float(os.getenv("QUALITY_LIGHT_SIMPLE", "0.53")),
+    "medium": float(os.getenv("QUALITY_LIGHT_MEDIUM", "0.52")),
+    "complex": float(os.getenv("QUALITY_LIGHT_COMPLEX", "0.58")),
 }
 # Lourd (Opus) : moyenne des trois paliers mesurés (0.94/0.86/0.84). Traité
 # comme plat par complexité (il reste fort partout ; la légère décroissance est
