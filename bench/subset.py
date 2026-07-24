@@ -1,4 +1,4 @@
-"""Curated realizable intents + ground truth for the ONOS bench."""
+"""Curated realizable intents + ground truth for the OVS bench."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,10 +23,11 @@ class EndpointRef(BaseModel):
 
 class GroundTruth(BaseModel):
     model_config = ConfigDict(frozen=True)
-    check: Literal["ping_ok", "ping_fail", "throughput_min"]
+    check: Literal["ping_ok", "ping_fail", "throughput_min", "throughput_max"]
     src: str
     dst: str
     min_mbps: Optional[float] = None
+    max_mbps: Optional[float] = None
 
 
 class SubsetEntry(BaseModel):

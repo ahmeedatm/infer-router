@@ -46,3 +46,16 @@ def test_decide_throughput_min():
     gt = GroundTruth(check="throughput_min", src="a", dst="b", min_mbps=8.0)
     assert decide(gt, Measurements(throughput_mbps=9.87)) is True
     assert decide(gt, Measurements(throughput_mbps=5.0)) is False
+
+
+def test_decide_throughput_max():
+    gt = GroundTruth(check="throughput_max", src="a", dst="b", max_mbps=8.0)
+    assert decide(gt, Measurements(throughput_mbps=7.5)) is True
+    assert decide(gt, Measurements(throughput_mbps=8.5)) is True  # within 15% tol
+    assert decide(gt, Measurements(throughput_mbps=12.0)) is False
+
+
+def test_decide_throughput_max_requires_cap():
+    gt = GroundTruth(check="throughput_max", src="a", dst="b")
+    with pytest.raises(VerifyError):
+        decide(gt, Measurements(throughput_mbps=5.0))

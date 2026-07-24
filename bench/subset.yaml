@@ -1,7 +1,7 @@
-# Sous-ensemble réalisable sur banc Mininet+ONOS. topology: linear3 (h1-h2-h3)
-# ou diamond (h1 -> {large|étroit} -> h2). Endpoints logiques -> hôtes Mininet.
+# Sous-ensemble réalisable sur banc Mininet + OVS (sans contrôleur externe).
+# topology: linear3 (h1 et h2 sur s1, h3 sur s2). Endpoints logiques -> hôtes.
 
-# --- reachability (4) : HostToHostIntent, ground_truth ping_ok ---
+# --- reachability (4) : connectivité par défaut (standalone), ground_truth ping_ok ---
 - intent_id: reach-001
   text: "Ensure the edge monitoring host can reach the core telemetry collector."
   domain: core
@@ -46,7 +46,7 @@
     ran_sched: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_ok, src: slice_ctrl, dst: ran_sched}
 
-# --- isolation (4) : ACL deny, ground_truth ping_fail ---
+# --- isolation (4) : drop flow-mods OVS, ground_truth ping_fail ---
 - intent_id: sec-001
   text: "Block all traffic from the RAN management host to the billing host."
   domain: security
@@ -91,47 +91,47 @@
     core_tel2: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_fail, src: compromised_tenant, dst: core_tel2}
 
-# --- qos (4) : PointToPointIntent + BandwidthConstraint, ground_truth throughput_min ---
+# --- qos (4) : plafonnement de débit (ingress policing OVS), ground_truth throughput_max ---
 - intent_id: slice-001
-  text: "Guarantee at least 8 Mbps for the URLLC slice between site A and site B."
+  text: "Cap the best-effort slice between site A and site B at 8 Mbps."
   domain: slice
   criticality: high
   klass: qos
-  topology: diamond
+  topology: linear3
   endpoints:
     site_a: {host: h1, mac: "00:00:00:00:00:01"}
     site_b: {host: h2, mac: "00:00:00:00:00:02"}
-  ground_truth: {check: throughput_min, src: site_a, dst: site_b, min_mbps: 8.0}
+  ground_truth: {check: throughput_max, src: site_a, dst: site_b, max_mbps: 8.0}
 
 - intent_id: slice-002
-  text: "Reserve at least 20 Mbps of bandwidth for the eMBB slice from the RAN edge to the core."
+  text: "Limit the eMBB background slice from the RAN edge to the core to 20 Mbps."
   domain: slice
   criticality: med
   klass: qos
-  topology: diamond
+  topology: linear3
   endpoints:
     ran_edge: {host: h1, mac: "00:00:00:00:00:01"}
     core_gw: {host: h2, mac: "00:00:00:00:00:02"}
-  ground_truth: {check: throughput_min, src: ran_edge, dst: core_gw, min_mbps: 20.0}
+  ground_truth: {check: throughput_max, src: ran_edge, dst: core_gw, max_mbps: 20.0}
 
 - intent_id: slice-003
-  text: "Ensure a minimum of 5 Mbps throughput for the mMTC telemetry uplink."
+  text: "Rate-limit the mMTC telemetry uplink to 5 Mbps."
   domain: slice
   criticality: low
   klass: qos
-  topology: diamond
+  topology: linear3
   endpoints:
     mmtc_sensor: {host: h1, mac: "00:00:00:00:00:01"}
     mmtc_collector: {host: h2, mac: "00:00:00:00:00:02"}
-  ground_truth: {check: throughput_min, src: mmtc_sensor, dst: mmtc_collector, min_mbps: 5.0}
+  ground_truth: {check: throughput_max, src: mmtc_sensor, dst: mmtc_collector, max_mbps: 5.0}
 
 - intent_id: slice-004
-  text: "Provision at least 15 Mbps for the priority video feed between the field unit and the ops center."
+  text: "Throttle the bulk backup transfer between the field unit and the ops center to 15 Mbps."
   domain: core
   criticality: high
   klass: qos
-  topology: diamond
+  topology: linear3
   endpoints:
     field_unit: {host: h1, mac: "00:00:00:00:00:01"}
     ops_center: {host: h2, mac: "00:00:00:00:00:02"}
-  ground_truth: {check: throughput_min, src: field_unit, dst: ops_center, min_mbps: 15.0}
+  ground_truth: {check: throughput_max, src: field_unit, dst: ops_center, max_mbps: 15.0}

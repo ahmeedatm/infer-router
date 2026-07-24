@@ -45,4 +45,10 @@ def decide(ground_truth: GroundTruth, meas: Measurements) -> bool:
     if ground_truth.check == "throughput_min":
         floor = ground_truth.min_mbps or 0.0
         return meas.throughput_mbps is not None and meas.throughput_mbps >= floor
+    if ground_truth.check == "throughput_max":
+        if ground_truth.max_mbps is None:
+            raise VerifyError("throughput_max requires max_mbps")
+        # 15% tolerance above the cap to absorb policing/measurement overshoot.
+        ceiling = ground_truth.max_mbps * 1.15
+        return meas.throughput_mbps is not None and meas.throughput_mbps <= ceiling
     raise VerifyError(f"unknown check {ground_truth.check!r}")

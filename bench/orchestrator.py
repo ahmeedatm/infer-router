@@ -1,10 +1,9 @@
-"""Run one intent/strategy case against a live ONOS + Mininet runner."""
+"""Run one intent/strategy case on the OVS bench (no external controller)."""
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
 from app.llm.sdn_action import SdnAction
-from bench.onos_client import OnosClient
 from bench.subset import SubsetEntry
 from bench.translator import translate
 from bench.verifier import (
@@ -13,6 +12,8 @@ from bench.verifier import (
     parse_iperf_mbps,
     parse_ping_loss,
 )
+
+_THROUGHPUT_CHECKS = ("throughput_min", "throughput_max")
 
 
 class CaseResult(BaseModel):
@@ -27,7 +28,7 @@ def _measure(entry: SubsetEntry, runner) -> Measurements:
     gt = entry.ground_truth
     src_host = entry.endpoints[gt.src].host
     dst_host = entry.endpoints[gt.dst].host
-    if gt.check == "throughput_min":
+    if gt.check in _THROUGHPUT_CHECKS:
         return Measurements(throughput_mbps=parse_iperf_mbps(runner.iperf(src_host, dst_host)))
     return Measurements(loss_pct=parse_ping_loss(runner.ping(src_host, dst_host)))
 
@@ -36,14 +37,17 @@ def run_case(
     entry: SubsetEntry,
     action: SdnAction,
     strategy: str,
-    onos: OnosClient,
     runner,
 ) -> CaseResult:
-    """Apply the action on ONOS, measure the data plane, decide vs ground truth."""
+    """Apply the action on the data plane, measure it, decide vs ground truth.
+
+    ``runner`` exposes ``warmup()``, ``apply(FlowSpec)``, ``ping()`` and
+    ``iperf()`` (see :class:`bench.topology.MininetRunner`). Unit tests inject a
+    fake runner, so this stays free of any Mininet dependency.
+    """
     runner.warmup()
-    cmd = translate(action, entry.endpoints)
-    onos.execute(cmd)
-    onos.wait_flows_installed(min_count=1, timeout_s=10.0)
+    spec = translate(action, entry.endpoints)
+    runner.apply(spec)
     meas = _measure(entry, runner)
     satisfied = decide(entry.ground_truth, meas)
     return CaseResult(

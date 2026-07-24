@@ -1,7 +1,15 @@
-"""Pure mapping: SdnAction + endpoint table -> ONOS REST command."""
+"""Pure mapping: SdnAction + endpoint table -> OVS flow specification.
+
+No SDN controller: the action is realised directly on Open vSwitch. This module
+stays pure (no execution); the runner applies the FlowSpec via ovs-ofctl /
+ovs-vsctl. Three kinds:
+    allow -> nothing (default L2 connectivity in standalone mode)
+    block -> bidirectional drop flow-mods (by source/dest MAC)
+    qos   -> ingress rate policing (kbps) on the source host's switch port
+"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -10,15 +18,20 @@ from bench.subset import EndpointRef
 
 
 class TranslateError(ValueError):
-    """Raised when an action cannot be mapped to an ONOS command."""
+    """Raised when an action cannot be mapped to a flow specification."""
 
 
-class OnosCommand(BaseModel):
+class FlowSpec(BaseModel):
+    """Immutable OVS realisation of a network action."""
+
     model_config = ConfigDict(frozen=True)
-    kind: Literal["host_intent", "acl_deny", "p2p_bw_intent"]
-    method: Literal["POST"] = "POST"
-    path: str
-    payload: dict
+
+    kind: Literal["allow", "block", "qos"]
+    # (dl_src, dl_dst) MAC pairs to drop (both directions for isolation).
+    drop_pairs: tuple[tuple[str, str], ...] = ()
+    # Ingress policing rate applied to policing_host's switch port.
+    policing_kbps: Optional[int] = None
+    policing_host: Optional[str] = None
 
 
 def _resolve(endpoints: dict[str, EndpointRef], key: str) -> EndpointRef:
@@ -27,46 +40,22 @@ def _resolve(endpoints: dict[str, EndpointRef], key: str) -> EndpointRef:
     return endpoints[key]
 
 
-def translate(
-    action: SdnAction,
-    endpoints: dict[str, EndpointRef],
-    app_id: str = "inferrouter",
-) -> OnosCommand:
+def translate(action: SdnAction, endpoints: dict[str, EndpointRef]) -> FlowSpec:
     src = _resolve(endpoints, action.src)
     dst = _resolve(endpoints, action.dst)
 
     if action.action == "allow":
-        return OnosCommand(
-            kind="host_intent",
-            path="/onos/v1/intents",
-            payload={
-                "type": "HostToHostIntent",
-                "appId": app_id,
-                "priority": 100,
-                "one": f"{src.mac}/-1",
-                "two": f"{dst.mac}/-1",
-            },
-        )
+        return FlowSpec(kind="allow")
     if action.action == "block":
-        return OnosCommand(
-            kind="acl_deny",
-            path="/onos/v1/acl/rules",
-            payload={"srcMac": src.mac, "dstMac": dst.mac},
+        return FlowSpec(
+            kind="block",
+            drop_pairs=((src.mac, dst.mac), (dst.mac, src.mac)),
         )
-    # bandwidth
+    # bandwidth -> ingress policing cap on the source host
     if action.bw_mbps is None:
         raise TranslateError("bandwidth action requires bw_mbps")
-    return OnosCommand(
-        kind="p2p_bw_intent",
-        path="/onos/v1/intents",
-        payload={
-            "type": "PointToPointIntent",
-            "appId": app_id,
-            "priority": 200,
-            "one": f"{src.mac}/-1",
-            "two": f"{dst.mac}/-1",
-            "constraints": [
-                {"type": "BandwidthConstraint", "bandwidth": action.bw_mbps * 1e6}
-            ],
-        },
+    return FlowSpec(
+        kind="qos",
+        policing_kbps=int(action.bw_mbps * 1000),
+        policing_host=src.host,
     )
