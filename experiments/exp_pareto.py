@@ -23,7 +23,7 @@ from pathlib import Path
 
 from app import config
 
-BENCH_PATH = Path("experiments/results/benchmark.json")
+BENCH_PATH = Path("experiments/results/benchmark_offline.json")
 # Coûts $ réels moyens par appel (mesurés) : cf. config POOL_*_COST.
 COST_LIGHT = config.POOL_LIGHT_COST
 COST_HEAVY = config.POOL_HEAVY_COST
