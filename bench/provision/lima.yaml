@@ -1,0 +1,24 @@
+# VM arm64 native (Virtualization.framework) pour le banc Mininet + OVS.
+# Pas de contrôleur SDN externe (cf. provision.sh) : les règles OpenFlow sont
+# appliquées directement sur Open vSwitch via ovs-ofctl.
+vmType: vz
+os: Linux
+arch: aarch64
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-arm64.img"
+    arch: aarch64
+cpus: 4
+memory: "6GiB"
+disk: "16GiB"
+mounts:
+  - location: "~/Developer/infer-router"
+    mountPoint: "/opt/infer-router"
+    writable: true
+ssh:
+  localPort: 0
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux
+      bash /opt/infer-router/bench/provision/provision.sh
