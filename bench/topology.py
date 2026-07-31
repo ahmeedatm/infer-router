@@ -32,7 +32,10 @@ _HOSTS = {
 }
 
 # Which edge switch each host hangs off, and the far-side edge for the others.
-_HOST_SWITCH = {"h1": "s1", "h2": "s1", "h3": "s4", "h4": "s4"}
+# h4 is the mirror probe host: it sits on s1 alongside h1/h2, the natural
+# mirror sources, because an OVS mirror is bridge-scoped -- the selected
+# source port and the output port must live on the same switch.
+_HOST_SWITCH = {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"}
 
 
 class TopologyError(ValueError):
@@ -40,7 +43,7 @@ class TopologyError(ValueError):
 
 
 class _Diamond4(Topo):
-    """h1,h2-s1 = s2/s3 = s4-h3,h4. Two paths, so reroute is observable."""
+    """h1,h2,h4-s1 = s2/s3 = s4-h3. Two paths, so reroute is observable."""
 
     def build(self):
         s1, s2, s3, s4 = (self.addSwitch(n) for n in ("s1", "s2", "s3", "s4"))
@@ -71,10 +74,10 @@ def _port_to(net, switch: str, peer: str) -> int:
 def _install_base_flows(net) -> None:
     """Unicast forwarding by destination MAC, default path through s2."""
     routes = {
-        "s1": {"h1": "h1", "h2": "h2", "h3": "s2", "h4": "s2"},
-        "s2": {"h1": "s1", "h2": "s1", "h3": "s4", "h4": "s4"},
-        "s3": {"h1": "s1", "h2": "s1", "h3": "s4", "h4": "s4"},
-        "s4": {"h1": "s2", "h2": "s2", "h3": "h3", "h4": "h4"},
+        "s1": {"h1": "h1", "h2": "h2", "h4": "h4", "h3": "s2"},
+        "s2": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
+        "s3": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
+        "s4": {"h1": "s2", "h2": "s2", "h4": "s2", "h3": "h3"},
     }
     for switch, table in routes.items():
         sw = net.get(switch)
@@ -156,11 +159,18 @@ class MininetRunner:
         noise_srv.cmd("kill %iperf")
         return out
 
-    def tcpdump_count(self, probe_host: str, seconds: int = 3) -> int:
+    def tcpdump_count(self, probe_host: str, src_host: str, dst_host: str,
+                       seconds: int = 3) -> int:
+        """Count packets seen on the probe while ``src_host`` pings ``dst_host``.
+
+        The traffic generated must be the traffic the mirror actually taps,
+        so the caller supplies the intent's own endpoints rather than a
+        hardcoded pair.
+        """
         probe = self._net.get(probe_host)
         probe.cmd(f"timeout {seconds} tcpdump -i {probe.defaultIntf().name} "
                   f"-c 100 -w /tmp/mirror.pcap &")
-        self.ping("h1", "h3")
+        self.ping(src_host, dst_host)
         out = probe.cmd("tcpdump -r /tmp/mirror.pcap 2>/dev/null | wc -l")
         try:
             return int(out.strip().splitlines()[-1])

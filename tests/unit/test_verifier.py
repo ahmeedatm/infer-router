@@ -100,7 +100,9 @@ class _FakeRunner:
     def ping(self, s, d): return self.canned.get("ping", _OK)
     def iperf(self, s, d, port=None, seconds=5): return self.canned.get("iperf", "")
     def iperf_contended(self, s, d, cs, cd, seconds=5): return self.canned.get("iperf", "")
-    def tcpdump_count(self, probe_host, seconds=3): return self.canned.get("packets", 0)
+    def tcpdump_count(self, probe_host, src_host, dst_host, seconds=3):
+        self.tcpdump_calls = getattr(self, "tcpdump_calls", []) + [(probe_host, src_host, dst_host)]
+        return self.canned.get("packets", 0)
     def flow_packets(self, switch, dl_src, dl_dst): return self.canned.get(switch, 0)
     def tos_of(self, s, d): return self.canned.get("tos", 0)
 
@@ -155,6 +157,17 @@ def test_mirror_seen_counts_packets_on_the_probe():
     entry = _entry(check)
     assert run_check(check, entry, _FakeRunner(packets=5)) is True
     assert run_check(check, entry, _FakeRunner(packets=1)) is False
+
+
+def test_mirror_seen_generates_traffic_between_the_checks_own_endpoints():
+    """Regression guard: the probed traffic must be the intent's own src/dst,
+    not a hardcoded pair, or the measurement is decoupled from the intent."""
+    check = MirrorSeen(check="mirror_seen", src="a", dst="b",
+                       probe_host="h4", min_packets=3)
+    entry = _entry(check)
+    runner = _FakeRunner(packets=5)
+    run_check(check, entry, runner)
+    assert runner.tcpdump_calls == [("h4", "h1", "h3")]
 
 
 def test_path_used_requires_traffic_on_one_path_only():

@@ -103,7 +103,7 @@ def run_check(check, entry: SubsetEntry, runner) -> bool:
         return blocked and reachable
 
     if isinstance(check, MirrorSeen):
-        return runner.tcpdump_count(check.probe_host) >= check.min_packets
+        return runner.tcpdump_count(check.probe_host, src, dst) >= check.min_packets
 
     if isinstance(check, PathUsed):
         mac_src = entry.endpoints[check.src].mac
