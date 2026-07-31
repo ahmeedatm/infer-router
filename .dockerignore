@@ -1,0 +1,43 @@
+# Ce qui ne doit jamais entrer dans le contexte de build.
+
+# Environnements et caches locaux
+.venv/
+venv/
+env/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Git et worktrees
+.git/
+.gitignore
+.worktrees/
+
+# Secrets : jamais dans une image
+.env
+.envrc
+
+# Rapport et docs : lourds et inutiles à l'exécution
+docs/
+
+# Images COCO du système pré-pivot, si elles traînent encore en local
+data/images/
+
+# Outillage et config d'éditeur
+.claude/
+.idea/
+.vscode/
+.DS_Store
+CLAUDE.md
+TODO.md
+REPORT.md
+DEMO.md
+
+# Fichiers Docker eux-mêmes
+Dockerfile
+docker-compose.yml
+.dockerignore

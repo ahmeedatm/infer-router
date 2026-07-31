@@ -1,0 +1,23 @@
+# Dépendances d'exécution : décision de routage, appels LLM, juge, tests.
+# Suffisant pour app/, bench/, tests/ et le benchmark hors ligne.
+# La pile embeddings est dans requirements.txt.
+
+# LLM cibles et juge (clients HTTP) + validation de données
+httpx==0.27.2
+pydantic==2.12.5
+pydantic_core==2.41.5
+annotated-types==0.7.0
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+anyio==4.12.1
+h11==0.16.0
+idna==3.11
+exceptiongroup==1.3.1
+PyYAML==6.0.2
+
+# Estimateur de complexité persisté (RandomForest sur 4 attributs)
+scikit-learn==1.6.1
+numpy==2.0.2
+
+# Tests
+pytest==8.4.2
