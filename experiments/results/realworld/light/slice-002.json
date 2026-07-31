@@ -1,0 +1,1 @@
+{"intent_id": "slice-002", "action": "bandwidth", "src": "ran_edge", "dst": "core_gw", "bw_mbps": 20.0}

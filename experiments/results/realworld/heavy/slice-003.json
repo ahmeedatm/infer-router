@@ -1,0 +1,1 @@
+{"intent_id": "slice-003", "action": "bandwidth", "src": "mmtc_sensor", "dst": "mmtc_collector", "bw_mbps": 5.0}

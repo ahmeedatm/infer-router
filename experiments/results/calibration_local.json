@@ -1,0 +1,522 @@
+[
+  {
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "q_light_local": 0.8571428571428571,
+    "q_heavy": 0.42857142857142855,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 10156.873124999998,
+    "completion_tokens": 167
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.25,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 8883.277375000001,
+    "completion_tokens": 216
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.25,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 14325.905249999998,
+    "completion_tokens": 341
+  },
+  {
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "q_light_local": 0.42857142857142855,
+    "q_heavy": 0.5714285714285714,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 5822.658541999999,
+    "completion_tokens": 139
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "q_light_local": 0.625,
+    "q_heavy": 0.875,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 13299.695917000008,
+    "completion_tokens": 224
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 28633.65041700001,
+    "completion_tokens": 339
+  },
+  {
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "q_light_local": 0.0,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 2303.979874999982,
+    "completion_tokens": 26
+  },
+  {
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "q_light_local": 0.25,
+    "q_heavy": 0.25,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 4666.843083000003,
+    "completion_tokens": 60
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.375,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 31603.644625000015,
+    "completion_tokens": 428
+  },
+  {
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "q_light_local": 0.14285714285714285,
+    "q_heavy": 0.7142857142857143,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 1906.3736660000075,
+    "completion_tokens": 22
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.75,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 15141.873791999984,
+    "completion_tokens": 193
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "q_light_local": 0.375,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 15901.64950000002,
+    "completion_tokens": 195
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.625,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 7935.837749999962,
+    "completion_tokens": 96
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.25,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 14073.37958400001,
+    "completion_tokens": 153
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "q_light_local": 0.2857142857142857,
+    "q_heavy": 0.5714285714285714,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 10009.257083000022,
+    "completion_tokens": 118
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "q_light_local": 0.375,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 29873.010082999997,
+    "completion_tokens": 338
+  },
+  {
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 4630.7257500000105,
+    "completion_tokens": 51
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.375,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 25954.57887500004,
+    "completion_tokens": 297
+  },
+  {
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 3900.389250000103,
+    "completion_tokens": 42
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 36439.778499999986,
+    "completion_tokens": 417
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "q_light_local": 0.14285714285714285,
+    "q_heavy": 0.42857142857142855,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 8562.541875000079,
+    "completion_tokens": 95
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "q_light_local": 0.375,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 12697.760499999958,
+    "completion_tokens": 139
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "q_light_local": 0.5714285714285714,
+    "q_heavy": 0.5714285714285714,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 18842.923790999976,
+    "completion_tokens": 209
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.625,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 14439.964458000077,
+    "completion_tokens": 153
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "q_light_local": 0.42857142857142855,
+    "q_heavy": 0.5714285714285714,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 14451.8865,
+    "completion_tokens": 156
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 16777.355875000012,
+    "completion_tokens": 183
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "q_light_local": 0.2857142857142857,
+    "q_heavy": 0.7142857142857143,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 17502.167583999948,
+    "completion_tokens": 193
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.0,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 43019.93416699997,
+    "completion_tokens": 461
+  },
+  {
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "q_light_local": 0.14285714285714285,
+    "q_heavy": 0.2857142857142857,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 10282.549375000031,
+    "completion_tokens": 109
+  },
+  {
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.375,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 24867.718999999965,
+    "completion_tokens": 264
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "q_light_local": 0.14285714285714285,
+    "q_heavy": 0.5714285714285714,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 17704.737708999914,
+    "completion_tokens": 186
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.0,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 19543.69049999991,
+    "completion_tokens": 204
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "q_light_local": 0.5,
+    "q_heavy": 0.75,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 18444.287957999906,
+    "completion_tokens": 194
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 8434.088166000038,
+    "completion_tokens": 85
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.375,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 5029.159333000052,
+    "completion_tokens": 52
+  },
+  {
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "q_light_local": 0.375,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 12016.992334000179,
+    "completion_tokens": 124
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "q_light_local": 0.25,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 4065.0007919998643,
+    "completion_tokens": 39
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 33420.53816700013,
+    "completion_tokens": 350
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "q_light_local": 0.25,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 9321.887584000024,
+    "completion_tokens": 90
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.625,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 28423.485124999843,
+    "completion_tokens": 286
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "q_light_local": 0.2857142857142857,
+    "q_heavy": 0.7142857142857143,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 4612.351833000048,
+    "completion_tokens": 44
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.0,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 15472.771749999993,
+    "completion_tokens": 160
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "q_light_local": 0.25,
+    "q_heavy": 0.375,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 6385.030749999942,
+    "completion_tokens": 64
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 9968.043792000117,
+    "completion_tokens": 98
+  },
+  {
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "q_light_local": 0.25,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 15149.973833000104,
+    "completion_tokens": 152
+  },
+  {
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "q_light_local": 0.25,
+    "q_heavy": 0.0,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 30610.270665999906,
+    "completion_tokens": 309
+  },
+  {
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "q_light_local": 0.25,
+    "q_heavy": 0.25,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 4565.610832999937,
+    "completion_tokens": 44
+  },
+  {
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "q_light_local": 0.375,
+    "q_heavy": 0.5,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 45567.49170900002,
+    "completion_tokens": 463
+  },
+  {
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "q_light_local": 0.125,
+    "q_heavy": 0.625,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 4321.306874999891,
+    "completion_tokens": 39
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "q_light_local": 0.125,
+    "q_heavy": 0.0,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 28619.13154199988,
+    "completion_tokens": 291
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "q_light_local": 0.375,
+    "q_heavy": 0.625,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 3840.2454580000267,
+    "completion_tokens": 36
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "q_light_local": 0.5,
+    "q_heavy": 0.125,
+    "model_light_local": "qwen2.5:7b-instruct",
+    "judge_model": "gemma2:9b",
+    "latency_light_local_ms": 46050.77362500015,
+    "completion_tokens": 462
+  }
+]

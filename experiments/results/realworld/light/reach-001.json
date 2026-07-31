@@ -1,0 +1,1 @@
+{"intent_id": "reach-001", "action": "allow", "src": "edge_mon", "dst": "core_tel", "bw_mbps": null}

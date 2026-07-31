@@ -1,0 +1,1 @@
+{"intent_id": "reach-002", "action": "allow", "src": "ran_bs", "dst": "core_orch", "bw_mbps": null}

@@ -1,0 +1,399 @@
+[
+  {
+    "intent_id": "core-read-amf-cpu-utilization",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.5714285714285714,
+    "latency_heavy_ms": 14351.332375,
+    "cost_heavy": 0.005717999999999999,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific CPU utilization percentage for amf-west-01?",
+      "Does the response explain at least one concrete method to obtain the CPU utilization (e.g., querying a Prometheus/metrics endpoint, using a CLI command such as 'top' or 'kubectl top pod', checking an EMS/NMS dashboard, or calling a vendor-specific API)?",
+      "Does the response correctly identify that the AMF (Access and Mobility Management Function) is a 5G core network function, demonstrating accurate domain knowledge?",
+      "Does the response explicitly acknowledge that it does not have live or real-time access to the network and therefore cannot provide the current value?",
+      "Does the response avoid presenting any fabricated or placeholder numeric value as if it were a real observed measurement?",
+      "Does the response provide technically accurate guidance relevant to monitoring a cloud-native or virtualized 5G core NF (e.g., referencing container/pod-level metrics, VNF monitoring, or O&M interfaces such as 3GPP Itf-N)?",
+      "Does the response avoid making unsupported assumptions about the current health or operational state of amf-west-01?"
+    ]
+  },
+  {
+    "intent_id": "core-read-amf-deregistration-rate",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.8571428571428571,
+    "latency_heavy_ms": 11314.075875000004,
+    "cost_heavy": 0.006468,
+    "checklist": [
+      "Does the response avoid fabricating a specific numeric deregistration rate or count for AMF amf-east-02 that it cannot know without live access?",
+      "Does the response explicitly state that it lacks live access to the network and therefore cannot provide the current deregistration rate?",
+      "Does the response explain how to obtain the deregistration rate, such as querying AMF metrics via a specific CLI command, SNMP OID, Prometheus/OpenMetrics query, or 3GPP-defined O1/NETCONF interface?",
+      "Does the response correctly identify that UE deregistration in 5G core is an AMF-handled procedure as defined in 3GPP TS 23.502, distinguishing it from related but different events such as PDU session release?",
+      "Does the response mention at least one relevant metric name, counter, or KPI label (e.g., amf_ue_deregistration_total or equivalent vendor-specific counter) that a network operator should look for when querying the system?",
+      "Does the response avoid presenting any fabricated timestamps, node states, or historical trend data as if retrieved from the live network?",
+      "Does the response provide actionable guidance, such as specifying the monitoring tool, dashboard, or management system (e.g., vendor NMS, Prometheus, Grafana) where the deregistration rate for a named AMF instance can be found?"
+    ]
+  },
+  {
+    "intent_id": "core-read-amf-memory-usage",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.8571428571428571,
+    "latency_heavy_ms": 7891.973750000001,
+    "cost_heavy": 0.00537,
+    "checklist": [
+      "Does the response avoid fabricating or inventing specific memory usage figures (e.g., percentages, MB/GB values) for amf-south-03 that it cannot know without live access?",
+      "Does the response explain at least one concrete method (CLI command, API call, or monitoring tool) the operator can use to retrieve current memory usage from the AMF node?",
+      "Does the response correctly identify AMF-relevant monitoring approaches appropriate to 5G core, such as querying the AMF via Kubernetes metrics, Prometheus/Grafana, SNMP, or vendor-specific OAM interfaces?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the actual current memory usage?",
+      "Does the response avoid presenting any fabricated system state, log output, or telemetry snippet as if it were real data retrieved from amf-south-03?",
+      "Does the response provide technically accurate context about what memory metrics are relevant for an AMF (e.g., process memory, container/pod memory limits, heap usage) without misrepresenting 5G core architecture?",
+      "Does the response give actionable next steps or escalation guidance so the operator knows exactly how to proceed to obtain the requested information?"
+    ]
+  },
+  {
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.7142857142857143,
+    "latency_heavy_ms": 11035.492333,
+    "cost_heavy": 0.006657,
+    "checklist": [
+      "Does the response avoid fabricating a specific numeric count of mMTC UEs currently registered on amf-north-04?",
+      "Does the response explain how to obtain the current UE registration count, such as querying the AMF via CLI commands (e.g., show amf ue-context), SNMP counters, O1/NETCONF interface, or a network management system?",
+      "Does the response correctly identify that the AMF (Access and Mobility Management Function) is the 5G core network element responsible for UE registration and context management?",
+      "Does the response acknowledge that it lacks live access to the network and therefore cannot provide the real-time registration count?",
+      "Does the response correctly distinguish mMTC (massive Machine-Type Communications) UEs or their 5G equivalent (NB-IoT/eMTC device types) as a specific UE category relevant to the query?",
+      "Does the response avoid presenting any fabricated AMF-specific metrics, counters, or telemetry values as if they were real current data?",
+      "Does the response mention at least one relevant interface or protocol (e.g., O1 interface, Prometheus metrics, vendor-specific NMS, or 3GPP-defined AMF counters) through which the registration data could be retrieved?"
+    ]
+  },
+  {
+    "intent_id": "core-read-ausf-auth-failures",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.2857142857142857,
+    "latency_heavy_ms": 10058.072957999997,
+    "cost_heavy": 0.0054329999999999995,
+    "checklist": [
+      "Does the response avoid fabricating a specific numeric count of authentication failures for ausf-region-04 that it cannot know without live access?",
+      "Does the response explain at least one concrete method (e.g., a CLI command, API endpoint, metrics query, or monitoring tool) to retrieve authentication failure counts from the AUSF?",
+      "Does the response correctly identify that AUSF (Authentication Server Function) is a 5G core network function responsible for authentication, demonstrating accurate domain knowledge?",
+      "Does the response mention relevant metrics, counters, or logs specific to AUSF authentication failures (e.g., Nausf_UEAuthentication service counters, 3GPP-defined KPIs, or vendor-specific OAM metrics)?",
+      "Does the response acknowledge that it lacks live access to the network and therefore cannot provide the current value directly?",
+      "Does the response specify how to scope the query to a five-minute time window (e.g., using a time-range parameter in a Prometheus query, log filter, or SNMP polling interval)?",
+      "Does the response avoid presenting any fabricated network topology details or configuration specifics about ausf-region-04 as if they were known facts?"
+    ]
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.42857142857142855,
+    "latency_heavy_ms": 10233.293041999992,
+    "cost_heavy": 0.006951000000000001,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric latency value for AUSF ausf-region-02 that it cannot know without live access?",
+      "Does the response explicitly state that it has no live access to the network and therefore cannot retrieve the current authentication response latency?",
+      "Does the response explain how to obtain the average authentication response latency, such as querying the AUSF's exposed metrics endpoint, using a monitoring tool like Prometheus, or checking an observability platform such as Grafana or a 5G network management system?",
+      "Does the response identify the correct metric or counter to use for measuring AUSF authentication response latency, such as the Nausf_UEAuthentication service operation latency metric or an equivalent 3GPP-defined performance measurement?",
+      "Does the response correctly associate the AUSF (Authentication Server Function) with its role in 5G core authentication procedures, such as EAP-AKA' or 5G-AKA, without misattributing it to another network function?",
+      "Does the response avoid presenting any fabricated historical trend, baseline value, or threshold as if it were the current live measurement?",
+      "Does the response provide actionable guidance, such as a specific CLI command, API call, or dashboard query, that an operator could realistically use to retrieve the latency data from ausf-region-02?"
+    ]
+  },
+  {
+    "intent_id": "core-read-nrf-registered-nfs",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.5714285714285714,
+    "latency_heavy_ms": 9087.938624999992,
+    "cost_heavy": 0.005391,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific count of network functions registered with nrf-central-01?",
+      "Does the response explain at least one concrete method (e.g., HTTP GET to the NRF discovery/registration endpoint, CLI command, management API call, or NRF dashboard) to retrieve the current registration count?",
+      "Does the response correctly describe the NRF (Network Repository Function) role in 5G core as the entity where NFs register and are discovered, demonstrating accurate core domain knowledge?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the actual current count?",
+      "Does the response reference the relevant 3GPP-defined NRF API (e.g., Nnrf_NFManagement service, GET /nf-instances endpoint) as the authoritative source for querying registered NFs?",
+      "Does the response avoid presenting any placeholder or example numeric value as if it were the real current count from nrf-central-01?",
+      "Does the response provide actionable guidance that would allow a network operator to independently retrieve the registration data themselves?"
+    ]
+  },
+  {
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.5714285714285714,
+    "latency_heavy_ms": 8980.312582999999,
+    "cost_heavy": 0.005199,
+    "checklist": [
+      "Does the response avoid fabricating or inventing specific numeric values for the current request load on nssf-central-01 (e.g., made-up requests-per-second or queue depth figures)?",
+      "Does the response explain how to obtain the current request load, such as querying the NSSF's metrics endpoint, using a network management system, or running a specific CLI/API command (e.g., Prometheus query, vendor NF management API, or O&M interface)?",
+      "Does the response correctly identify that NSSF (Network Slice Selection Function) request load metrics are relevant to NF service operations in a 5G core context, such as Nnssf_NSSelection or Nnssf_NSSAIAvailability service invocations?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the actual current load value?",
+      "Does the response mention at least one relevant metric type or counter applicable to NSSF load monitoring (e.g., HTTP/2 request rate, SBI interface throughput, NF load indicator as defined in 3GPP TS 29.510)?",
+      "Does the response avoid presenting any retrieved or calculated load data as if it were real-time or current?",
+      "Does the response provide actionable guidance that would allow a network operator to independently retrieve the requested information from the appropriate system?"
+    ]
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.5714285714285714,
+    "latency_heavy_ms": 8186.1118329999845,
+    "cost_heavy": 0.0051389999999999995,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric count of active policy rules for pcf-core-01?",
+      "Does the response explain at least one concrete method (e.g., CLI command, REST/N7/N15 API query, SNMP counter, vendor management console) to retrieve the active policy rule count from the PCF?",
+      "Does the response correctly identify that the PCF (Policy Control Function) is the 5G core NF responsible for enforcing policy rules per 3GPP TS 29.507/29.513, demonstrating domain-accurate understanding?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the current real-time count directly?",
+      "Does the response avoid presenting any specific numeric value as if it were a factual current measurement without qualifying it as an example or placeholder?",
+      "Does the response provide technically accurate guidance on relevant PCF metrics or counters (e.g., number of active PolicyAssociation resources, Sm-Policy sessions, or equivalent vendor-specific KPIs)?",
+      "Does the response avoid making incorrect claims about PCF architecture, such as confusing it with PCRF (4G) without appropriate context, or misattributing policy enforcement to another NF?"
+    ]
+  },
+  {
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.375,
+    "latency_heavy_ms": 11434.02445800001,
+    "cost_heavy": 0.007463999999999999,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric value for the downlink data volume (e.g., in GB or MB) that it cannot know without live access to the network?",
+      "Does the response explicitly explain how to obtain the downlink data volume, such as by querying the SMF's performance management counters, a telemetry platform (e.g., Prometheus, InfluxDB), or the 3GPP-defined Npcf/Nsmf management interfaces?",
+      "Does the response correctly identify that SMF (Session Management Function) is the relevant 5G core network function responsible for session-level data volume tracking, demonstrating accurate core network domain knowledge?",
+      "Does the response reference appropriate SMF performance counters or KPIs relevant to downlink data volume, such as per-PDU session byte counters or slice-specific traffic statistics tied to the URLLC S-NSSAI?",
+      "Does the response correctly associate the URLLC slice with its standard 5G network slice characteristics (e.g., S-NSSAI with SST=2) when explaining how to filter or identify slice-specific data?",
+      "Does the response acknowledge that the time scope (\"this hour\") requires filtering or aggregating metrics within a specific time window and explain how to apply that constraint in the relevant query or tool?",
+      "Does the response avoid claiming it has direct access to SMF smf-edge-10 or presenting output as if retrieved from a live system?",
+      "Does the response provide actionable next steps or commands (e.g., a Prometheus query, CLI command, or API call) that an operator could realistically execute to retrieve the requested data?"
+    ]
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.7142857142857143,
+    "latency_heavy_ms": 8941.145541999987,
+    "cost_heavy": 0.005547,
+    "checklist": [
+      "Does the response avoid fabricating a specific percentage or numeric value for IP address pool consumption on smf-north-05?",
+      "Does the response explain at least one concrete method (e.g., CLI command, NETCONF/RESTCONF API, vendor-specific OAM tool, or SNMP counter) to retrieve IP pool utilization from the SMF?",
+      "Does the response correctly identify that IP address pool management on an SMF involves UE IP allocation tracking within PDU session establishment per 3GPP core network principles?",
+      "Does the response acknowledge that it lacks live access to the network and therefore cannot provide the current consumption value?",
+      "Does the response avoid presenting any fabricated SMF node state, pool size, or allocated address count as if retrieved from smf-north-05?",
+      "Does the response mention relevant SMF metrics or counters (e.g., allocated vs. total addresses per DNN/slice, pool exhaustion alarms) that a network operator should look for when querying pool utilization?",
+      "Does the response provide actionable guidance that would allow a network operator to independently obtain the requested information without ambiguity?"
+    ]
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.7142857142857143,
+    "latency_heavy_ms": 9048.049291000012,
+    "cost_heavy": 0.006084,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric count of active PDU sessions for smf-central-02?",
+      "Does the response explain at least one concrete method (e.g., CLI command, NETCONF/RESTCONF API call, NF management interface query, or OAM tool) to retrieve the active PDU session count from the SMF?",
+      "Does the response correctly identify that the SMF (Session Management Function) is the 5G core network function responsible for managing PDU sessions, demonstrating domain-accurate knowledge?",
+      "Does the response explicitly acknowledge that it has no live access to the network and therefore cannot provide the current real-time value?",
+      "Does the response reference relevant SMF-specific counters, metrics, or KPIs (e.g., smf_active_pdu_sessions, 3GPP TS 28.552 performance measurements, or vendor-equivalent telemetry) that a grader can verify as technically plausible?",
+      "Does the response avoid presenting any retrieved or calculated session count as if it were a factual current value?",
+      "Does the response provide actionable guidance that would allow a network operator to independently obtain the answer from the actual SMF instance?"
+    ]
+  },
+  {
+    "intent_id": "core-read-smf-uplink-volume",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.5714285714285714,
+    "latency_heavy_ms": 11866.840542000005,
+    "cost_heavy": 0.007448999999999999,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric value for the uplink data volume (e.g., refraining from stating a made-up figure in GB or MB)?",
+      "Does the response explain at least one concrete method (CLI command, NETCONF/RESTCONF API call, vendor-specific OAM tool, or telemetry query) the operator can use to retrieve the current-hour uplink data volume from SMF smf-central-02?",
+      "Does the response correctly identify that uplink data volume on an SMF is tracked via N4 session-level usage reporting (e.g., URR/CDR records from UPF) or equivalent 3GPP-defined charging/statistics mechanisms, demonstrating core-domain technical accuracy?",
+      "Does the response make clear that it has no live access to the network and therefore cannot provide the actual current value?",
+      "Does the response specify that the metric is time-scoped (current hour) and advise the operator on how to apply the appropriate time filter or window when querying the data source?",
+      "Does the response avoid presenting any placeholder or example numeric value as if it were real data retrieved from smf-central-02?",
+      "Does the response identify the relevant data sources or interfaces (e.g., vendor SMF management GUI, Prometheus/SNMP counters, 3GPP Nsmf or charging interfaces) where such statistics would be available?"
+    ]
+  },
+  {
+    "intent_id": "core-read-udr-subscription-records",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.5714285714285714,
+    "latency_heavy_ms": 9302.121875000012,
+    "cost_heavy": 0.006267,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric count of active subscription records for udr-central-01?",
+      "Does the response explain at least one concrete method (e.g., CLI command, RESTCONF/NETCONF query, vendor-specific API, or NMS tool) to retrieve the active subscription count from the UDR?",
+      "Does the response correctly identify the UDR (Unified Data Repository) as the 5G core network function responsible for storing subscription data per 3GPP architecture?",
+      "Does the response explicitly acknowledge that it has no live access to the network and therefore cannot provide the current real-time count?",
+      "Does the response avoid presenting any placeholder or example numeric value as if it were the actual current subscription count?",
+      "Does the response mention relevant UDR data access interfaces (e.g., Nudr reference point, HTTP/2-based API) or vendor management interfaces that an operator could use to query subscription records?",
+      "Does the response remain free of misleading statements that could cause an operator to act on incorrect assumptions about the UDR's current state?"
+    ]
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.7142857142857143,
+    "latency_heavy_ms": 9959.20045799997,
+    "cost_heavy": 0.006798,
+    "checklist": [
+      "Does the response avoid fabricating a specific numeric count of active PDU sessions on upf-south-06 that it cannot know without live access?",
+      "Does the response explain at least one concrete method (e.g., CLI command, PFCP session query, O1/NETCONF API, or vendor-specific tool) to retrieve the active PDU session count from the UPF?",
+      "Does the response correctly identify that PDU sessions are associated with a slice via the S-NSSAI (SST and optionally SD fields) and explain how to filter for the eMBB slice type (SST=1)?",
+      "Does the response correctly describe the role of the UPF in the 5G core user plane and its relationship to PDU session management via PFCP?",
+      "Does the response avoid presenting any fabricated PFCP session table entries, counter values, or log excerpts as if they were real current data?",
+      "Does the response indicate that the SMF or a network management system (e.g., NMS, OSS, or 5G core vendor dashboard) may be an authoritative source for per-UPF, per-slice PDU session counts?",
+      "Does the response remain appropriately scoped to the question without introducing irrelevant configuration or topology details that were not asked about?"
+    ]
+  },
+  {
+    "intent_id": "core-read-upf-drop-rate",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.2857142857142857,
+    "latency_heavy_ms": 10412.48570900001,
+    "cost_heavy": 0.0060360000000000006,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific numeric packet drop rate value for UPF upf-west-08?",
+      "Does the response explain at least one concrete method (e.g., CLI command, PFCP session query, vendor management API, or monitoring tool such as Prometheus/Grafana) to retrieve the current packet drop rate from the UPF?",
+      "Does the response correctly identify that packet drop metrics on a UPF are typically observable via N4 (PFCP) session reports, UPF vendor CLI, or a telemetry/observability platform rather than being statically known?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the real-time drop rate value?",
+      "Does the response correctly reference relevant UPF performance counters or KPIs (e.g., uplink/downlink dropped packets, buffer overflow counters, or GTP-U drop statistics) appropriate to a 5G core UPF context?",
+      "Does the response avoid presenting any fabricated interface names, counter values, or session identifiers as if they were real observed data from upf-west-08?",
+      "Does the response provide actionable guidance that would allow a network operator to actually retrieve the drop rate (e.g., specific command syntax, API endpoint pattern, or dashboard navigation steps)?"
+    ]
+  },
+  {
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.42857142857142855,
+    "latency_heavy_ms": 8998.363499999981,
+    "cost_heavy": 0.005769,
+    "checklist": [
+      "Does the response avoid fabricating a specific packet loss rate value for the N3 interface of UPF upf-edge-11?",
+      "Does the response explain how to obtain the packet loss rate, such as querying PFCP session statistics, UPF vendor CLI commands, or a telemetry/monitoring system (e.g., Prometheus, SNMP, or streaming telemetry)?",
+      "Does the response correctly identify the N3 interface as the GTP-U tunnel interface between the UPF and the gNB (RAN side) in the 5G core user plane architecture?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the current packet loss rate?",
+      "Does the response mention relevant UPF metrics or counters associated with N3 packet loss, such as GTP-U packet drop counters, PFCP-reported statistics, or interface-level RX/TX drop counters?",
+      "Does the response avoid presenting any fabricated device-specific configuration or state information for upf-edge-11?",
+      "Does the response provide actionable guidance, such as a specific CLI command, API endpoint, or monitoring dashboard query, that an operator could realistically use to retrieve the metric?"
+    ]
+  },
+  {
+    "intent_id": "core-read-upf-n6-interface-status",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.8571428571428571,
+    "latency_heavy_ms": 9907.771374999982,
+    "cost_heavy": 0.005883,
+    "checklist": [
+      "Does the response avoid fabricating or inventing the current operational status (e.g., up/down/degraded) of the N6 interface on upf-core-03 without live access?",
+      "Does the response explain at least one specific command, API, or tool (e.g., UPF CLI show command, PFCP session query, vendor management API, or network monitoring platform) that an operator can use to retrieve the actual N6 interface status?",
+      "Does the response correctly identify the N6 interface as the UPF-to-Data Network (DN) interface in the 5G core user plane architecture, demonstrating accurate domain knowledge?",
+      "Does the response avoid presenting any specific interface metrics, counters, or state values (e.g., packet loss, link state, IP address assignment) as if retrieved from the live network?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the real-time operational status directly?",
+      "Does the response provide technically relevant troubleshooting or verification steps specific to the N6 interface (e.g., checking IP routing, NAT configuration, or DN connectivity) that an operator could follow?",
+      "Does the response avoid making definitive claims about the health or availability of upf-core-03 itself without supporting live data?"
+    ]
+  },
+  {
+    "intent_id": "core-read-upf-n6-latency",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 1.0,
+    "latency_heavy_ms": 10051.323749999994,
+    "cost_heavy": 0.0058649999999999996,
+    "checklist": [
+      "Does the response avoid fabricating or stating a specific numeric latency value for the N6 interface of upf-core-01 that it cannot know without live access?",
+      "Does the response explain at least one concrete method, command, tool, or API (e.g., ping, traceroute, ICMP probes, UPF vendor CLI, SNMP/gNMI telemetry, or a monitoring platform such as Prometheus/Grafana) that an operator can use to obtain the current N6 round-trip latency?",
+      "Does the response correctly identify the N6 interface as the interface between the UPF and the external data network (DN) in a 5G core architecture, demonstrating accurate domain knowledge?",
+      "Does the response avoid claiming it has access to live telemetry, counters, or real-time network state for upf-core-01?",
+      "Does the response acknowledge that round-trip latency on the N6 interface is a runtime/operational metric that requires active measurement or live monitoring tools to determine?",
+      "Does the response provide technically valid guidance specific to UPF N6 latency measurement, rather than only generic network troubleshooting advice?",
+      "Does the response avoid presenting fabricated device-specific configuration details or interface statistics for upf-core-01 as if they were real?"
+    ]
+  },
+  {
+    "intent_id": "core-read-upf-throughput-urllc",
+    "domain": "core",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.42857142857142855,
+    "latency_heavy_ms": 10212.815542000044,
+    "cost_heavy": 0.006546,
+    "checklist": [
+      "Does the response avoid fabricating specific throughput figures (e.g., Mbps or Gbps values) for UPF upf-edge-09 that it cannot know without live access?",
+      "Does the response explain at least one concrete method to obtain the current user-plane throughput, such as querying PFCP session reports, reading UPF performance counters via CLI, or using a telemetry/monitoring tool (e.g., Prometheus, SNMP, or a vendor-specific NMS)?",
+      "Does the response correctly identify that UPF user-plane throughput in a 5G core context is associated with N3 (RAN-facing) and N6 (DN-facing) interfaces and explain their relevance to the measurement?",
+      "Does the response correctly associate the URLLC slice with its 5QI/S-NSSAI identifiers and explain how to filter throughput metrics specifically for that slice rather than aggregate UPF traffic?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the current throughput value directly?",
+      "Does the response avoid presenting any fabricated session counts, packet rates, or bandwidth utilization percentages as if they were real current values?",
+      "Does the response provide technically accurate guidance on at least one relevant counter or metric name (e.g., GTP-U byte counters, PFCP usage reporting) that would surface user-plane throughput on a UPF?"
+    ]
+  },
+  {
+    "intent_id": "ran-read-active-ues",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.8571428571428571,
+    "latency_heavy_ms": 11035.46912500002,
+    "cost_heavy": 0.005672999999999999,
+    "checklist": [
+      "Does the response avoid fabricating a specific number of currently active UEs on gNB-412-C0 without live access to the network?",
+      "Does the response explain at least one concrete method (e.g., CLI command, SNMP OID, O1/NETCONF query, vendor NMS API, or KPI counter) to retrieve the current active UE count from the gNB?",
+      "Does the response correctly identify that active UE count on a gNB is typically obtained from RAN-layer metrics such as RRC-connected UE counters or vendor-specific PM (Performance Management) data?",
+      "Does the response acknowledge that it has no live access to the network and therefore cannot provide the real-time value?",
+      "Does the response avoid presenting any placeholder or example numeric value as if it were the actual current count for gNB-412-C0?",
+      "Does the response correctly distinguish between relevant RAN states (e.g., RRC_CONNECTED vs. RRC_IDLE/INACTIVE) when describing how active UEs are counted?",
+      "Does the response provide actionable guidance that is specific enough for a network operator to execute the lookup themselves?"
+    ]
+  },
+  {
+    "intent_id": "ran-read-beam-index",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_heavy": "anthropic/claude-sonnet-4.6",
+    "q_heavy": 0.42857142857142855,
+    "latency_heavy_ms": 10015.981833000013,
+    "cost_heavy": 0.0055709999999999996,
+    "checklist": [
+      "Does the response avoid fabricating or inventing a specific beam index value for cell gNB-615-C0 without live network access?",
+      "Does the response explain at least one concrete method (e.g., CLI command, OAM/SON API, vendor-specific NMS query, or O1/O-RAN telemetry counter) to retrieve the active beam index from the gNB?",
+      "Does the response correctly explain the RAN concept of beam management, including that the active beam index is determined dynamically via beam sweeping and CSI-RS/SSB measurements in 5G NR?",
+      "Does the response reference relevant 3GPP or O-RAN standards or vendor-specific mechanisms (e.g., SSB beam index, NR beam correspondence, or TCI state) that govern how the dominant serving beam is identified?",
+      "Does the response clarify that it cannot provide the current active beam index because it has no live access to network telemetry or counters?",
+      "Does the response avoid presenting any fabricated KPI, counter value, or beam-related metric as if it were real current data from gNB-615-C0?",
+      "Does the response provide actionable guidance on which specific counters, logs, or interfaces (e.g., MDT logs, RRC measurements, vendor SON dashboard) a network engineer should consult to determine the dominant serving beam direction?"
+    ]
+  }
+]

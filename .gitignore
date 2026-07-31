@@ -1,12 +1,15 @@
 # =============================================================================
-# InferRouter — .gitignore
+# InferRouter-LLM — .gitignore
 # =============================================================================
-# COMMITTED (source of truth, never ignore):
-#   app/, tests/, scripts/, docs/, docker-compose.yml, Dockerfile,
-#   Makefile, requirements.txt, pytest.ini, .env.example, .dockerignore
+# VERSIONNÉ (source de vérité) :
+#   app/, bench/, experiments/, scripts/, tests/, docs/
+#   Dockerfile, docker-compose.yml, .dockerignore, requirements.txt,
+#   pytest.ini, .env.example
+#   data/*.yaml (jeux d'intents), data/complexity_estimator.joblib (estimateur
+#   persisté, déterministe), experiments/results/ (preuves des campagnes)
 #
-# LOCAL-ONLY (ignored below):
-#   .venv/, data/*, __pycache__, IDE config, secrets, large binaries
+# LOCAL UNIQUEMENT (ignoré ci-dessous) :
+#   .venv/, __pycache__, secrets, config IDE, artefacts de build
 # =============================================================================
 
 # --- Python runtime ---
@@ -17,7 +20,7 @@ __pycache__/
 *.egg-info/
 .eggs/
 
-# --- Virtual environments ---
+# --- Environnements virtuels ---
 .venv/
 venv/
 env/
@@ -25,7 +28,7 @@ env/
 # --- Worktrees git (espaces de travail isolés, jamais versionnés) ---
 .worktrees/
 
-# --- Test / coverage ---
+# --- Tests / couverture ---
 .pytest_cache/
 .coverage
 .coverage.*
@@ -33,29 +36,29 @@ htmlcov/
 .ruff_cache/
 .mypy_cache/
 
-# --- Data (local-only: images, benchmarks, results) ---
+# --- Données ---
+# Tout est ignoré par défaut, sauf les artefacts qui rendent le dépôt
+# reproductible depuis un clone frais : les jeux d'intents et l'estimateur
+# persisté (RandomForest sur 4 attributs, random_state=42, 1,1 Mo).
 data/*
-# Exception : les jeux d'intents versionnés (artefacts validés)
 !data/intents_spike.yaml
 !data/intents_dataset.yaml
 !data/intents_dataset_lengthctrl.yaml
 !data/intents_dataset_decorr.yaml
+!data/complexity_estimator.joblib
 
-# --- Spike experiment outputs (local-only) ---
-experiments/results/
-
-# --- Secrets / local config ---
+# --- Secrets / config locale ---
 .env
 .envrc
 
-# --- Project docs kept local ---
+# --- Docs gardées hors dépôt ---
 .claude/
 CLAUDE.md
 TODO.md
 REPORT.md
 DEMO.md
 
-# --- Large binary / generated files ---
+# --- Binaires et fichiers générés ---
 *.pdf
 !docs/InferRouter-LLM.pdf
 latex/

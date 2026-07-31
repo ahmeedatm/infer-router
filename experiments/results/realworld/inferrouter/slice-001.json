@@ -1,0 +1,1 @@
+{"intent_id": "slice-001", "action": "bandwidth", "src": "site_a", "dst": "site_b", "bw_mbps": 8.0}

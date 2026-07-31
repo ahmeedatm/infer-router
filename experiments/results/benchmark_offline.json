@@ -1,0 +1,2666 @@
+[
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 23280.508
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 34420.501667
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 28473.542208
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 18460.638875
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 33361.473542
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 20190.947999999993
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 21259.314667000013
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 9472.137458
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 11430.357541000007
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9620.795791999995
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 10653.695542000038
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 8818.399417000022
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 10736.420708000082
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9782.807041999946
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 12341.855167000063
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 9672.312917
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 14023.16333300007
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8379.339874999914
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8980.10391600019
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9001.321166000025
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 11274.735125
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9722.017457999997
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.7142857142857143,
+    "cost": 0.0285,
+    "latency_ms": 9738.80379100001
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 9142.971375000001
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 10157.626250000021
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9015.543624999993
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 8915.943624999984
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8014.654833000009
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 28516.03149999994
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 15519.939375000007
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 19455.233292000004
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 21150.09870900002
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 24952.83154100002
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 23691.939250000018
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 20998.41745800006
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 28297.440542000004
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 16753.536291000048
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.625,
+    "cost": 0.0285,
+    "latency_ms": 24808.889375000035
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 26199.792333000005
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 18665.73904199993
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 25721.540707999793
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 23712.197792000097
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 25084.8108749999
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 36301.665917000035
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 19461.007624999867
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 24915.40629199994
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.7142857142857143,
+    "cost": 0.0285,
+    "latency_ms": 20660.95650000011
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8061.389500000018
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 11337.72533299998
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 15793.499749999999
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 16381.855499999987
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 28817.323665999993
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 25914.444750000002
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 25047.896165999988
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 23423.749750000014
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 18688.486624999998
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 22864.173083000027
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 16508.341833000002
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9741.041541000071
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 25143.570708
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.5,
+    "cost": 0.0285,
+    "latency_ms": 23145.349958
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 22492.745958
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 33275.026708
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 19136.878582999998
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 14422.126417000016
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 20456.36675000003
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 23055.94725000003
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 9386.57012500005
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 7401.948875000016
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 20381.40008399995
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 31171.348707999983
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 24549.01437500007
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 17744.63049999997
+  },
+  {
+    "strategy": "always_heavy",
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 16496.530042000017
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9276.074417
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 16931.076708000004
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 16651.797584
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 8568.775624999998
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 23759.565333
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.75,
+    "cost": 0.000168,
+    "latency_ms": 16083.09725
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.625,
+    "cost": 0.000168,
+    "latency_ms": 11933.92987499999
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 819.264917
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.42857142857142855,
+    "cost": 0.000168,
+    "latency_ms": 3780.087583
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2361.8757910000027
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 4563.351167
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 5377.808542000004
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 6881.945208
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 5087.96833400001
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2928.5456670000085
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 3506.401374999996
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.75,
+    "cost": 0.000168,
+    "latency_ms": 6973.758750000002
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 7412.477625000009
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 5307.639416999962
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 2675.7706249999997
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 7584.176166999995
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 4671.140667000003
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 56552.851334
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 2120.3599580000514
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 8221.983708999971
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 794.3502919999901
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 30592.951708000044
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 5039.998915999945
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 27132.807375000004
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 5597.575792000001
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 9703.366709000002
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 7779.73437499999
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 8469.975625
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 10927.504916999993
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 7474.638875000011
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.42857142857142855,
+    "cost": 0.000168,
+    "latency_ms": 10627.235959000018
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 7242.604707999988
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 7009.783666999993
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 15776.461124999998
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 7452.586459000003
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 17010.59062500002
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 8666.371249999997
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.42857142857142855,
+    "cost": 0.000168,
+    "latency_ms": 10312.56741699997
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 34370.870541999975
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 6991.186500000026
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9996.786958
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.14285714285714285,
+    "cost": 0.000168,
+    "latency_ms": 8544.817417
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 4830.17612499998
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 4739.888958
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 4408.357292000005
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.75,
+    "cost": 0.000168,
+    "latency_ms": 6106.622542000011
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 5290.490708999997
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 11641.149249999984
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9560.987000000012
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.75,
+    "cost": 0.000168,
+    "latency_ms": 28557.50312499998
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 6500.100750000001
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 7077.117166999983
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.14285714285714285,
+    "cost": 0.000168,
+    "latency_ms": 6666.584916999966
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2983.5903339999986
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 16730.664040999953
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9942.32199999999
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 20404.312540999967
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 12724.630124999976
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 29913.750790999984
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 7931.057208000084
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 12157.235249999985
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 16020.18483400002
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.0,
+    "cost": 0.000168,
+    "latency_ms": 4000.479833000014
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 861.5696669999977
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 45221.86458299996
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 20817.303917000005
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 16625.494458000005
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 8470.288334
+  },
+  {
+    "strategy": "always_light",
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 1871.7256249999964
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9276.074417
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 16931.076708000004
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 28473.542208
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 8568.775624999998
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 23759.565333
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.75,
+    "cost": 0.000168,
+    "latency_ms": 16083.09725
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.625,
+    "cost": 0.000168,
+    "latency_ms": 11933.92987499999
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 819.264917
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 11430.357541000007
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2361.8757910000027
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 4563.351167
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 5377.808542000004
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 6881.945208
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 5087.96833400001
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2928.5456670000085
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 3506.401374999996
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 14023.16333300007
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 7412.477625000009
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8980.10391600019
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9001.321166000025
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 7584.176166999995
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 4671.140667000003
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.7142857142857143,
+    "cost": 0.0285,
+    "latency_ms": 9738.80379100001
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 9142.971375000001
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 10157.626250000021
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 794.3502919999901
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 30592.951708000044
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8014.654833000009
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 27132.807375000004
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 5597.575792000001
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 19455.233292000004
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 7779.73437499999
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 24952.83154100002
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 23691.939250000018
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 20998.41745800006
+  },
+  {
+    "strategy": "random",
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.42857142857142855,
+    "cost": 0.000168,
+    "latency_ms": 10627.235959000018
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 16753.536291000048
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 7009.783666999993
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 26199.792333000005
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 7452.586459000003
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 25721.540707999793
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 23712.197792000097
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.42857142857142855,
+    "cost": 0.000168,
+    "latency_ms": 10312.56741699997
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 34370.870541999975
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 6991.186500000026
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9996.786958
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.7142857142857143,
+    "cost": 0.0285,
+    "latency_ms": 20660.95650000011
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 4830.17612499998
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 4739.888958
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 4408.357292000005
+  },
+  {
+    "strategy": "random",
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 16381.855499999987
+  },
+  {
+    "strategy": "random",
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 28817.323665999993
+  },
+  {
+    "strategy": "random",
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 25914.444750000002
+  },
+  {
+    "strategy": "random",
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 25047.896165999988
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.75,
+    "cost": 0.000168,
+    "latency_ms": 28557.50312499998
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 18688.486624999998
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 22864.173083000027
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.14285714285714285,
+    "cost": 0.000168,
+    "latency_ms": 6666.584916999966
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 9741.041541000071
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.5,
+    "cost": 0.000168,
+    "latency_ms": 16730.664040999953
+  },
+  {
+    "strategy": "random",
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "tier": "light",
+    "q": 0.375,
+    "cost": 0.000168,
+    "latency_ms": 9942.32199999999
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 20404.312540999967
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 12724.630124999976
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 19136.878582999998
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 14422.126417000016
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 20456.36675000003
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 16020.18483400002
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 9386.57012500005
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 861.5696669999977
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.25,
+    "cost": 0.000168,
+    "latency_ms": 45221.86458299996
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "tier": "light",
+    "q": 0.125,
+    "cost": 0.000168,
+    "latency_ms": 20817.303917000005
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 24549.01437500007
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 17744.63049999997
+  },
+  {
+    "strategy": "random",
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 16496.530042000017
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 23280.508
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 34420.501667
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 28473.542208
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 18460.638875
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 33361.473542
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 20190.947999999993
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 21259.314667000013
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 819.264917
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.42857142857142855,
+    "cost": 0.000168,
+    "latency_ms": 3780.087583
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2361.8757910000027
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 4563.351167
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 8818.399417000022
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 6881.945208
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 5087.96833400001
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2928.5456670000085
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 3506.401374999996
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 14023.16333300007
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 7412.477625000009
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 8980.10391600019
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 2675.7706249999997
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 7584.176166999995
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 1.0,
+    "cost": 0.000168,
+    "latency_ms": 4671.140667000003
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 56552.851334
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 9142.971375000001
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 8221.983708999971
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 794.3502919999901
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.8571428571428571,
+    "cost": 0.000168,
+    "latency_ms": 30592.951708000044
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.7142857142857143,
+    "cost": 0.000168,
+    "latency_ms": 5039.998915999945
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 28516.03149999994
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 15519.939375000007
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 19455.233292000004
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 21150.09870900002
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 24952.83154100002
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 23691.939250000018
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 20998.41745800006
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 28297.440542000004
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 16753.536291000048
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.625,
+    "cost": 0.0285,
+    "latency_ms": 24808.889375000035
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 26199.792333000005
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 18665.73904199993
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 25721.540707999793
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 23712.197792000097
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 25084.8108749999
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 36301.665917000035
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 19461.007624999867
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 24915.40629199994
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.7142857142857143,
+    "cost": 0.0285,
+    "latency_ms": 20660.95650000011
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 4830.17612499998
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 4739.888958
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.8571428571428571,
+    "cost": 0.0285,
+    "latency_ms": 15793.499749999999
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 16381.855499999987
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 28817.323665999993
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 25914.444750000002
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 25047.896165999988
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 23423.749750000014
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 18688.486624999998
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 22864.173083000027
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 16508.341833000002
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.5714285714285714,
+    "cost": 0.000168,
+    "latency_ms": 2983.5903339999986
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 25143.570708
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.5,
+    "cost": 0.0285,
+    "latency_ms": 23145.349958
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 22492.745958
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 33275.026708
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 19136.878582999998
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 14422.126417000016
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.875,
+    "cost": 0.0285,
+    "latency_ms": 20456.36675000003
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 23055.94725000003
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.0,
+    "cost": 0.000168,
+    "latency_ms": 4000.479833000014
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "tier": "light",
+    "q": 0.2857142857142857,
+    "cost": 0.000168,
+    "latency_ms": 861.5696669999977
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 20381.40008399995
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 31171.348707999983
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 24549.01437500007
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 0.75,
+    "cost": 0.0285,
+    "latency_ms": 17744.63049999997
+  },
+  {
+    "strategy": "inferrouter",
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "tier": "heavy",
+    "q": 1.0,
+    "cost": 0.0285,
+    "latency_ms": 16496.530042000017
+  }
+]

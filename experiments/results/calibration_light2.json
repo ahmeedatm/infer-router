@@ -1,0 +1,86 @@
+[
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "q_light2": 0.0,
+    "q_heavy": 0.0,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "q_light2": 0.0,
+    "q_heavy": 0.125,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.25,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "q_light2": 0.0,
+    "q_heavy": 0.5,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "q_light2": 0.14285714285714285,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.5,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "q_light2": 0.25,
+    "q_heavy": 0.5,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "q_light2": 0.25,
+    "q_heavy": 0.5,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "q_light2": 0.0,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "q_light2": 0.0,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "openai/gpt-4o-mini"
+  },
+  {
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "openai/gpt-4o-mini"
+  }
+]

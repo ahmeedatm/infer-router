@@ -1,0 +1,1 @@
+{"intent_id": "reach-004", "action": "allow", "src": "slice_ctrl", "dst": "ran_sched", "bw_mbps": null}
