@@ -30,3 +30,13 @@ def test_commands_for_rejects_an_unregistered_verb():
 
     with pytest.raises(VerbError):
         commands_for(_Fake(), EP)
+
+
+ALL_VERBS = frozenset({
+    "allow", "block", "bandwidth_max", "bandwidth_min",
+    "mirror", "reroute", "priority",
+})
+
+
+def test_every_verb_is_registered():
+    assert frozenset(REGISTRY) == ALL_VERBS

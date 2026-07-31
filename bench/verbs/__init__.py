@@ -8,7 +8,7 @@ from __future__ import annotations
 from types import ModuleType
 
 from bench.subset import EndpointRef
-from bench.verbs import allow_block, bandwidth, mirror, reroute
+from bench.verbs import allow_block, bandwidth, mirror, priority, reroute
 from bench.verbs.base import OvsCommand, VerbError
 
 REGISTRY: dict[str, ModuleType] = {
@@ -17,6 +17,7 @@ REGISTRY: dict[str, ModuleType] = {
     "bandwidth_max": bandwidth,
     "bandwidth_min": bandwidth,
     "mirror": mirror,
+    "priority": priority,
     "reroute": reroute,
 }
 
