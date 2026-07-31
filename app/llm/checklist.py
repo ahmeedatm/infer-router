@@ -22,7 +22,9 @@ from typing import Optional
 import httpx
 
 from app import config
+from app.llm.ollama_client import call_model as call_local_model
 from app.llm.openrouter_client import call_model
+from app.llm.prompting import is_local_model_id
 from app.llm.schema import Intent
 
 # Prompt asking the strong model for an intent-specific yes/no checklist.
@@ -83,12 +85,18 @@ def _parse_lines(raw: str) -> tuple[str, ...]:
 def generate_checklist(
     intent: Intent,
     *,
+    model_id: Optional[str] = None,
     client: Optional[httpx.Client] = None,
 ) -> tuple[str, ...]:
-    """Generate an intent-specific RocketEval checklist via the strong model.
+    """Generate an intent-specific RocketEval checklist with a strong model.
 
     Args:
         intent: The network intent to build the checklist for.
+        model_id: Model producing the checklist. Defaults to
+            ``config.CHECKLIST_MODEL`` (a third-party strong model, neutral
+            towards the pool). An Ollama tag routes the call to the local
+            server instead of OpenRouter, which lets the checklist be built
+            without API credits at the cost of a weaker generator.
         client: Optional injected httpx.Client (for tests / connection reuse).
 
     Returns:
@@ -96,6 +104,7 @@ def generate_checklist(
 
     Raises:
         OpenRouterError: on timeout, non-2xx status, or malformed response.
+        OllamaClientError: when a local generator is unreachable or unusable.
         ChecklistError: when the model output yields zero criteria.
     """
     prompt = CHECKLIST_PROMPT_TEMPLATE.format(
@@ -103,8 +112,10 @@ def generate_checklist(
         criticality=intent.criticality,
         text=intent.text,
     )
-    response = call_model(
-        config.CHECKLIST_MODEL,
+    generator = model_id or config.CHECKLIST_MODEL
+    backend = call_local_model if is_local_model_id(generator) else call_model
+    response = backend(
+        generator,
         prompt,
         temperature=0.0,
         max_tokens=config.CHECKLIST_MAX_TOKENS,
