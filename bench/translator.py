@@ -1,11 +1,22 @@
-"""Pure mapping: SdnAction + endpoint table -> OVS flow specification.
+"""Pure mapping: action/plan + endpoint table -> OVS realisation.
 
-No SDN controller: the action is realised directly on Open vSwitch. This module
-stays pure (no execution); the runner applies the FlowSpec via ovs-ofctl /
-ovs-vsctl. Three kinds:
-    allow -> nothing (default L2 connectivity in standalone mode)
-    block -> bidirectional drop flow-mods (by source/dest MAC)
-    qos   -> ingress rate policing (kbps) on the source host's switch port
+No SDN controller: actions and operations are realised directly on Open
+vSwitch. This module stays pure (no execution); the runner applies the result
+via ovs-ofctl / ovs-vsctl.
+
+Two paths coexist during the verb-vocabulary migration:
+
+- Legacy: ``translate`` maps one ``SdnAction`` (allow/block/bandwidth) to a
+  single ``FlowSpec``, one field per mechanism. This shape forced every
+  realisable intent to touch exactly two endpoints under one constraint, and
+  so made every bench intent structurally simple. It is removed once every
+  consumer has migrated to the plan path (see the cleanup task in the SDD
+  plan); until then it stays untouched here.
+- Plan: ``translate_plan`` maps an ``IntentPlan`` (an ordered sequence of
+  operations covering all seven verbs) to a flat tuple of ``OvsCommand``,
+  delegating each operation to ``bench.verbs.commands_for``. All verb
+  knowledge lives in ``bench.verbs``, so adding a verb never touches this
+  module.
 """
 from __future__ import annotations
 
@@ -13,12 +24,15 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from app.llm.intent_plan import IntentPlan
 from app.llm.sdn_action import SdnAction
 from bench.subset import EndpointRef
+from bench.verbs import commands_for
+from bench.verbs.base import OvsCommand, VerbError
 
 
 class TranslateError(ValueError):
-    """Raised when an action cannot be mapped to a flow specification."""
+    """Raised when an action or plan cannot be mapped to an OVS realisation."""
 
 
 class FlowSpec(BaseModel):
@@ -59,3 +73,17 @@ def translate(action: SdnAction, endpoints: dict[str, EndpointRef]) -> FlowSpec:
         policing_kbps=int(action.bw_mbps * 1000),
         policing_host=src.host,
     )
+
+
+def translate_plan(
+    plan: IntentPlan,
+    endpoints: dict[str, EndpointRef],
+) -> tuple[OvsCommand, ...]:
+    """Flatten a plan into the ordered commands that realise it."""
+    commands: list[OvsCommand] = []
+    for op in plan.operations:
+        try:
+            commands.extend(commands_for(op, endpoints))
+        except VerbError as exc:
+            raise TranslateError(f"{plan.intent_id}: {exc}") from exc
+    return tuple(commands)
