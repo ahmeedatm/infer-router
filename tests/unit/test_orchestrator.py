@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from app.llm.sdn_action import SdnAction
 from bench.orchestrator import CaseResult, run_case
-from bench.subset import EndpointRef, GroundTruth, SubsetEntry
+from bench.subset import EndpointRef, GroundTruth, PingFail, SubsetEntry
 from bench.translator import FlowSpec
 
 
@@ -10,10 +10,12 @@ def _entry() -> SubsetEntry:
     return SubsetEntry(
         intent_id="sec-001", text="block a->b", domain="security",
         criticality="high", klass="isolation", topology="linear3",
+        expected_complexity="simple",
         endpoints={
             "a": EndpointRef(host="h1", mac="00:00:00:00:00:01"),
             "b": EndpointRef(host="h3", mac="00:00:00:00:00:03"),
         },
+        checks=(PingFail(check="ping_fail", src="a", dst="b"),),
         ground_truth=GroundTruth(check="ping_fail", src="a", dst="b"),
     )
 

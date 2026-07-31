@@ -1,49 +1,63 @@
 from __future__ import annotations
 
 import textwrap
-from pathlib import Path
 
 import pytest
 
 from bench.subset import SubsetError, load_subset
 
-
-def _write(tmp_path: Path, body: str) -> str:
-    p = tmp_path / "subset.yaml"
-    p.write_text(textwrap.dedent(body))
-    return str(p)
-
-
-def test_loads_valid_entry(tmp_path):
-    path = _write(tmp_path, """
-        - intent_id: sec-001
-          text: Block RAN mgmt from core billing
-          domain: security
-          criticality: high
-          klass: isolation
-          topology: linear3
-          endpoints:
-            ran_mgmt: {host: h1, mac: "00:00:00:00:00:01"}
-            core_billing: {host: h3, mac: "00:00:00:00:00:03"}
-          ground_truth: {check: ping_fail, src: ran_mgmt, dst: core_billing}
-    """)
-    entries = load_subset(path)
-    assert entries[0].intent_id == "sec-001"
-    assert entries[0].endpoints["ran_mgmt"].host == "h1"
-    assert entries[0].ground_truth.check == "ping_fail"
+_VALID = textwrap.dedent("""
+- intent_id: cx-001
+  text: "Isolate a from b and cap a to c at 10 Mbps."
+  domain: security
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    a: {host: h1, mac: "00:00:00:00:00:01"}
+    b: {host: h3, mac: "00:00:00:00:00:03"}
+    c: {host: h2, mac: "00:00:00:00:00:02"}
+  checks:
+    - {check: ping_fail, src: a, dst: b}
+    - {check: throughput_max, src: a, dst: c, max_mbps: 10.0}
+""")
 
 
-def test_rejects_ground_truth_unknown_endpoint(tmp_path):
-    path = _write(tmp_path, """
-        - intent_id: bad-001
-          text: x
-          domain: security
-          criticality: low
-          klass: isolation
-          topology: linear3
-          endpoints:
-            a: {host: h1, mac: "00:00:00:00:00:01"}
-          ground_truth: {check: ping_fail, src: a, dst: ghost}
-    """)
+def _write(tmp_path, body: str) -> str:
+    path = tmp_path / "subset.yaml"
+    path.write_text(body)
+    return str(path)
+
+
+def test_loads_an_entry_with_several_checks(tmp_path):
+    entries = load_subset(_write(tmp_path, _VALID))
+    assert len(entries) == 1
+    entry = entries[0]
+    assert entry.expected_complexity == "complex"
+    assert len(entry.checks) == 2
+    assert entry.checks[0].check == "ping_fail"
+    assert entry.checks[1].max_mbps == 10.0
+
+
+def test_rejects_a_check_referencing_an_unknown_endpoint(tmp_path):
+    body = _VALID.replace("{check: ping_fail, src: a, dst: b}",
+                          "{check: ping_fail, src: a, dst: ghost}")
     with pytest.raises(SubsetError):
-        load_subset(path)
+        load_subset(_write(tmp_path, body))
+
+
+def test_rejects_an_entry_without_checks(tmp_path):
+    body = _VALID.split("  checks:")[0] + "  checks: []\n"
+    with pytest.raises(SubsetError):
+        load_subset(_write(tmp_path, body))
+
+
+def test_rejects_an_unknown_complexity_label(tmp_path):
+    with pytest.raises(SubsetError):
+        load_subset(_write(tmp_path, _VALID.replace("complex", "trivial")))
+
+
+def test_rejects_a_throughput_max_without_a_cap(tmp_path):
+    body = _VALID.replace(", max_mbps: 10.0", "")
+    with pytest.raises(SubsetError):
+        load_subset(_write(tmp_path, body))

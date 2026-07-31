@@ -12,6 +12,9 @@
     edge_mon: {host: h1, mac: "00:00:00:00:00:01"}
     core_tel: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_ok, src: edge_mon, dst: core_tel}
+  expected_complexity: simple
+  checks:
+    - {check: ping_ok, src: edge_mon, dst: core_tel}
 
 - intent_id: reach-002
   text: "Allow the RAN base station to reach the core orchestrator for configuration sync."
@@ -23,6 +26,9 @@
     ran_bs: {host: h1, mac: "00:00:00:00:00:01"}
     core_orch: {host: h2, mac: "00:00:00:00:00:02"}
   ground_truth: {check: ping_ok, src: ran_bs, dst: core_orch}
+  expected_complexity: simple
+  checks:
+    - {check: ping_ok, src: ran_bs, dst: core_orch}
 
 - intent_id: reach-003
   text: "Establish connectivity between the security probe and the log aggregator."
@@ -34,6 +40,9 @@
     sec_probe: {host: h2, mac: "00:00:00:00:00:02"}
     log_agg: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_ok, src: sec_probe, dst: log_agg}
+  expected_complexity: simple
+  checks:
+    - {check: ping_ok, src: sec_probe, dst: log_agg}
 
 - intent_id: reach-004
   text: "Make sure the slice controller can reach the RAN scheduler for slice provisioning."
@@ -45,6 +54,9 @@
     slice_ctrl: {host: h1, mac: "00:00:00:00:00:01"}
     ran_sched: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_ok, src: slice_ctrl, dst: ran_sched}
+  expected_complexity: simple
+  checks:
+    - {check: ping_ok, src: slice_ctrl, dst: ran_sched}
 
 # --- isolation (4) : drop flow-mods OVS, ground_truth ping_fail ---
 - intent_id: sec-001
@@ -57,6 +69,9 @@
     ran_mgmt: {host: h1, mac: "00:00:00:00:00:01"}
     billing: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_fail, src: ran_mgmt, dst: billing}
+  expected_complexity: simple
+  checks:
+    - {check: ping_fail, src: ran_mgmt, dst: billing}
 
 - intent_id: sec-002
   text: "Isolate the guest diagnostic host from the core billing system entirely."
@@ -68,6 +83,9 @@
     guest_diag: {host: h2, mac: "00:00:00:00:00:02"}
     core_billing: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_fail, src: guest_diag, dst: core_billing}
+  expected_complexity: simple
+  checks:
+    - {check: ping_fail, src: guest_diag, dst: core_billing}
 
 - intent_id: sec-003
   text: "Deny any connection between the legacy RAN probe and the security operations host."
@@ -79,6 +97,9 @@
     legacy_ran: {host: h1, mac: "00:00:00:00:00:01"}
     sec_ops: {host: h2, mac: "00:00:00:00:00:02"}
   ground_truth: {check: ping_fail, src: legacy_ran, dst: sec_ops}
+  expected_complexity: simple
+  checks:
+    - {check: ping_fail, src: legacy_ran, dst: sec_ops}
 
 - intent_id: sec-004
   text: "Cut off the compromised slice tenant host from the core telemetry collector."
@@ -90,6 +111,9 @@
     compromised_tenant: {host: h1, mac: "00:00:00:00:00:01"}
     core_tel2: {host: h3, mac: "00:00:00:00:00:03"}
   ground_truth: {check: ping_fail, src: compromised_tenant, dst: core_tel2}
+  expected_complexity: simple
+  checks:
+    - {check: ping_fail, src: compromised_tenant, dst: core_tel2}
 
 # --- qos (4) : plafonnement de débit (ingress policing OVS), ground_truth throughput_max ---
 - intent_id: slice-001
@@ -102,6 +126,9 @@
     site_a: {host: h1, mac: "00:00:00:00:00:01"}
     site_b: {host: h2, mac: "00:00:00:00:00:02"}
   ground_truth: {check: throughput_max, src: site_a, dst: site_b, max_mbps: 8.0}
+  expected_complexity: simple
+  checks:
+    - {check: throughput_max, src: site_a, dst: site_b, max_mbps: 8.0}
 
 - intent_id: slice-002
   text: "Limit the eMBB background slice from the RAN edge to the core to 20 Mbps."
@@ -113,6 +140,9 @@
     ran_edge: {host: h1, mac: "00:00:00:00:00:01"}
     core_gw: {host: h2, mac: "00:00:00:00:00:02"}
   ground_truth: {check: throughput_max, src: ran_edge, dst: core_gw, max_mbps: 20.0}
+  expected_complexity: simple
+  checks:
+    - {check: throughput_max, src: ran_edge, dst: core_gw, max_mbps: 20.0}
 
 - intent_id: slice-003
   text: "Rate-limit the mMTC telemetry uplink to 5 Mbps."
@@ -124,6 +154,9 @@
     mmtc_sensor: {host: h1, mac: "00:00:00:00:00:01"}
     mmtc_collector: {host: h2, mac: "00:00:00:00:00:02"}
   ground_truth: {check: throughput_max, src: mmtc_sensor, dst: mmtc_collector, max_mbps: 5.0}
+  expected_complexity: simple
+  checks:
+    - {check: throughput_max, src: mmtc_sensor, dst: mmtc_collector, max_mbps: 5.0}
 
 - intent_id: slice-004
   text: "Throttle the bulk backup transfer between the field unit and the ops center to 15 Mbps."
@@ -135,3 +168,6 @@
     field_unit: {host: h1, mac: "00:00:00:00:00:01"}
     ops_center: {host: h2, mac: "00:00:00:00:00:02"}
   ground_truth: {check: throughput_max, src: field_unit, dst: ops_center, max_mbps: 15.0}
+  expected_complexity: simple
+  checks:
+    - {check: throughput_max, src: field_unit, dst: ops_center, max_mbps: 15.0}
