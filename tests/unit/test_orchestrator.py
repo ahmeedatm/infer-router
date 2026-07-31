@@ -27,8 +27,9 @@ class _FakeRunner:
     def __init__(self, ping_out: str, iperf_out: str) -> None:
         self._ping, self._iperf = ping_out, iperf_out
         self.applied = []
+        self.warmup_calls = 0
 
-    def warmup(self): ...
+    def warmup(self): self.warmup_calls += 1
     def apply(self, commands): self.applied.extend(commands)
     def ping(self, s, d): return self._ping
     def iperf(self, s, d, port=None, seconds=5): return self._iperf
@@ -71,3 +72,21 @@ def test_an_untranslatable_plan_counts_as_a_total_failure():
     assert res.satisfied is False
     assert res.realization_rate == 0.0
     assert "unknown endpoint" in res.detail
+
+
+def test_an_unreadable_probe_fails_only_that_check():
+    # ping output has no packet-loss field: parse_ping_loss raises VerifyError
+    # for the ping_fail check. The iperf output is well-formed, so the
+    # throughput_max check still gets a genuine verdict. One bad probe must
+    # cost exactly one check, not the whole case.
+    runner = _FakeRunner("connect: Network is unreachable", "9.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", _FULL), "heavy", runner)
+    assert res.satisfied is False
+    assert res.realization_rate == 0.5
+
+
+def test_a_missing_plan_causes_no_runner_side_effects():
+    runner = _FakeRunner(_OK, "")
+    run_case(_entry(), None, "light", runner)
+    assert runner.warmup_calls == 0
+    assert runner.applied == []
