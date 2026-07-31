@@ -8,12 +8,14 @@ from __future__ import annotations
 from types import ModuleType
 
 from bench.subset import EndpointRef
-from bench.verbs import allow_block
+from bench.verbs import allow_block, bandwidth
 from bench.verbs.base import OvsCommand, VerbError
 
 REGISTRY: dict[str, ModuleType] = {
     "allow": allow_block,
     "block": allow_block,
+    "bandwidth_max": bandwidth,
+    "bandwidth_min": bandwidth,
 }
 
 
