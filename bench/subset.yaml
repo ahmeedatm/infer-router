@@ -23,7 +23,7 @@
     - {check: ping_ok, src: edge_mon, dst: core_tel}
 
 - intent_id: s-block-001
-  text: "Block all traffic from the RAN management host to the billing host."
+  text: "Ensure the billing host is entirely unreachable from the RAN management host."
   domain: security
   criticality: high
   expected_complexity: simple
@@ -98,7 +98,7 @@
     - {check: path_used, src: ran_sched, dst: core_coll, via: s3, not_via: s2}
 
 - intent_id: s-prio-001
-  text: "Mark the URLLC signalling flow from the slice controller to the RAN scheduler as expedited forwarding."
+  text: "Mark the URLLC signalling flow from the slice controller to the RAN scheduler as expedited forwarding (ToS 184)."
   domain: slice
   criticality: high
   expected_complexity: simple
@@ -125,7 +125,7 @@
     - {check: throughput_max, src: tenant, dst: collector, max_mbps: 6.0}
 
 - intent_id: m-002
-  text: "Cut off the rogue IoT sensor from the core network entirely, and duplicate its traffic with the local relay host to the security probe for forensic capture."
+  text: "Cut off the rogue IoT sensor from the core network entirely, and duplicate the traffic from the rogue sensor to the local relay host onto the security probe for forensic capture."
   domain: security
   criticality: high
   expected_complexity: medium
@@ -140,7 +140,7 @@
     - {check: mirror_seen, src: rogue, dst: relay, probe_host: h4, min_packets: 3}
 
 - intent_id: m-003
-  text: "For the eMBB slice: cap user data from the guest terminal to the edge gateway at 8 Mbps, and mark the control channel from the slice orchestrator to the same gateway as expedited forwarding."
+  text: "For the eMBB slice: cap user data from the guest terminal to the edge gateway at 8 Mbps, and mark the control channel from the slice orchestrator to the same gateway as expedited forwarding (ToS 184)."
   domain: slice
   criticality: med
   expected_complexity: medium
@@ -199,7 +199,7 @@
     - {check: throughput_max, src: backup_agent, dst: orchestrator, max_mbps: 8.0}
 
 - intent_id: m-007
-  text: "Move the RAN sensor feed from the base station to the core analytics server onto the northern path, and mark the alarm control channel from the RAN controller to the same analytics server as expedited forwarding."
+  text: "Move the RAN sensor feed from the base station to the core analytics server onto the southern path, and mark the alarm control channel from the RAN controller to the same analytics server as expedited forwarding (ToS 184)."
   domain: ran
   criticality: med
   expected_complexity: medium
@@ -209,7 +209,7 @@
     core_analytics: {host: h3, mac: "00:00:00:00:00:03"}
     ran_ctrl: {host: h2, mac: "00:00:00:00:00:02"}
   checks:
-    - {check: path_used, src: base_station, dst: core_analytics, via: s2, not_via: s3}
+    - {check: path_used, src: base_station, dst: core_analytics, via: s3, not_via: s2}
     - {check: tos_marked, src: ran_ctrl, dst: core_analytics, tos: 184}
 
 - intent_id: m-008
@@ -247,7 +247,7 @@
     - {check: mirror_seen, src: sensors, dst: collector, probe_host: h4, min_packets: 3}
 
 - intent_id: c-002
-  text: "Contain the incident: cut off the compromised host from the security gateway, duplicate the compromised host's local traffic with the supervisor console to the security probe, and guarantee at least 5 Mbps to the supervisor's own monitoring flow toward the security gateway even while the probe link is under load."
+  text: "Contain the incident: cut off the compromised host from the security gateway, duplicate the traffic from the compromised host to the supervisor console onto the security probe, and guarantee at least 5 Mbps to the supervisor's own monitoring flow toward the security gateway even while the probe link is under load."
   domain: security
   criticality: high
   expected_complexity: complex
@@ -264,7 +264,7 @@
        contender_src: probe, contender_dst: sec_gateway}
 
 - intent_id: c-003
-  text: "For the URLLC slice: force the control signalling from the primary controller to the core anchor onto the southern path and mark it as expedited forwarding, and guarantee at least 5 Mbps to the data flow from the secondary controller to the same anchor even while a background link competes for the same route."
+  text: "For the URLLC slice: force the control signalling from the primary controller to the core anchor onto the southern path and mark it as expedited forwarding (ToS 184), and guarantee at least 5 Mbps to the data flow from the secondary controller to the same anchor even while a background link competes for the same route."
   domain: slice
   criticality: high
   expected_complexity: complex
@@ -343,18 +343,18 @@
     - {check: ping_ok, src: tenant, dst: mgmt_srv}
 
 - intent_id: c-008
-  text: "Across domains: cut off the compromised host from the primary control console locally, move the edge probe's traffic to the core hub onto the southern path, and guarantee at least 4 Mbps to the control console's own telemetry toward the core hub, even while the compromised host's remaining traffic competes for the same route."
+  text: "Across domains: cut off the compromised host from the primary control console locally, move the secondary uplink's traffic to the core hub onto the southern path, and guarantee at least 4 Mbps to the control console's own telemetry toward the core hub, even while the compromised host's remaining traffic competes for the same route."
   domain: core
   criticality: high
   expected_complexity: complex
   topology: diamond4
   endpoints:
-    breach_src: {host: h2, mac: "00:00:00:00:00:02"}
+    breach_src: {host: h4, mac: "00:00:00:00:00:04"}
     primary_host: {host: h1, mac: "00:00:00:00:00:01"}
-    edge_probe: {host: h4, mac: "00:00:00:00:00:04"}
+    secondary_uplink: {host: h2, mac: "00:00:00:00:00:02"}
     core_hub: {host: h3, mac: "00:00:00:00:00:03"}
   checks:
     - {check: ping_fail, src: breach_src, dst: primary_host}
-    - {check: path_used, src: edge_probe, dst: core_hub, via: s3, not_via: s2}
+    - {check: path_used, src: secondary_uplink, dst: core_hub, via: s3, not_via: s2}
     - {check: throughput_min, src: primary_host, dst: core_hub, min_mbps: 4.0,
        contender_src: breach_src, contender_dst: core_hub}
