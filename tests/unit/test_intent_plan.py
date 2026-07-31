@@ -73,3 +73,53 @@ def test_prompt_lists_endpoints_and_demands_an_array():
     for verb in ("allow", "block", "bandwidth_max", "bandwidth_min",
                  "mirror", "reroute", "priority"):
         assert verb in prompt
+
+
+def test_stray_bracket_in_preamble_does_not_corrupt_extraction():
+    raw = (
+        'Note: source is a[edge-node] and dest is b. Here is the plan: '
+        '[{"verb": "block", "src": "a", "dst": "b"}]'
+    )
+    plan = parse_plan_response("t-1", raw)
+    assert len(plan.operations) == 1
+    assert isinstance(plan.operations[0], BlockOp)
+
+
+def test_trailing_prose_with_bracket_does_not_corrupt_extraction():
+    raw = '[{"verb": "allow", "src": "a", "dst": "b"}] (note: see step [2])'
+    plan = parse_plan_response("t-2", raw)
+    assert len(plan.operations) == 1
+    assert plan.operations[0].verb == "allow"
+
+
+def test_bracket_inside_json_string_value_is_not_treated_as_structural():
+    raw = '[{"verb": "block", "src": "a", "dst": "b[1]"}]'
+    plan = parse_plan_response("t-3", raw)
+    assert plan.operations[0].src == "a"
+    assert plan.operations[0].dst == "b[1]"
+
+
+def test_escaped_quote_inside_string_does_not_break_extraction():
+    raw = '[{"verb": "block", "src": "a\\" ]", "dst": "b"}]'
+    try:
+        plan = parse_plan_response("t-4", raw)
+    except IntentPlanError:
+        pass
+    else:
+        assert isinstance(plan, IntentPlan)
+
+
+def test_unbalanced_input_is_rejected():
+    with pytest.raises(IntentPlanError):
+        parse_plan_response("t-5", '[{"verb": "block", "src": "a", "dst": "b"')
+
+
+def test_array_wins_over_earlier_bare_object():
+    raw = (
+        '{"verb": "block", "src": "x", "dst": "y"} then the real plan is: '
+        '[{"verb": "allow", "src": "a", "dst": "b"}]'
+    )
+    plan = parse_plan_response("t-6", raw)
+    assert len(plan.operations) == 1
+    assert plan.operations[0].verb == "allow"
+    assert plan.operations[0].src == "a"
