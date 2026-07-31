@@ -9,14 +9,23 @@ made every bench intent structurally simple.
 Pure module: no network. The model call is wired by the phase-A experiment
 script, which feeds the raw completion text to ``parse_plan_response``.
 
-``_extract`` deliberately accepts a bare JSON object (not just an array) and
-wraps it as a single-operation plan. This avoids scoring a model as failed
-over pure formatting when the intent only needed one operation. Extraction
-uses a bracket-balanced, string-aware scan rather than a greedy regex: a
-greedy first-bracket-to-last-bracket match is corrupted by any stray bracket
-in surrounding prose (e.g. a citation like "[2]" or a literal "[" in an
-endpoint name), which would silently bias failure counts against whichever
-model tends to wrap its answers in more prose.
+``parse_plan_response`` deliberately accepts a bare JSON object (not just an
+array) and wraps it as a single-operation plan. This avoids scoring a model
+as failed over pure formatting when the intent only needed one operation.
+
+Extraction is schema-aware, not just JSON-aware: it walks every balanced,
+string-aware bracket span in the completion (arrays before bare objects) and
+returns the first one that both parses as JSON and validates as an
+``IntentPlan``. Two failure modes this avoids, both of which would bias
+results against whichever model writes more prose around its answer (the
+lighter, more verbose model in this project's benchmark):
+- a greedy first-bracket-to-last-bracket regex, corrupted by any stray
+  bracket anywhere in the completion (e.g. a citation like "[2]" or a
+  literal "[" in an endpoint name);
+- stopping at the first span that merely parses as *any* JSON, which is
+  fooled by incidental bracketed content earlier in the text (a port list
+  like "[80, 443]", an unrelated object) that is valid JSON but not a valid
+  plan.
 """
 from __future__ import annotations
 
@@ -176,44 +185,50 @@ def _iter_balanced_spans(raw: str, open_char: str, close_char: str) -> Iterator[
         search_from = start + 1
 
 
-def _first_valid_json(raw: str, open_char: str, close_char: str):
-    """Return the parsed value of the first balanced span (in order of
-    appearance) that is valid JSON, or ``None`` if no candidate parses.
+def _iter_json_candidates(raw: str) -> Iterator[object]:
+    """Yield every JSON value decodable from a balanced span in ``raw``,
+    array spans before bare-object spans, each group in order of appearance.
 
-    Trying every candidate span in turn, rather than only the first one, is
-    what makes a stray unrelated bracket (a citation, a literal bracket in an
-    endpoint name) harmless: a non-JSON candidate is simply skipped in favour
-    of the next one.
+    A span that fails to parse as JSON at all is silently skipped here (it
+    is never a real candidate); only spans that decode successfully are
+    yielded, so the caller only has to reason about schema validity.
     """
-    for span in _iter_balanced_spans(raw, open_char, close_char):
-        try:
-            return json.loads(span)
-        except json.JSONDecodeError:
-            continue
-    return None
+    for open_char, close_char in (("[", "]"), ("{", "}")):
+        for span in _iter_balanced_spans(raw, open_char, close_char):
+            try:
+                yield json.loads(span)
+            except json.JSONDecodeError:
+                continue
 
 
-def _extract(raw: str) -> list:
-    """Pull the operation list out of a completion.
-
-    Prefers a JSON array anywhere in the text; a bare object is accepted only
-    when no array is present, and is wrapped as a single-operation plan so a
-    single-operation intent is not scored as a failure over pure formatting.
-    Extraction is bracket-balanced and string-aware (see ``_matching_close``),
-    not a greedy regex, so prose surrounding the payload cannot corrupt it.
-    """
-    data = _first_valid_json(raw, "[", "]")
-    if data is None:
-        data = _first_valid_json(raw, "{", "}")
-    if data is None:
-        raise IntentPlanError(f"no JSON found in completion: {raw[:120]!r}")
+def _as_operations(data: object) -> list:
+    """Normalise a decoded JSON value into an operations list: a bare object
+    is wrapped as a single-operation plan (see module docstring)."""
     return data if isinstance(data, list) else [data]
 
 
 def parse_plan_response(intent_id: str, raw: str) -> IntentPlan:
-    """Extract and validate the operation plan from a raw model completion."""
-    operations = _extract(raw)
-    try:
-        return IntentPlan(intent_id=intent_id, operations=tuple(operations))
-    except (ValidationError, TypeError) as exc:
-        raise IntentPlanError(f"plan fails schema: {exc}") from exc
+    """Extract and validate the operation plan from a raw model completion.
+
+    Tries every JSON-decodable candidate span in ``raw`` (arrays before bare
+    objects, each group in order of appearance) and returns the first one
+    that also validates as an ``IntentPlan``. This keeps incidental
+    bracketed content elsewhere in the completion (a port list, an unrelated
+    object) from shadowing the real plan merely because it parses as JSON
+    and comes first.
+
+    If no candidate validates, the raised error describes the schema failure
+    of the last JSON-decodable candidate seen, since that is the one most
+    likely to be the model's actual (if malformed) attempt at a plan. If
+    nothing in the completion parses as JSON at all, that is reported
+    instead.
+    """
+    last_schema_error: Optional[Exception] = None
+    for data in _iter_json_candidates(raw):
+        try:
+            return IntentPlan(intent_id=intent_id, operations=tuple(_as_operations(data)))
+        except (ValidationError, TypeError) as exc:
+            last_schema_error = exc
+    if last_schema_error is not None:
+        raise IntentPlanError(f"plan fails schema: {last_schema_error}") from last_schema_error
+    raise IntentPlanError(f"no JSON found in completion: {raw[:120]!r}")
