@@ -23,6 +23,23 @@ _VALID = textwrap.dedent("""
 """)
 
 
+_WITH_LEGACY_GROUND_TRUTH = textwrap.dedent("""
+- intent_id: legacy-001
+  text: "Block a from b."
+  domain: security
+  criticality: high
+  klass: isolation
+  expected_complexity: simple
+  topology: linear3
+  endpoints:
+    a: {host: h1, mac: "00:00:00:00:00:01"}
+    b: {host: h3, mac: "00:00:00:00:00:03"}
+  ground_truth: {check: ping_fail, src: a, dst: b}
+  checks:
+    - {check: ping_fail, src: a, dst: b}
+""")
+
+
 def _write(tmp_path, body: str) -> str:
     path = tmp_path / "subset.yaml"
     path.write_text(body)
@@ -61,3 +78,21 @@ def test_rejects_a_throughput_max_without_a_cap(tmp_path):
     body = _VALID.replace(", max_mbps: 10.0", "")
     with pytest.raises(SubsetError):
         load_subset(_write(tmp_path, body))
+
+
+def test_rejects_a_legacy_ground_truth_referencing_an_unknown_endpoint(tmp_path):
+    body = _WITH_LEGACY_GROUND_TRUTH.replace(
+        "ground_truth: {check: ping_fail, src: a, dst: b}",
+        "ground_truth: {check: ping_fail, src: a, dst: ghost}",
+    )
+    with pytest.raises(SubsetError):
+        load_subset(_write(tmp_path, body))
+
+
+def test_loads_a_valid_legacy_ground_truth_alongside_checks(tmp_path):
+    entries = load_subset(_write(tmp_path, _WITH_LEGACY_GROUND_TRUTH))
+    assert len(entries) == 1
+    entry = entries[0]
+    assert entry.ground_truth.check == "ping_fail"
+    assert entry.ground_truth.src == "a"
+    assert entry.ground_truth.dst == "b"
