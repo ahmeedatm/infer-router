@@ -1,50 +1,73 @@
 from __future__ import annotations
 
-from app.llm.sdn_action import SdnAction
+from app.llm.intent_plan import parse_plan_response
 from bench.orchestrator import CaseResult, run_case
-from bench.subset import EndpointRef, GroundTruth, PingFail, SubsetEntry
-from bench.translator import FlowSpec
+from bench.subset import EndpointRef, PingFail, SubsetEntry, ThroughputMax
+
+_OK = "3 packets transmitted, 3 received, 0% packet loss"
+_LOST = "3 packets transmitted, 0 received, 100% packet loss"
 
 
 def _entry() -> SubsetEntry:
     return SubsetEntry(
-        intent_id="sec-001", text="block a->b", domain="security",
-        criticality="high", klass="isolation", topology="linear3",
-        expected_complexity="simple",
+        intent_id="cx-001", text="isolate and cap", domain="security",
+        criticality="high", expected_complexity="complex", topology="diamond4",
         endpoints={
             "a": EndpointRef(host="h1", mac="00:00:00:00:00:01"),
             "b": EndpointRef(host="h3", mac="00:00:00:00:00:03"),
         },
-        checks=(PingFail(check="ping_fail", src="a", dst="b"),),
-        ground_truth=GroundTruth(check="ping_fail", src="a", dst="b"),
+        checks=(
+            PingFail(check="ping_fail", src="a", dst="b"),
+            ThroughputMax(check="throughput_max", src="a", dst="b", max_mbps=10.0),
+        ),
     )
 
 
 class _FakeRunner:
-    """Records the applied FlowSpec and returns a canned ping output."""
+    def __init__(self, ping_out: str, iperf_out: str) -> None:
+        self._ping, self._iperf = ping_out, iperf_out
+        self.applied = []
 
-    def __init__(self, ping_out: str) -> None:
-        self._ping_out = ping_out
-        self.applied: FlowSpec | None = None
-
-    def warmup(self) -> None: ...
-    def apply(self, spec: FlowSpec) -> None: self.applied = spec
-    def ping(self, s, d) -> str: return self._ping_out
-    def iperf(self, s, d) -> str: return ""
+    def warmup(self): ...
+    def apply(self, commands): self.applied.extend(commands)
+    def ping(self, s, d): return self._ping
+    def iperf(self, s, d, port=None, seconds=5): return self._iperf
 
 
-def test_isolation_satisfied_when_ping_fails():
-    action = SdnAction(intent_id="sec-001", action="block", src="a", dst="b")
-    runner = _FakeRunner("3 packets transmitted, 0 received, 100% packet loss")
-    res = run_case(_entry(), action, "heavy", runner)
+_FULL = ('[{"verb": "block", "src": "a", "dst": "b"}, '
+         '{"verb": "bandwidth_max", "src": "a", "dst": "b", "bw_mbps": 10}]')
+
+
+def test_both_checks_pass_gives_satisfied_and_rate_one():
+    runner = _FakeRunner(_LOST, "9.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", _FULL), "heavy", runner)
     assert isinstance(res, CaseResult)
     assert res.satisfied is True
-    assert res.strategy == "heavy"
-    assert runner.applied is not None and runner.applied.kind == "block"
+    assert res.realization_rate == 1.0
+    assert res.expected_complexity == "complex"
+    assert len(runner.applied) == 3
 
 
-def test_isolation_unsatisfied_when_ping_succeeds():
-    action = SdnAction(intent_id="sec-001", action="block", src="a", dst="b")
-    runner = _FakeRunner("3 packets transmitted, 3 received, 0% packet loss")
-    res = run_case(_entry(), action, "light", runner)
+def test_one_check_out_of_two_gives_unsatisfied_but_half_rate():
+    # The model only blocked; the cap is missing, so throughput overshoots.
+    partial = '[{"verb": "block", "src": "a", "dst": "b"}]'
+    runner = _FakeRunner(_LOST, "45.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", partial), "light", runner)
     assert res.satisfied is False
+    assert res.realization_rate == 0.5
+
+
+def test_a_missing_plan_counts_as_a_total_failure():
+    res = run_case(_entry(), None, "light", _FakeRunner(_OK, ""))
+    assert res.satisfied is False
+    assert res.realization_rate == 0.0
+    assert "no valid plan" in res.detail
+
+
+def test_an_untranslatable_plan_counts_as_a_total_failure():
+    bad = '[{"verb": "block", "src": "a", "dst": "ghost"}]'
+    res = run_case(_entry(), parse_plan_response("cx-001", bad), "light",
+                   _FakeRunner(_OK, ""))
+    assert res.satisfied is False
+    assert res.realization_rate == 0.0
+    assert "unknown endpoint" in res.detail

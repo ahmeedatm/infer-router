@@ -5,7 +5,10 @@ from experiments.aggregate_realization import realization_rate, render_table
 
 
 def _r(intent, strat, ok):
-    return CaseResult(intent_id=intent, strategy=strat, satisfied=ok, detail="")
+    return CaseResult(
+        intent_id=intent, strategy=strat, expected_complexity="simple",
+        satisfied=ok, realization_rate=1.0 if ok else 0.0, detail="",
+    )
 
 
 def test_rate_per_strategy():

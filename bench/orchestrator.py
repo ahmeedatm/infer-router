@@ -1,58 +1,79 @@
 """Run one intent/strategy case on the OVS bench (no external controller)."""
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict
 
-from app.llm.sdn_action import SdnAction
-from bench.subset import SubsetEntry
-from bench.translator import translate
-from bench.verifier import (
-    Measurements,
-    decide,
-    parse_iperf_mbps,
-    parse_ping_loss,
-)
-
-_THROUGHPUT_CHECKS = ("throughput_min", "throughput_max")
+from app.llm.intent_plan import IntentPlan
+from bench.subset import Complexity, SubsetEntry
+from bench.translator import TranslateError, translate_plan
+from bench.verifier import VerifyError, run_check
 
 
 class CaseResult(BaseModel):
+    """Outcome of one intent under one routing strategy.
+
+    Attributes:
+        satisfied: Every ground-truth check held (strict AND). An intent that
+            is half realised is not honoured, so this is the headline metric.
+        realization_rate: Fraction of checks that held, for diagnosis.
+    """
+
     model_config = ConfigDict(frozen=True)
+
     intent_id: str
     strategy: str
+    expected_complexity: Complexity
     satisfied: bool
+    realization_rate: float
     detail: str
 
 
-def _measure(entry: SubsetEntry, runner) -> Measurements:
-    gt = entry.ground_truth
-    src_host = entry.endpoints[gt.src].host
-    dst_host = entry.endpoints[gt.dst].host
-    if gt.check in _THROUGHPUT_CHECKS:
-        return Measurements(throughput_mbps=parse_iperf_mbps(runner.iperf(src_host, dst_host)))
-    return Measurements(loss_pct=parse_ping_loss(runner.ping(src_host, dst_host)))
+def _failed(entry: SubsetEntry, strategy: str, detail: str) -> CaseResult:
+    return CaseResult(
+        intent_id=entry.intent_id, strategy=strategy,
+        expected_complexity=entry.expected_complexity,
+        satisfied=False, realization_rate=0.0, detail=detail,
+    )
 
 
 def run_case(
     entry: SubsetEntry,
-    action: SdnAction,
+    plan: Optional[IntentPlan],
     strategy: str,
     runner,
 ) -> CaseResult:
-    """Apply the action on the data plane, measure it, decide vs ground truth.
+    """Apply the plan on the data plane, run every check, score the case.
 
-    ``runner`` exposes ``warmup()``, ``apply(FlowSpec)``, ``ping()`` and
-    ``iperf()`` (see :class:`bench.topology.MininetRunner`). Unit tests inject a
-    fake runner, so this stays free of any Mininet dependency.
+    ``runner`` exposes ``warmup()``, ``apply(commands)`` and the probe methods
+    used by :func:`bench.verifier.run_check`. Unit tests inject a fake runner,
+    so this stays free of any Mininet dependency.
     """
+    if plan is None:
+        return _failed(entry, strategy, "LLM produced no valid plan")
+
     runner.warmup()
-    spec = translate(action, entry.endpoints)
-    runner.apply(spec)
-    meas = _measure(entry, runner)
-    satisfied = decide(entry.ground_truth, meas)
+    try:
+        commands = translate_plan(plan, entry.endpoints)
+    except TranslateError as exc:
+        return _failed(entry, strategy, f"untranslatable plan: {exc}")
+
+    runner.apply(commands)
+
+    results = []
+    for check in entry.checks:
+        try:
+            results.append(run_check(check, entry, runner))
+        except VerifyError as exc:
+            results.append(False)
+            print(f"{entry.intent_id}/{strategy}: {check.check} unreadable: {exc}")
+
+    rate = sum(results) / len(results)
+    verbs = ",".join(op.verb for op in plan.operations)
     return CaseResult(
-        intent_id=entry.intent_id,
-        strategy=strategy,
-        satisfied=satisfied,
-        detail=f"{action.action} {action.src}->{action.dst} | {meas.model_dump()}",
+        intent_id=entry.intent_id, strategy=strategy,
+        expected_complexity=entry.expected_complexity,
+        satisfied=all(results), realization_rate=rate,
+        detail=f"[{verbs}] {sum(results)}/{len(results)} checks",
     )
