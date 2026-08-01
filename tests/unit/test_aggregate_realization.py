@@ -1,27 +1,47 @@
 from __future__ import annotations
 
 from bench.orchestrator import CaseResult
-from experiments.aggregate_realization import realization_rate, render_table
+from experiments.aggregate_realization import (
+    by_complexity, mean_realization, realization_rate, render_table,
+)
 
 
-def _r(intent, strat, ok):
+def _r(strategy, complexity, satisfied, rate) -> CaseResult:
     return CaseResult(
-        intent_id=intent, strategy=strat, expected_complexity="simple",
-        satisfied=ok, realization_rate=1.0 if ok else 0.0, detail="",
+        intent_id="i", strategy=strategy, expected_complexity=complexity,
+        satisfied=satisfied, realization_rate=rate, detail="",
     )
 
 
-def test_rate_per_strategy():
-    results = [
-        _r("i1", "light", True), _r("i2", "light", False),
-        _r("i1", "heavy", True), _r("i2", "heavy", True),
-    ]
-    rates = realization_rate(results)
-    assert rates["light"] == 0.5
-    assert rates["heavy"] == 1.0
+_RESULTS = [
+    _r("heavy", "simple", True, 1.0),
+    _r("heavy", "complex", True, 1.0),
+    _r("light", "simple", True, 1.0),
+    _r("light", "complex", False, 0.5),
+]
 
 
-def test_render_table_contains_rows():
-    table = render_table({"light": 0.5, "heavy": 1.0})
-    assert "light" in table and "50" in table
-    assert "heavy" in table and "100" in table
+def test_realization_rate_is_the_share_of_satisfied_cases():
+    assert realization_rate(_RESULTS) == {"heavy": 1.0, "light": 0.5}
+
+
+def test_mean_realization_averages_the_partial_scores():
+    assert mean_realization(_RESULTS) == {"heavy": 1.0, "light": 0.75}
+
+
+def test_by_complexity_splits_each_strategy():
+    got = by_complexity(_RESULTS)
+    assert got[("light", "simple")] == 1.0
+    assert got[("light", "complex")] == 0.0
+    assert got[("heavy", "complex")] == 1.0
+
+
+def test_render_table_reports_both_metrics_and_every_stratum():
+    table = render_table(_RESULTS)
+    assert "Stratégie" in table
+    assert "simple" in table and "complex" in table
+    assert "100 %" in table and "50 %" in table
+
+
+def test_empty_results_render_without_crashing():
+    assert render_table([]) != ""
