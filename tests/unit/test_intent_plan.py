@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
 from app.llm.intent_plan import (
     BandwidthMaxOp,
     BlockOp,
     IntentPlan,
     IntentPlanError,
+    Selector,
     build_plan_prompt,
     parse_plan_response,
 )
@@ -150,3 +152,68 @@ def test_several_incidental_fragments_and_no_valid_plan_still_rejected():
     )
     with pytest.raises(IntentPlanError):
         parse_plan_response("t-10", raw)
+
+
+# --- Selector: a port match needs a transport protocol ----------------------
+
+
+def test_selector_accepts_a_port_with_a_transport_proto():
+    assert Selector(proto="tcp", port=22).port == 22
+    assert Selector(proto="udp", port=53).port == 53
+
+
+def test_selector_accepts_a_proto_without_a_port():
+    assert Selector(proto="icmp").port is None
+
+
+def test_selector_rejects_a_port_without_a_proto():
+    """``{"port": 22}`` alone translates to ``dl_type=0x0800,tp_dst=22``,
+    which ovs-ofctl rejects for missing prerequisites. The rule is therefore
+    never installed: scoring it as a realised operation charges the model for
+    an outcome the bench could not produce."""
+    with pytest.raises(ValidationError):
+        Selector(port=22)
+
+
+def test_selector_rejects_a_port_with_icmp():
+    """``nw_proto=1,tp_dst=22`` is rejected the same way: ICMP has no ports."""
+    with pytest.raises(ValidationError):
+        Selector(proto="icmp", port=22)
+
+
+def test_a_plan_with_a_portless_proto_selector_fails_to_parse():
+    """The rejection must surface as an IntentPlanError, so an unrealisable
+    operation is measured as a model failure rather than silently applied."""
+    raw = '[{"verb": "block", "src": "a", "dst": "b", "selector": {"port": 22}}]'
+    with pytest.raises(IntentPlanError):
+        parse_plan_response("s-003", raw)
+
+
+def test_prompt_states_that_a_port_requires_tcp_or_udp():
+    """A model emitting a bare port is a plausible completion unless the
+    schema says otherwise, so the constraint belongs in the prompt too."""
+    prompt = build_plan_prompt("Deny SSH from a to b", ["a", "b"])
+    assert "port" in prompt
+    assert 'requires "proto"' in prompt
+
+
+def test_one_invalid_operation_silently_truncates_the_plan_CHARACTERISATION():
+    """DEFECT, pinned rather than fixed (out of this pass's scope).
+
+    When an array holds one invalid operation, the extractor moves on to the
+    bare-object spans and returns the first single operation that validates.
+    The plan is not rejected; it is silently truncated to one of the
+    operations the model asked for, and the rest are dropped without a trace.
+
+    This predates the Selector rule but the rule makes it far easier to
+    reach, and it bites hardest on multi-operation (complex) intents: the
+    checks for the dropped operations then fail as if the model had never
+    asked for them. Fixing it means validating array candidates strictly
+    instead of falling through to bare objects.
+    """
+    raw = ('[{"verb": "block", "src": "a", "dst": "b", '
+           '"selector": {"port": 22}}, '
+           '{"verb": "bandwidth_max", "src": "a", "dst": "b", "bw_mbps": 8}]')
+    plan = parse_plan_response("c-004", raw)
+    assert len(plan.operations) == 1
+    assert plan.operations[0].verb == "bandwidth_max"

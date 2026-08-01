@@ -7,7 +7,14 @@ import pytest
 from app.llm.intent_plan import IntentPlan, IntentPlanError
 from app.llm.schema import ModelResponse
 from bench.subset import EndpointRef, PingFail, SubsetEntry
-from experiments.run_realworld_validation import _model_for, main, plan_for
+from bench.translator import translate_plan
+from experiments.run_realworld_validation import (
+    NOOP_STRATEGY,
+    _model_for,
+    _STRATEGIES,
+    main,
+    plan_for,
+)
 
 _TWO_ENTRY_SUBSET_YAML = """
 - intent_id: e1
@@ -145,3 +152,62 @@ def test_main_records_a_failure_and_keeps_processing(tmp_path):
     assert (results_dir / "light" / "e2.json").exists()
     assert (results_dir / "heavy" / "e2.json").exists()
     assert (results_dir / "inferrouter" / "e2.json").exists()
+
+
+# --- the noop negative control ----------------------------------------------
+
+
+def _forbidden_call(model_id, prompt, max_tokens=None):
+    raise AssertionError(f"the noop control called the API: {model_id}")
+
+
+def test_noop_produces_a_valid_plan_without_calling_any_model():
+    plan = plan_for(_entry(), NOOP_STRATEGY, _forbidden_call)
+    assert isinstance(plan, IntentPlan)
+    assert plan.intent_id == "s-block-001"
+
+
+def test_noop_translates_to_zero_ovs_commands():
+    """The control's whole point: it parses and applies, yet leaves the data
+    plane exactly as build_topology left it. Any check still passing under
+    it is a check no model can influence."""
+    entry = _entry()
+    plan = plan_for(entry, NOOP_STRATEGY, _forbidden_call)
+    assert translate_plan(plan, entry.endpoints) == ()
+
+
+def test_noop_uses_the_intents_own_endpoints():
+    """A plan naming an endpoint outside the entry would be untranslatable
+    and would score 0 for the wrong reason."""
+    entry = _entry()
+    plan = plan_for(entry, NOOP_STRATEGY, _forbidden_call)
+    for op in plan.operations:
+        assert op.src in entry.endpoints
+        assert op.dst in entry.endpoints
+
+
+def test_noop_has_no_model_and_cannot_resolve_one():
+    """Belt and braces on the money guarantee: even the model-resolution path
+    refuses the control strategy."""
+    with pytest.raises(ValueError):
+        _model_for(_entry(), NOOP_STRATEGY)
+
+
+def test_noop_is_part_of_the_default_strategy_sweep():
+    assert NOOP_STRATEGY in _STRATEGIES
+
+
+def test_main_runs_the_noop_control_without_spending_anything(tmp_path):
+    subset_path = tmp_path / "subset.yaml"
+    subset_path.write_text(_TWO_ENTRY_SUBSET_YAML)
+    results_dir = tmp_path / "results"
+
+    exit_code = main(
+        ["--subset", str(subset_path), "--strategy", NOOP_STRATEGY],
+        call=_forbidden_call, results_dir=results_dir,
+    )
+    assert exit_code == 0
+    for intent_id in ("e1", "e2"):
+        payload = json.loads((results_dir / NOOP_STRATEGY / f"{intent_id}.json").read_text())
+        assert payload["operations"]
+        assert "failed" not in payload

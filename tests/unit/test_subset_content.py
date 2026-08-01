@@ -41,3 +41,16 @@ def test_every_intent_targets_diamond4():
 def test_intent_ids_are_unique():
     ids = [e.intent_id for e in load_subset()]
     assert len(ids) == len(set(ids))
+
+
+def test_the_noop_control_is_inert_on_every_real_subset_entry():
+    """The negative control is only a control if it applies cleanly and
+    changes nothing, for all 24 intents. An entry where it failed to
+    translate would score 0 for the wrong reason and stop proving anything
+    about the checks."""
+    from bench.translator import translate_plan
+    from experiments.run_realworld_validation import noop_plan
+
+    for entry in load_subset():
+        plan = noop_plan(entry)
+        assert translate_plan(plan, entry.endpoints) == (), entry.intent_id

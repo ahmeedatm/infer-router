@@ -32,7 +32,7 @@ from __future__ import annotations
 import json
 from typing import Annotated, Iterator, Literal, Optional, Sequence, Union
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 
 class IntentPlanError(ValueError):
@@ -46,6 +46,24 @@ class Selector(BaseModel):
 
     proto: Optional[Literal["tcp", "udp", "icmp"]] = None
     port: Optional[int] = Field(default=None, ge=1, le=65535)
+
+    @model_validator(mode="after")
+    def _port_needs_a_transport_proto(self) -> "Selector":
+        """A port match without TCP or UDP is unrealisable.
+
+        ``{"port": 22}`` alone becomes ``dl_type=0x0800,tp_dst=22`` and
+        ``{"proto": "icmp", "port": 22}`` becomes ``nw_proto=1,tp_dst=22``;
+        ovs-ofctl rejects both for missing prerequisites, so the rule is never
+        installed. Rejecting the operation at parse time scores it as a model
+        failure, which is what it is, instead of applying nothing and blaming
+        the resulting check.
+        """
+        if self.port is not None and self.proto in (None, "icmp"):
+            raise ValueError(
+                f"selector port requires proto 'tcp' or 'udp' (got "
+                f"{self.proto!r}): a port match has no meaning otherwise"
+            )
+        return self
 
 
 class _BaseOp(BaseModel):
@@ -110,7 +128,8 @@ class IntentPlan(BaseModel):
 
 _SCHEMA_LINES = (
     '{"verb": "allow"|"block", "src": <endpoint>, "dst": <endpoint>, '
-    '"selector": {"proto": "tcp"|"udp"|"icmp", "port": <int>} (optional)}',
+    '"selector": {"proto": "tcp"|"udp"|"icmp", "port": <int>} (optional; '
+    '"port" requires "proto" to be "tcp" or "udp")}',
     '{"verb": "bandwidth_max"|"bandwidth_min", "src": <endpoint>, '
     '"dst": <endpoint>, "bw_mbps": <number>}',
     '{"verb": "mirror", "src": <endpoint>, "dst": <endpoint>, "to": <endpoint>}',
