@@ -1,0 +1,4 @@
+[run]
+omit =
+    bench/topology.py
+    bench/smoke.py

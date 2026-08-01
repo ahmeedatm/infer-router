@@ -3,11 +3,6 @@
 Ground truth describes the expected network state, never the expected
 operations: a model reaching that state by another route is not penalised, and
 an omitted operation fails its check on its own.
-
-``GroundTruth``/``klass`` are the legacy single-check schema, still consumed
-by :mod:`bench.verifier` and :mod:`bench.orchestrator`. ``checks`` (plural,
-Task 9) supersedes them for new entries; the two coexist until the
-consumers migrate.
 """
 from __future__ import annotations
 
@@ -31,17 +26,6 @@ class EndpointRef(BaseModel):
     host: str
     mac: str
     ip: Optional[str] = None
-
-
-class GroundTruth(BaseModel):
-    """Legacy single-check ground truth (pre-Task 9)."""
-
-    model_config = ConfigDict(frozen=True)
-    check: Literal["ping_ok", "ping_fail", "throughput_min", "throughput_max"]
-    src: str
-    dst: str
-    min_mbps: Optional[float] = None
-    max_mbps: Optional[float] = None
 
 
 class _BaseCheck(BaseModel):
@@ -124,18 +108,13 @@ class SubsetEntry(BaseModel):
     topology: str
     endpoints: dict[str, EndpointRef]
     checks: tuple[Check, ...] = Field(min_length=1)
-    # Legacy fields (pre-Task 9), optional so both schemas coexist until
-    # bench.verifier/bench.orchestrator migrate to `checks` in Tasks 10-11.
-    klass: Optional[Literal["reachability", "isolation", "qos"]] = None
-    ground_truth: Optional[GroundTruth] = None
 
 
 _ENDPOINT_FIELDS = ("src", "dst", "contender_src", "contender_dst")
 
 
 def _validate_refs(entry: SubsetEntry) -> None:
-    """Every endpoint a check (or the legacy ground_truth) names must exist
-    in the entry's endpoint table.
+    """Every endpoint a check names must exist in the entry's endpoint table.
 
     ``mirror_seen.probe_host`` is a Mininet host name, not a logical
     endpoint key, so it is deliberately excluded from this check.
@@ -147,13 +126,6 @@ def _validate_refs(entry: SubsetEntry) -> None:
                 raise SubsetError(
                     f"{entry.intent_id}: check {check.check} references "
                     f"unknown endpoint {who!r}"
-                )
-    if entry.ground_truth is not None:
-        for who in (entry.ground_truth.src, entry.ground_truth.dst):
-            if who not in entry.endpoints:
-                raise SubsetError(
-                    f"{entry.intent_id}: ground_truth references unknown "
-                    f"endpoint {who!r}"
                 )
 
 

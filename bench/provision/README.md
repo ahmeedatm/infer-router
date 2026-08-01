@@ -1,31 +1,36 @@
-# Banc Mininet + ONOS (VM Lima)
+# Banc Mininet + Open vSwitch (VM Lima)
+
+Aucun contrôleur SDN externe. ONOS ne démarre pas sur Apple Silicon et Ryu ne
+s'installe pas sur Python récent (constat du 2026-07-24), donc InferRouter joue
+lui-même le rôle du décideur et les opérations sont posées directement sur OVS.
 
 ## Démarrer la VM
+
 ```bash
 limactl start --name inferbench bench/provision/lima.yaml
 limactl shell inferbench
 ```
 
-## Vérifier ONOS (dans la VM, après ~90 s)
+## Vérifier le banc avant tout run
+
 ```bash
-curl -u karaf:karaf http://127.0.0.1:8181/onos/v1/applications | head
-# Activer les apps si besoin :
-ssh -p 8101 karaf@localhost   # pw: karaf
-#   app activate org.onosproject.openflow
-#   app activate org.onosproject.fwd
+cd /opt/infer-router && sudo python3 -m bench.smoke
 ```
 
-## Test de fumée Mininet sous contrôle ONOS
-```bash
-sudo mn --topo single,3 --mac --switch ovs,protocols=OpenFlow14 \
-        --controller remote,ip=127.0.0.1 --test pingall
-```
-Attendu : `0% dropped`.
+Attendu : `SMOKE OK: base forwarding works on diamond4`. Un échec signifie que
+les règles de base du mode secure sont mal posées ; inutile de lancer le run
+complet tant que ce test ne passe pas.
 
-## Run complet (dans la VM)
+## Run complet
+
 ```bash
-# 1. (sur le Mac) produire les actions : python experiments/run_realworld_validation.py
-# 2. (dans la VM) rejouer sur le banc :
+# 1. Sur le Mac, produire les plans (API OpenRouter) :
+python experiments/run_realworld_validation.py
+
+# 2. Dans la VM, rejouer sur le banc :
 cd /opt/infer-router && sudo python3 -m bench.run_bench
 cat experiments/results/realworld/realization_table.md
 ```
+
+Compter 20 à 30 minutes pour 24 intents × 3 stratégies : chaque cas reconstruit
+la topologie et certains checks lancent un iperf de 5 s.

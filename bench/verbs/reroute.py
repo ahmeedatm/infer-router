@@ -15,8 +15,6 @@ OP_MODEL = RerouteOp
 
 VALID_VIA = frozenset({"s2", "s3"})
 
-_EDGES = ("s1", "s4")
-
 
 def to_commands(
     op: RerouteOp,

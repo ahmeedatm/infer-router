@@ -2,7 +2,7 @@
 """Structured-output contract for the target LLM: an ordered plan of network
 operations derived from one intent.
 
-Replaces the single-action ``SdnAction`` contract, whose shape forced every
+Replaces the earlier single-action contract, whose shape forced every
 realisable intent to touch exactly two endpoints under one constraint, and so
 made every bench intent structurally simple.
 
