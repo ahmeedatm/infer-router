@@ -66,8 +66,9 @@ class _FakeRunner:
     def ping(self, s, d): return self.canned.get("ping", _OK)
     def iperf(self, s, d, port=None, seconds=5): return self.canned.get("iperf", "")
     def iperf_contended(self, s, d, cs, cd, seconds=5): return self.canned.get("iperf", "")
-    def tcpdump_count(self, probe_host, src_host, dst_host, seconds=3):
+    def tcpdump_count(self, probe_host, src_host, dst_host, seconds=3, tag="case"):
         self.tcpdump_calls = getattr(self, "tcpdump_calls", []) + [(probe_host, src_host, dst_host)]
+        self.tcpdump_tags = getattr(self, "tcpdump_tags", []) + [tag]
         return self.canned.get("packets", 0)
     def flow_packets(self, switch, dl_src, dl_dst): return self.canned.get(switch, 0)
     def tos_of(self, s, d): return self.canned.get("tos", 0)
@@ -136,12 +137,36 @@ def test_mirror_seen_generates_traffic_between_the_checks_own_endpoints():
     assert runner.tcpdump_calls == [("h4", "h1", "h3")]
 
 
+def test_mirror_seen_tags_the_capture_with_the_intent_id():
+    """The capture file must be per-case. A fixed path is read back from a
+    shared /tmp that survives across cases, so a case whose mirror never
+    worked can read a previous case's packets and pass."""
+    check = MirrorSeen(check="mirror_seen", src="a", dst="b",
+                       probe_host="h4", min_packets=3)
+    runner = _FakeRunner(packets=5)
+    run_check(check, _entry(check), runner)
+    assert runner.tcpdump_tags == ["t-001"]
+
+
 def test_path_used_requires_traffic_on_one_path_only():
     check = PathUsed(check="path_used", src="a", dst="b", via="s3", not_via="s2")
     entry = _entry(check)
     assert run_check(check, entry, _FakeRunner(s3=42, s2=0)) is True
     assert run_check(check, entry, _FakeRunner(s3=42, s2=7)) is False
-    assert run_check(check, entry, _FakeRunner(s3=0, s2=0)) is False
+
+
+def test_path_used_raises_when_no_traffic_was_seen_on_either_path():
+    """Zero packets on both paths is not "the model routed it wrong" — it is
+    "the counters saw nothing", which happens when no flow matching the MAC
+    pair exists anywhere. Returning a bare False there reports a model
+    failure for a bench condition. The orchestrator catches VerifyError,
+    still scores the check false and logs it, so the run continues while the
+    condition becomes visible."""
+    check = PathUsed(check="path_used", src="a", dst="b", via="s3", not_via="s2")
+    with pytest.raises(VerifyError) as excinfo:
+        run_check(check, _entry(check), _FakeRunner(s3=0, s2=0))
+    message = str(excinfo.value)
+    assert "s3" in message and "s2" in message
 
 
 def test_tos_marked_compares_the_captured_byte():

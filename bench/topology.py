@@ -10,6 +10,7 @@ Imported only inside the Lima VM (needs mininet). Never import from unit tests.
 """
 from __future__ import annotations
 
+import itertools
 import re
 
 from mininet.link import TCLink
@@ -17,9 +18,23 @@ from mininet.net import Mininet
 from mininet.node import OVSSwitch
 from mininet.topo import Topo
 
+from bench.apply_result import ApplyError, raise_if_failed  # noqa: F401
 from bench.verbs.base import OvsCommand
 
 BASE_FLOW_PRIORITY = 100
+
+# Seconds of slack on top of an iperf run before the client is killed. Without
+# it a correctly blocked port stalls the whole run on TCP SYN retries (~127 s
+# per call, ~30 minutes across the campaign) instead of reading as 0 Mbps.
+IPERF_GRACE_S = 5
+
+# Port and overrun of the competing flow in ``iperf_contended``. The noise must
+# outlive the measurement window it is meant to contend with, and must then be
+# killed, or it bleeds into the next check of the same case.
+NOISE_PORT = 5002
+NOISE_OVERRUN_S = 2
+
+_UNSAFE_TAG = re.compile(r"[^A-Za-z0-9_.-]")
 
 # Capacity cap on the core link, so bandwidth_min has contention to survive.
 _CORE_MBPS = 10
@@ -72,7 +87,11 @@ def _port_to(net, switch: str, peer: str) -> int:
 
 
 def _install_base_flows(net) -> None:
-    """Unicast forwarding by destination MAC, default path through s2."""
+    """Unicast forwarding by destination MAC, default path through s2.
+
+    A rejection here breaks every case at once and is invisible without
+    reading the output, so it raises like any other rejected command.
+    """
     routes = {
         "s1": {"h1": "h1", "h2": "h2", "h4": "h4", "h3": "s2"},
         "s2": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
@@ -83,11 +102,12 @@ def _install_base_flows(net) -> None:
         sw = net.get(switch)
         for host, nexthop in table.items():
             port = _port_to(net, switch, nexthop)
-            sw.cmd(
+            command = (
                 f"ovs-ofctl add-flow {switch} "
                 f"'priority={BASE_FLOW_PRIORITY},dl_dst={_HOSTS[host]},"
                 f"actions=output:{port}'"
             )
+            raise_if_failed(switch, command, sw.cmd(command))
 
 
 def build_topology(name: str) -> Mininet:
@@ -109,6 +129,17 @@ class MininetRunner:
 
     def __init__(self, net: Mininet) -> None:
         self._net = net
+        self._applied: list[tuple[str, str]] = []
+        self._capture_seq = itertools.count(1)
+
+    @property
+    def applied(self) -> tuple[tuple[str, str], ...]:
+        """Every (switch, expanded command) this runner has issued, in order.
+
+        A failed case is otherwise undiagnosable: the plan says what was
+        asked for, this says what actually reached the switches.
+        """
+        return tuple(self._applied)
 
     # --- realisation -----------------------------------------------------
 
@@ -128,11 +159,22 @@ class MininetRunner:
         self._net.pingAll()
 
     def apply(self, commands) -> None:
+        """Run each command on its target switch, raising on any rejection.
+
+        ``Node.cmd`` has no exit status, so the combined output is inspected
+        instead (see :mod:`bench.apply_result`). Silently discarding it made
+        every rejected rule look like a model that simply did not ask for the
+        behaviour: the rule was never installed, the check failed, and the
+        model was charged for a bench problem.
+        """
         for cmd in commands:
             targets = ([s.name for s in self._net.switches]
                        if cmd.target == "all" else [cmd.target])
             for switch in targets:
-                self._net.get(switch).cmd(self._expand(cmd.command, switch))
+                expanded = self._expand(cmd.command, switch)
+                self._applied.append((switch, expanded))
+                raise_if_failed(switch, expanded,
+                                self._net.get(switch).cmd(expanded))
 
     # --- probes ----------------------------------------------------------
 
@@ -141,37 +183,68 @@ class MininetRunner:
         return src.cmd(f"ping -c 3 -W 1 {dst.IP()}")
 
     def iperf(self, src_host: str, dst_host: str, port=None, seconds: int = 5) -> str:
+        """Measure throughput; a refused port must read as 0, not as a stall.
+
+        The client carries a ``timeout`` because a correctly blocked port
+        leaves iperf retrying the TCP SYN for roughly two minutes. That is a
+        successful block, so it must cost one measurement window, not the
+        campaign's schedule.
+        """
         server, client = self._net.get(dst_host), self._net.get(src_host)
         flag = f"-p {port}" if port is not None else ""
         server.cmd(f"iperf -s -D {flag}")
-        out = client.cmd(f"iperf -c {server.IP()} -t {seconds} {flag}")
+        out = client.cmd(f"timeout {seconds + IPERF_GRACE_S} "
+                         f"iperf -c {server.IP()} -t {seconds} {flag}")
         server.cmd("kill %iperf")
         return out
 
     def iperf_contended(self, src_host, dst_host, contender_src, contender_dst,
                         seconds: int = 5) -> str:
-        """Measure the protected flow while a competing flow saturates the core."""
+        """Measure the protected flow while a competing flow saturates the core.
+
+        The noise flow deliberately outlives the measurement window, so it has
+        to be killed here: left running, it keeps loading the core link during
+        the next check of the same case and corrupts that measurement too.
+        """
         noise_srv = self._net.get(contender_dst)
         noise_cli = self._net.get(contender_src)
-        noise_srv.cmd("iperf -s -D -p 5002")
-        noise_cli.cmd(f"iperf -c {noise_srv.IP()} -p 5002 -t {seconds + 2} &")
-        out = self.iperf(src_host, dst_host, seconds=seconds)
-        noise_srv.cmd("kill %iperf")
-        return out
+        noise_srv.cmd(f"iperf -s -D -p {NOISE_PORT}")
+        noise_cli.cmd(
+            f"timeout {seconds + NOISE_OVERRUN_S + IPERF_GRACE_S} "
+            f"iperf -c {noise_srv.IP()} -p {NOISE_PORT} "
+            f"-t {seconds + NOISE_OVERRUN_S} &"
+        )
+        try:
+            return self.iperf(src_host, dst_host, seconds=seconds)
+        finally:
+            # Matched on the noise port, which the protected flow never uses.
+            noise_cli.cmd(f"pkill -f 'iperf -c .* -p {NOISE_PORT}'")
+            noise_srv.cmd(f"pkill -f 'iperf -s -D -p {NOISE_PORT}'")
 
     def tcpdump_count(self, probe_host: str, src_host: str, dst_host: str,
-                       seconds: int = 3) -> int:
+                       seconds: int = 3, tag: str = "case") -> int:
         """Count packets seen on the probe while ``src_host`` pings ``dst_host``.
 
         The traffic generated must be the traffic the mirror actually taps,
         so the caller supplies the intent's own endpoints rather than a
         hardcoded pair.
+
+        Two details decide whether this measures anything. ``-U`` makes
+        tcpdump flush each packet instead of block-buffering, and the capture
+        window is waited out before the file is read: read while the writer
+        still holds it, a mirror that worked can count 0. The file name
+        carries the case's tag because Mininet hosts share ``/tmp`` with the
+        VM, so a fixed path lets one case read the previous case's packets.
         """
         probe = self._net.get(probe_host)
+        pcap = (f"/tmp/mirror-{_UNSAFE_TAG.sub('_', tag)}-"
+                f"{next(self._capture_seq)}.pcap")
+        probe.cmd(f"rm -f {pcap}")
         probe.cmd(f"timeout {seconds} tcpdump -i {probe.defaultIntf().name} "
-                  f"-c 100 -w /tmp/mirror.pcap &")
+                  f"-U -c 100 -w {pcap} 2>/dev/null &")
         self.ping(src_host, dst_host)
-        out = probe.cmd("tcpdump -r /tmp/mirror.pcap 2>/dev/null | wc -l")
+        probe.cmd("wait")
+        out = probe.cmd(f"tcpdump -r {pcap} 2>/dev/null | wc -l")
         try:
             return int(out.strip().splitlines()[-1])
         except (ValueError, IndexError):

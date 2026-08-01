@@ -62,18 +62,27 @@ def run_case(
     runner.apply(commands)
 
     results = []
+    failed = []
     for check in entry.checks:
         try:
-            results.append(run_check(check, entry, runner))
+            held = run_check(check, entry, runner)
         except VerifyError as exc:
-            results.append(False)
+            held = False
             print(f"{entry.intent_id}/{strategy}: {check.check} unreadable: {exc}")
+        results.append(held)
+        if not held:
+            failed.append(check.check)
 
     rate = sum(results) / len(results)
     verbs = ",".join(op.verb for op in plan.operations)
+    # Naming the failing checks is what lets a result row be read as either a
+    # model failure or a bench malfunction; the count alone cannot say which.
+    detail = f"[{verbs}] {sum(results)}/{len(results)} checks"
+    if failed:
+        detail += "; failed: " + ", ".join(failed)
     return CaseResult(
         intent_id=entry.intent_id, strategy=strategy,
         expected_complexity=entry.expected_complexity,
         satisfied=all(results), realization_rate=rate,
-        detail=f"[{verbs}] {sum(results)}/{len(results)} checks",
+        detail=detail,
     )

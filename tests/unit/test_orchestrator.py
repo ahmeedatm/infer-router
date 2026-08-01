@@ -90,3 +90,37 @@ def test_a_missing_plan_causes_no_runner_side_effects():
     run_case(_entry(), None, "light", runner)
     assert runner.warmup_calls == 0
     assert runner.applied == []
+
+
+# --- detail must name which checks failed -----------------------------------
+
+
+def test_detail_names_the_failing_checks():
+    """With the bench's own defects still outstanding, ``detail`` is the only
+    field that lets the first VM run tell a bench bug from a model failure:
+    "2/4 checks" says how many, never which."""
+    partial = '[{"verb": "block", "src": "a", "dst": "b"}]'
+    runner = _FakeRunner(_LOST, "45.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", partial), "light", runner)
+    assert res.detail == "[block] 1/2 checks; failed: throughput_max"
+
+
+def test_detail_lists_every_failing_check_in_order():
+    runner = _FakeRunner(_OK, "45.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", _FULL), "heavy", runner)
+    assert res.detail.endswith("failed: ping_fail, throughput_max")
+
+
+def test_detail_says_nothing_about_failures_when_everything_passed():
+    runner = _FakeRunner(_LOST, "9.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", _FULL), "heavy", runner)
+    assert res.detail == "[block,bandwidth_max] 2/2 checks"
+
+
+def test_a_check_that_raises_is_named_among_the_failures():
+    """An unreadable probe scores false; it must still be named, otherwise
+    the one condition most likely to be a bench malfunction is the one that
+    leaves no trace in the result row."""
+    runner = _FakeRunner("connect: Network is unreachable", "9.0 Mbits/sec")
+    res = run_case(_entry(), parse_plan_response("cx-001", _FULL), "heavy", runner)
+    assert "failed: ping_fail" in res.detail

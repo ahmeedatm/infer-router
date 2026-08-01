@@ -86,13 +86,26 @@ def run_check(check, entry: SubsetEntry, runner) -> bool:
         return blocked and reachable
 
     if isinstance(check, MirrorSeen):
-        return runner.tcpdump_count(check.probe_host, src, dst) >= check.min_packets
+        seen = runner.tcpdump_count(
+            check.probe_host, src, dst, tag=entry.intent_id
+        )
+        return seen >= check.min_packets
 
     if isinstance(check, PathUsed):
         mac_src = entry.endpoints[check.src].mac
         mac_dst = entry.endpoints[check.dst].mac
         used = runner.flow_packets(check.via, mac_src, mac_dst)
         unused = runner.flow_packets(check.not_via, mac_src, mac_dst)
+        if used == 0 and unused == 0:
+            # Not "the model routed it the wrong way" but "the counters saw
+            # nothing at all", which is what happens when no flow anywhere
+            # matches the MAC pair. Returning False here would report a model
+            # failure for a bench condition, so make it visible instead.
+            raise VerifyError(
+                f"no traffic observed on either path for "
+                f"{mac_src} -> {mac_dst}: {check.via} and {check.not_via} "
+                f"both report 0 packets"
+            )
         return used > 0 and unused == 0
 
     if isinstance(check, TosMarked):
