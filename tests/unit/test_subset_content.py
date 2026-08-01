@@ -30,8 +30,19 @@ def test_every_check_type_appears_somewhere():
     seen = {c.check for e in load_subset() for c in e.checks}
     assert seen == {
         "ping_ok", "ping_fail", "throughput_max", "throughput_min",
-        "port_blocked", "mirror_seen", "path_used", "tos_marked",
+        "port_blocked", "port_open", "mirror_seen", "path_used", "tos_marked",
     }
+
+
+def test_no_intent_is_scored_on_ping_ok_alone():
+    """Base connectivity is total by default and a selector-less ``allow``
+    translates to zero commands, so an intent whose only check is ``ping_ok``
+    cannot be failed by any plan. Combined with a denial it is a useful
+    non-regression check; alone it measures nothing. The negative control
+    caught this on s-allow-001, which scored 1/1 with an inert plan."""
+    for entry in load_subset():
+        kinds = {c.check for c in entry.checks}
+        assert kinds != {"ping_ok"}, entry.intent_id
 
 
 def test_every_intent_targets_diamond4():

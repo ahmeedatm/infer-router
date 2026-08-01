@@ -9,9 +9,16 @@
 # opérations : un modèle qui atteint cet état par une autre route n'est pas
 # pénalisé.
 
-# --- simple (8) : un verbe par intent, un check par intent ---
+# --- simple (8) : un intent court et sans ambiguïté, un check par intent ---
+# s-allow-001 est le seul dont la réalisation demande deux opérations. La
+# raison est structurelle : la connectivité de base est totale, et un `allow`
+# sans sélecteur se traduit par zéro commande OVS. Un intent dont la seule
+# vérité terrain est « X joint Y » est donc infalsifiable par construction --
+# le contrôle négatif l'a marqué 1/1 avec un plan inerte. Une permission n'est
+# observable que comme exception à une interdiction, ce qui la rend
+# intrinsèquement binaire. L'énoncé, lui, reste une directive simple.
 - intent_id: s-allow-001
-  text: "Ensure the edge monitoring host can reach the core telemetry collector."
+  text: "Cut the legacy RAN probe off from the core telemetry collector, except its metrics feed on TCP port 9100."
   domain: core
   criticality: med
   expected_complexity: simple
@@ -20,7 +27,7 @@
     edge_mon: {host: h1, mac: "00:00:00:00:00:01"}
     core_tel: {host: h3, mac: "00:00:00:00:00:03"}
   checks:
-    - {check: ping_ok, src: edge_mon, dst: core_tel}
+    - {check: port_open, src: edge_mon, dst: core_tel, port: 9100, proto: tcp}
 
 - intent_id: s-block-001
   text: "Ensure the billing host is entirely unreachable from the RAN management host."
@@ -47,7 +54,7 @@
     - {check: port_blocked, src: legacy_ran, dst: sec_ops, port: 22, proto: tcp}
 
 - intent_id: s-bwmax-001
-  text: "Cap the best-effort slice between site A and site B at 8 Mbps."
+  text: "Cap the best-effort slice between site A and site B at 4 Mbps."
   domain: slice
   criticality: high
   expected_complexity: simple
@@ -56,7 +63,7 @@
     site_a: {host: h1, mac: "00:00:00:00:00:01"}
     site_b: {host: h3, mac: "00:00:00:00:00:03"}
   checks:
-    - {check: throughput_max, src: site_a, dst: site_b, max_mbps: 8.0}
+    - {check: throughput_max, src: site_a, dst: site_b, max_mbps: 4.0}
 
 - intent_id: s-bwmin-001
   text: "Guarantee at least 5 Mbps to the URLLC control flow from the RAN edge to the core gateway."
@@ -140,7 +147,7 @@
     - {check: mirror_seen, src: rogue, dst: relay, probe_host: h4, min_packets: 3}
 
 - intent_id: m-003
-  text: "For the eMBB slice: cap user data from the guest terminal to the edge gateway at 8 Mbps, and mark the control channel from the slice orchestrator to the same gateway as expedited forwarding (ToS 184)."
+  text: "For the eMBB slice: cap user data from the guest terminal to the edge gateway at 4 Mbps, and mark the control channel from the slice orchestrator to the same gateway as expedited forwarding (ToS 184)."
   domain: slice
   criticality: med
   expected_complexity: medium
@@ -150,7 +157,7 @@
     edge_gw: {host: h3, mac: "00:00:00:00:00:03"}
     slice_orch: {host: h1, mac: "00:00:00:00:00:01"}
   checks:
-    - {check: throughput_max, src: guest_terminal, dst: edge_gw, max_mbps: 8.0}
+    - {check: throughput_max, src: guest_terminal, dst: edge_gw, max_mbps: 4.0}
     - {check: tos_marked, src: slice_orch, dst: edge_gw, tos: 184}
 
 - intent_id: m-004
@@ -185,7 +192,7 @@
     - {check: mirror_seen, src: contractor, dst: historian, probe_host: h4, min_packets: 3}
 
 - intent_id: m-006
-  text: "Ensure the management API can reach the core orchestrator, and cap the nightly backup sync from the backup agent to the orchestrator at 8 Mbps."
+  text: "Ensure the management API can reach the core orchestrator, and cap the nightly backup sync from the backup agent to the orchestrator at 4 Mbps."
   domain: core
   criticality: med
   expected_complexity: medium
@@ -196,7 +203,7 @@
     backup_agent: {host: h2, mac: "00:00:00:00:00:02"}
   checks:
     - {check: ping_ok, src: mgmt_api, dst: orchestrator}
-    - {check: throughput_max, src: backup_agent, dst: orchestrator, max_mbps: 8.0}
+    - {check: throughput_max, src: backup_agent, dst: orchestrator, max_mbps: 4.0}
 
 - intent_id: m-007
   text: "Move the RAN sensor feed from the base station to the core analytics server onto the southern path, and mark the alarm control channel from the RAN controller to the same analytics server as expedited forwarding (ToS 184)."
@@ -230,7 +237,7 @@
 
 # --- complex (8) : trois à quatre opérations, autant de checks ---
 - intent_id: c-001
-  text: "For the factory slice: keep the sensors reachable from the collector, isolate them from the guest tenant, cap the uplink at 8 Mbps, and duplicate the slice traffic to the security probe."
+  text: "For the factory slice: keep the sensors reachable from the collector, isolate them from the guest tenant, cap the uplink at 4 Mbps, and duplicate the slice traffic to the security probe."
   domain: slice
   criticality: high
   expected_complexity: complex
@@ -243,7 +250,7 @@
   checks:
     - {check: ping_ok, src: sensors, dst: collector}
     - {check: ping_fail, src: guest, dst: sensors}
-    - {check: throughput_max, src: sensors, dst: collector, max_mbps: 8.0}
+    - {check: throughput_max, src: sensors, dst: collector, max_mbps: 4.0}
     - {check: mirror_seen, src: sensors, dst: collector, probe_host: h4, min_packets: 3}
 
 - intent_id: c-002
@@ -281,7 +288,7 @@
        contender_src: bg_link, contender_dst: core_anchor}
 
 - intent_id: c-004
-  text: "On the management plane: deny SSH from the management host to the ops server while keeping other management traffic reachable, cut off the client-plane host from the same server entirely, and cap the management host's remaining traffic to the server at 7 Mbps."
+  text: "On the management plane: deny SSH from the management host to the ops server while keeping other management traffic reachable, cut off the client-plane host from the same server entirely, and cap the management host's remaining traffic to the server at 4 Mbps."
   domain: core
   criticality: high
   expected_complexity: complex
@@ -293,10 +300,10 @@
   checks:
     - {check: port_blocked, src: mgmt_host, dst: ops_srv, port: 22, proto: tcp}
     - {check: ping_fail, src: client_plane, dst: ops_srv}
-    - {check: throughput_max, src: mgmt_host, dst: ops_srv, max_mbps: 7.0}
+    - {check: throughput_max, src: mgmt_host, dst: ops_srv, max_mbps: 4.0}
 
 - intent_id: c-005
-  text: "On RAN backhaul failover: move the primary base station's traffic to the core server onto the southern path while confirming the base station stays reachable from the core, and cap the secondary backhaul link's traffic to the same server at 8 Mbps."
+  text: "On RAN backhaul failover: move the primary base station's traffic to the core server onto the southern path while confirming the base station stays reachable from the core, and cap the secondary backhaul link's traffic to the same server at 4 Mbps."
   domain: ran
   criticality: high
   expected_complexity: complex
@@ -308,10 +315,10 @@
   checks:
     - {check: path_used, src: primary_bs, dst: core_srv, via: s3, not_via: s2}
     - {check: ping_ok, src: primary_bs, dst: core_srv}
-    - {check: throughput_max, src: backup_link, dst: core_srv, max_mbps: 8.0}
+    - {check: throughput_max, src: backup_link, dst: core_srv, max_mbps: 4.0}
 
 - intent_id: c-006
-  text: "For the degraded eMBB slice: cap best-effort user data from the slice terminal to the core edge at 8 Mbps, tag the slice's control channel from the slice agent to the same edge with ToS value 32 to mark it as scavenger-class traffic, and duplicate that control channel to the security probe for monitoring."
+  text: "For the degraded eMBB slice: cap best-effort user data from the slice terminal to the core edge at 4 Mbps, tag the slice's control channel from the slice agent to the same edge with ToS value 32 to mark it as scavenger-class traffic, and duplicate that control channel to the security probe for monitoring."
   domain: slice
   criticality: low
   expected_complexity: complex
@@ -322,7 +329,7 @@
     ctrl_chan: {host: h2, mac: "00:00:00:00:00:02"}
     probe: {host: h4, mac: "00:00:00:00:00:04"}
   checks:
-    - {check: throughput_max, src: embb_user, dst: core_edge, max_mbps: 8.0}
+    - {check: throughput_max, src: embb_user, dst: core_edge, max_mbps: 4.0}
     - {check: tos_marked, src: ctrl_chan, dst: core_edge, tos: 32}
     - {check: mirror_seen, src: ctrl_chan, dst: core_edge, probe_host: h4, min_packets: 3}
 

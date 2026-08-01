@@ -30,6 +30,38 @@ def test_a_noop_operation_contributes_nothing():
     assert translate_plan(plan, EP) == ()
 
 
+def test_a_selected_allow_permits_the_return_path_too():
+    """A permission that only covers the forward direction establishes
+    nothing: the SYN passes at priority 300 and the SYN-ACK falls back into
+    the broader drop at 200. Measured in the VM as "tcp connect failed:
+    Connection timed out" until the reverse rule was added."""
+    plan = parse_plan_response("s-001", (
+        '[{"verb": "allow", "src": "a", "dst": "b", '
+        '"selector": {"proto": "tcp", "port": 9100}}]'
+    ))
+    cmds = translate_plan(plan, EP)
+    assert len(cmds) == 2
+    forward, backward = (c.command for c in cmds)
+    assert "dl_src=00:00:00:00:00:01,dl_dst=00:00:00:00:00:03" in forward
+    assert "tp_dst=9100" in forward
+    assert "dl_src=00:00:00:00:00:03,dl_dst=00:00:00:00:00:01" in backward
+    assert "tp_src=9100" in backward
+    assert all("actions=normal" in c.command for c in cmds)
+
+
+def test_a_selected_block_stays_one_directional():
+    """Dropping the forward direction is enough to kill the flow, and the
+    reverse drop would also cut return traffic of unrelated permitted flows."""
+    plan = parse_plan_response("s-002", (
+        '[{"verb": "block", "src": "a", "dst": "b", '
+        '"selector": {"proto": "tcp", "port": 22}}]'
+    ))
+    cmds = translate_plan(plan, EP)
+    assert len(cmds) == 1
+    assert "tp_dst=22" in cmds[0].command
+    assert "actions=drop" in cmds[0].command
+
+
 def test_an_unknown_endpoint_raises_translate_error():
     plan = parse_plan_response("x-001", '[{"verb": "block", "src": "a", "dst": "ghost"}]')
     with pytest.raises(TranslateError):

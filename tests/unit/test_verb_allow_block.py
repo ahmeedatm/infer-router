@@ -38,10 +38,14 @@ def test_block_with_l4_selector_uses_priority_300_and_matches_the_port():
 
 
 def test_allow_with_selector_punches_a_hole_at_priority_300():
+    """Both directions, or the hole is not a hole: the request passes at 300
+    and the response falls back into the broader drop at 200."""
     op = AllowOp(verb="allow", src="a", dst="b",
                  selector=Selector(proto="udp", port=53))
     cmds = allow_block.to_commands(op, EP)
-    assert len(cmds) == 1
-    assert "priority=300" in cmds[0].command
-    assert "nw_proto=17" in cmds[0].command
-    assert "actions=normal" in cmds[0].command
+    assert len(cmds) == 2
+    assert all("priority=300" in c.command for c in cmds)
+    assert all("nw_proto=17" in c.command for c in cmds)
+    assert all("actions=normal" in c.command for c in cmds)
+    assert "tp_dst=53" in cmds[0].command
+    assert "tp_src=53" in cmds[1].command

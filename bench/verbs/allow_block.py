@@ -5,6 +5,11 @@ Without a selector, ``block`` drops both directions by MAC pair at priority
 topology. With an L4 selector, both act at priority 300 on the narrowed flow
 only, ``block`` dropping it and ``allow`` punching a hole through a broader
 drop.
+
+The selected ``allow`` is emitted in both directions (``tp_dst`` forward,
+``tp_src`` back). A hole punched one way is not a hole: the forward SYN gets
+through at 300 and the SYN-ACK falls back into the 200 drop, so the connection
+never establishes and the permission is unobservable.
 """
 from __future__ import annotations
 
@@ -19,12 +24,13 @@ OP_MODEL = (AllowOp, BlockOp)
 _PROTO_NUM = {"icmp": 1, "tcp": 6, "udp": 17}
 
 
-def _match(dl_src: str, dl_dst: str, selector: Selector) -> str:
+def _match(dl_src: str, dl_dst: str, selector: Selector,
+           port_field: str = "tp_dst") -> str:
     parts = [f"dl_src={dl_src}", f"dl_dst={dl_dst}", "dl_type=0x0800"]
     if selector.proto is not None:
         parts.append(f"nw_proto={_PROTO_NUM[selector.proto]}")
     if selector.port is not None:
-        parts.append(f"tp_dst={selector.port}")
+        parts.append(f"{port_field}={selector.port}")
     return ",".join(parts)
 
 
@@ -43,8 +49,19 @@ def to_commands(
     dst = resolve(endpoints, op.dst)
 
     if op.selector is not None:
-        action = "drop" if op.verb == "block" else "normal"
-        return (_flow(_match(src.mac, dst.mac, op.selector), 300, action),)
+        if op.verb == "block":
+            # Dropping the forward direction is enough to kill the flow, and
+            # a reverse drop would also cut the return traffic of permitted
+            # flows that happen to use the port as a source.
+            return (_flow(_match(src.mac, dst.mac, op.selector), 300, "drop"),)
+        # A permission has to cover the return path or it establishes
+        # nothing: the SYN passes at 300 and the SYN-ACK falls back into the
+        # broader drop at 200. Measured in the VM as "tcp connect failed:
+        # Connection timed out" with the forward rule alone.
+        return (
+            _flow(_match(src.mac, dst.mac, op.selector), 300, "normal"),
+            _flow(_match(dst.mac, src.mac, op.selector, "tp_src"), 300, "normal"),
+        )
 
     if op.verb == "allow":
         return ()
