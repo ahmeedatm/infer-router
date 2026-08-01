@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import itertools
 import re
+from typing import Optional
 
 from mininet.link import TCLink
 from mininet.net import Mininet
@@ -22,6 +23,33 @@ from bench.apply_result import ApplyError, raise_if_failed  # noqa: F401
 from bench.verbs.base import OvsCommand
 
 BASE_FLOW_PRIORITY = 100
+
+# Per-pair flows on the transit switches, just above the dl_dst catch-all and
+# below every priority the verbs use (block 200, reroute/priority 150).
+# Without them nothing on s2 or s3 matches both MACs, so ``flow_packets`` --
+# which needs dl_src and dl_dst on the same line -- could never count a
+# packet and ``path_used`` could never be true. The catch-all stays underneath
+# so connectivity never depends on this table being exhaustive.
+PAIR_FLOW_PRIORITY = 110
+
+_TRANSIT_SWITCHES = ("s2", "s3")
+
+# iperf's default control port. Passed explicitly so the server can be killed
+# by an exact pattern instead of a shell job spec (see ``iperf``).
+DEFAULT_IPERF_PORT = 5001
+
+# Traffic the mirror checks generate. Short interval, so the burst fits inside
+# one capture window; enough packets that a working mirror clears min_packets
+# with margin even if the first one is lost to tcpdump's startup.
+MIRROR_PING_COUNT = 6
+MIRROR_PING_INTERVAL = 0.2
+
+# How long to wait for tcpdump to report "listening" before generating the
+# traffic it is supposed to capture.
+CAPTURE_READY_TIMEOUT_S = 5
+
+# How long to wait for an iperf server to release, then bind, its port.
+IPERF_PORT_TIMEOUT_S = 5
 
 # Seconds of slack on top of an iperf run before the client is killed. Without
 # it a correctly blocked port stalls the whole run on TCP SYN retries (~127 s
@@ -86,19 +114,27 @@ def _port_to(net, switch: str, peer: str) -> int:
     raise TopologyError(f"no link between {switch} and {peer}")
 
 
+_ROUTES = {
+    "s1": {"h1": "h1", "h2": "h2", "h4": "h4", "h3": "s2"},
+    "s2": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
+    "s3": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
+    "s4": {"h1": "s2", "h2": "s2", "h4": "s2", "h3": "h3"},
+}
+
+
 def _install_base_flows(net) -> None:
     """Unicast forwarding by destination MAC, default path through s2.
+
+    The transit switches additionally carry one flow per ordered MAC pair, at
+    a priority just above the catch-all. They forward identically; they exist
+    so that traversal is countable. ``path_used`` reads per-flow packet
+    counters and needs a flow naming both endpoints, which a dl_dst-only table
+    never provides.
 
     A rejection here breaks every case at once and is invisible without
     reading the output, so it raises like any other rejected command.
     """
-    routes = {
-        "s1": {"h1": "h1", "h2": "h2", "h4": "h4", "h3": "s2"},
-        "s2": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
-        "s3": {"h1": "s1", "h2": "s1", "h4": "s1", "h3": "s4"},
-        "s4": {"h1": "s2", "h2": "s2", "h4": "s2", "h3": "h3"},
-    }
-    for switch, table in routes.items():
+    for switch, table in _ROUTES.items():
         sw = net.get(switch)
         for host, nexthop in table.items():
             port = _port_to(net, switch, nexthop)
@@ -106,6 +142,18 @@ def _install_base_flows(net) -> None:
                 f"ovs-ofctl add-flow {switch} "
                 f"'priority={BASE_FLOW_PRIORITY},dl_dst={_HOSTS[host]},"
                 f"actions=output:{port}'"
+            )
+            raise_if_failed(switch, command, sw.cmd(command))
+
+    for switch in _TRANSIT_SWITCHES:
+        sw = net.get(switch)
+        table = _ROUTES[switch]
+        for src, dst in itertools.permutations(_HOSTS, 2):
+            port = _port_to(net, switch, table[dst])
+            command = (
+                f"ovs-ofctl add-flow {switch} "
+                f"'priority={PAIR_FLOW_PRIORITY},dl_src={_HOSTS[src]},"
+                f"dl_dst={_HOSTS[dst]},actions=output:{port}'"
             )
             raise_if_failed(switch, command, sw.cmd(command))
 
@@ -175,12 +223,33 @@ class MininetRunner:
                 self._applied.append((switch, expanded))
                 raise_if_failed(switch, expanded,
                                 self._net.get(switch).cmd(expanded))
+        self._invalidate_datapath_cache()
+
+    def _invalidate_datapath_cache(self) -> None:
+        """Drop cached datapath flows so the next packet is re-classified.
+
+        The warmup runs before the plan and populates the kernel megaflow
+        cache with action lists derived from the pre-plan configuration.
+        OVS's revalidator re-derives them on its own schedule, not on the
+        change, so a check probing immediately after ``apply`` can be served
+        entirely from stale entries and measure the network as it was.
+
+        Measured on the mirror case: with the warmup, 0 mirrored packets
+        immediately after applying the mirror, 10 after sleeping 15 s, 10
+        immediately after this flush. Sleeping would work; it would also add
+        a quarter of an hour to the campaign and leave the race in place.
+        The cache is datapath-wide, so one flush covers every bridge.
+        """
+        if self._net.switches:
+            self._net.switches[0].cmd("ovs-appctl dpctl/del-flows 2>/dev/null")
 
     # --- probes ----------------------------------------------------------
 
-    def ping(self, src_host: str, dst_host: str) -> str:
+    def ping(self, src_host: str, dst_host: str, count: int = 3,
+             interval: Optional[float] = None) -> str:
         src, dst = self._net.get(src_host), self._net.get(dst_host)
-        return src.cmd(f"ping -c 3 -W 1 {dst.IP()}")
+        pace = f"-i {interval} " if interval is not None else ""
+        return src.cmd(f"ping -c {count} -W 1 {pace}{dst.IP()}")
 
     def iperf(self, src_host: str, dst_host: str, port=None, seconds: int = 5) -> str:
         """Measure throughput; a refused port must read as 0, not as a stall.
@@ -189,14 +258,47 @@ class MininetRunner:
         leaves iperf retrying the TCP SYN for roughly two minutes. That is a
         successful block, so it must cost one measurement window, not the
         campaign's schedule.
+
+        The port is always explicit, even when it is iperf's own default,
+        because that is what makes the server killable. ``-D`` detaches the
+        server from the shell that started it, so the previous ``kill %iperf``
+        was a job spec matching nothing: servers accumulated for the whole
+        campaign, each one holding its case's network namespace open long
+        after ``net.stop()``. A pattern carrying the exact port kills this
+        server without touching the contention flow's server on another port.
         """
         server, client = self._net.get(dst_host), self._net.get(src_host)
-        flag = f"-p {port}" if port is not None else ""
-        server.cmd(f"iperf -s -D {flag}")
+        port = DEFAULT_IPERF_PORT if port is None else port
+        self._start_iperf_server(server, port)
         out = client.cmd(f"timeout {seconds + IPERF_GRACE_S} "
-                         f"iperf -c {server.IP()} -t {seconds} {flag}")
-        server.cmd("kill %iperf")
+                         f"iperf -c {server.IP()} -t {seconds} -p {port}")
+        server.cmd(f"pkill -f 'iperf -s -D -p {port}'")
         return out
+
+    def _start_iperf_server(self, server, port: int) -> str:
+        """Leave exactly one server listening on ``port``, and prove it.
+
+        Both waits are load-bearing. Killing the previous server and starting
+        the next one immediately is a race: the dying process still holds the
+        socket, the new one fails to bind, and the client's connection is
+        reset a few milliseconds in. iperf still prints a bandwidth for that
+        sliver -- "0.0000-0.0177 sec 99.0 KBytes 45.9 Mbits/sec" -- which is
+        an entirely fictitious number that parses cleanly. Measured on
+        consecutive calls, every second one came back like that, so any case
+        running two throughput checks had a coin-flip on the second.
+
+        Waiting for the port to appear in the listen table then removes the
+        opposite race, where the client connects before the server is up.
+        """
+        attempts = int(IPERF_PORT_TIMEOUT_S * 10)
+        server.cmd(f"pkill -f 'iperf -s -D -p {port}'")
+        server.cmd(f"for _ in $(seq 1 {attempts}); do "
+                   f"pgrep -f 'iperf -s -D -p {port}' >/dev/null || break; "
+                   f"sleep 0.1; done")
+        server.cmd(f"iperf -s -D -p {port}")
+        return server.cmd(f"for _ in $(seq 1 {attempts}); do "
+                          f"ss -ltn 2>/dev/null | grep -q ':{port} ' && break; "
+                          f"sleep 0.1; done")
 
     def iperf_contended(self, src_host, dst_host, contender_src, contender_dst,
                         seconds: int = 5) -> str:
@@ -208,7 +310,7 @@ class MininetRunner:
         """
         noise_srv = self._net.get(contender_dst)
         noise_cli = self._net.get(contender_src)
-        noise_srv.cmd(f"iperf -s -D -p {NOISE_PORT}")
+        self._start_iperf_server(noise_srv, NOISE_PORT)
         noise_cli.cmd(
             f"timeout {seconds + NOISE_OVERRUN_S + IPERF_GRACE_S} "
             f"iperf -c {noise_srv.IP()} -p {NOISE_PORT} "
@@ -222,40 +324,69 @@ class MininetRunner:
             noise_srv.cmd(f"pkill -f 'iperf -s -D -p {NOISE_PORT}'")
 
     def tcpdump_count(self, probe_host: str, src_host: str, dst_host: str,
-                       seconds: int = 3, tag: str = "case") -> int:
-        """Count packets seen on the probe while ``src_host`` pings ``dst_host``.
+                       seconds: int = 15, tag: str = "case") -> int:
+        """Count mirrored packets on the probe while src pings dst.
 
-        The traffic generated must be the traffic the mirror actually taps,
-        so the caller supplies the intent's own endpoints rather than a
-        hardcoded pair.
+        Only the traffic the mirror is supposed to duplicate is counted: ICMP
+        between the two mirrored endpoints. Counting everything on the probe's
+        interface counted the wrong thing entirely. A freshly started Linux
+        interface emits its own IPv6 autoconfiguration burst (multicast
+        listener reports, neighbour and router solicitations), measured at 8
+        to 10 packets in the first seconds, against a ``min_packets`` of 3.
+        So the check passed with no mirror installed, and passed or failed
+        depending only on how far into the case it ran: 8 packets at t=0, 0 at
+        t=8s, which is why it scored 1/1 on the mirror intent and 0 on the
+        one where it ran fourth.
 
-        Two details decide whether this measures anything. ``-U`` makes
-        tcpdump flush each packet instead of block-buffering, and the capture
-        window is waited out before the file is read: read while the writer
-        still holds it, a mirror that worked can count 0. The file name
-        carries the case's tag because Mininet hosts share ``/tmp`` with the
-        VM, so a fixed path lets one case read the previous case's packets.
+        The capture is also synchronised with the traffic rather than raced
+        against it. tcpdump needs a moment to open its socket, and the ping
+        used to start immediately, so the first packets were lost before the
+        capture existed. Here the ping waits for tcpdump to report that it is
+        listening, and the capture is stopped as soon as the ping is done
+        rather than sitting out its full timeout.
+
+        The file name carries the case's tag because Mininet hosts share
+        ``/tmp`` with the VM, so a fixed path lets one case read the previous
+        case's packets.
         """
         probe = self._net.get(probe_host)
-        pcap = (f"/tmp/mirror-{_UNSAFE_TAG.sub('_', tag)}-"
-                f"{next(self._capture_seq)}.pcap")
-        probe.cmd(f"rm -f {pcap}")
+        stem = f"/tmp/mirror-{_UNSAFE_TAG.sub('_', tag)}-{next(self._capture_seq)}"
+        pcap, log = f"{stem}.pcap", f"{stem}.log"
+        expected = (f"icmp and host {self._net.get(src_host).IP()} "
+                    f"and host {self._net.get(dst_host).IP()}")
+
+        probe.cmd(f"rm -f {pcap} {log}")
         probe.cmd(f"timeout {seconds} tcpdump -i {probe.defaultIntf().name} "
-                  f"-U -c 100 -w {pcap} 2>/dev/null &")
-        self.ping(src_host, dst_host)
+                  f"-U -c 200 -w {pcap} 2>{log} &")
+        probe.cmd(f"for _ in $(seq 1 {int(CAPTURE_READY_TIMEOUT_S * 10)}); do "
+                  f"grep -q listening {log} && break; sleep 0.1; done")
+
+        self.ping(src_host, dst_host, count=MIRROR_PING_COUNT,
+                  interval=MIRROR_PING_INTERVAL)
+
+        # -U flushes each packet as it arrives, so stopping the writer early
+        # loses nothing and saves the rest of the timeout window.
+        probe.cmd(f"pkill -f 'tcpdump -i .* -w {pcap}'")
         probe.cmd("wait")
-        out = probe.cmd(f"tcpdump -r {pcap} 2>/dev/null | wc -l")
+        out = probe.cmd(f"tcpdump -r {pcap} -n '{expected}' 2>/dev/null | wc -l")
         try:
             return int(out.strip().splitlines()[-1])
         except (ValueError, IndexError):
             return 0
 
     def flow_packets(self, switch: str, dl_src: str, dl_dst: str) -> int:
+        """Packets counted by flows matching this ordered MAC pair.
+
+        The field names are part of the match. A bare substring test counted
+        ``dl_src=B,dl_dst=A`` for the pair (A, B) as well, so the two
+        directions of a flow were summed together and a reroute that only
+        moved one of them read as if it had moved both.
+        """
         sw = self._net.get(switch)
         out = sw.cmd(f"ovs-ofctl dump-flows {switch}")
         total = 0
         for line in out.splitlines():
-            if dl_src in line and dl_dst in line:
+            if f"dl_src={dl_src}" in line and f"dl_dst={dl_dst}" in line:
                 m = re.search(r"n_packets=(\d+)", line)
                 if m:
                     total += int(m.group(1))
@@ -271,4 +402,15 @@ class MininetRunner:
         return int(m.group(1), 16) if m else 0
 
     def stop(self) -> None:
+        """Tear the case down, including anything that outlived its shell.
+
+        ``iperf -s -D`` detaches, so it survives both the shell that started
+        it and ``net.stop()``. A surviving server keeps its case's network
+        namespace alive; a campaign's worth of them accumulates (19 were found
+        in the VM, some carrying ports from a previous run). They are swept
+        here rather than only per call, so a case that raises mid-check still
+        cleans up after itself.
+        """
+        if self._net.hosts:
+            self._net.hosts[0].cmd("pkill -f 'iperf -s -D' 2>/dev/null")
         self._net.stop()

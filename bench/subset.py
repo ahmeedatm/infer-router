@@ -68,6 +68,21 @@ class PortBlocked(_BaseCheck):
     proto: Literal["tcp", "udp"]
 
 
+class PortOpen(_BaseCheck):
+    """One port still carries traffic while the pair is otherwise cut off.
+
+    The dual of :class:`PortBlocked`, and the only shape in which a permission
+    is observable: base connectivity is total, so "this flow works" says
+    nothing until something broader denies it.
+    """
+
+    check: Literal["port_open"]
+    src: str
+    dst: str
+    port: int = Field(ge=1, le=65535)
+    proto: Literal["tcp", "udp"]
+
+
 class MirrorSeen(_BaseCheck):
     check: Literal["mirror_seen"]
     src: str
@@ -93,7 +108,7 @@ class TosMarked(_BaseCheck):
 
 Check = Annotated[
     Union[PingOk, PingFail, ThroughputMax, ThroughputMin,
-          PortBlocked, MirrorSeen, PathUsed, TosMarked],
+          PortBlocked, PortOpen, MirrorSeen, PathUsed, TosMarked],
     Field(discriminator="check"),
 ]
 
