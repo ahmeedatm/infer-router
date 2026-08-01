@@ -51,13 +51,18 @@ def plan_for(
     return parse_plan_response(entry.intent_id, reply.text)
 
 
-def _write(strategy: str, intent_id: str, payload: dict) -> None:
-    out = _RESULTS / strategy
+def _write(results_dir: Path, strategy: str, intent_id: str, payload: dict) -> None:
+    out = results_dir / strategy
     out.mkdir(parents=True, exist_ok=True)
     (out / f"{intent_id}.json").write_text(json.dumps(payload))
 
 
-def main(argv=None) -> int:
+def main(
+    argv=None,
+    *,
+    call: Callable[..., ModelResponse] = call_model,
+    results_dir: Path = _RESULTS,
+) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--strategy", choices=(*_STRATEGIES, "all"), default="all")
     parser.add_argument("--subset", default=None)
@@ -66,13 +71,13 @@ def main(argv=None) -> int:
     for entry in load_subset(args.subset):
         for strategy in strategies:
             try:
-                plan = plan_for(entry, strategy)
+                plan = plan_for(entry, strategy, call)
             except IntentPlanError as exc:
-                _write(strategy, entry.intent_id,
+                _write(results_dir, strategy, entry.intent_id,
                        {"failed": True, "reason": str(exc)})
                 print(f"{strategy}/{entry.intent_id}: FAILED ({exc})")
                 continue
-            _write(strategy, entry.intent_id, plan.model_dump())
+            _write(results_dir, strategy, entry.intent_id, plan.model_dump())
             verbs = ",".join(op.verb for op in plan.operations)
             print(f"{strategy}/{entry.intent_id}: [{verbs}]")
     return 0
