@@ -5,15 +5,22 @@ bench.run_bench. A completion that cannot be parsed is written with
 ``{"failed": true}`` so the bench scores it as a total failure rather than
 skipping the case.
 
-The ``noop`` strategy is a negative control, not a routing strategy. It calls
-no model and emits a plan that is valid, translatable and inert: a single
-selector-less ``allow`` between two of the intent's own endpoints, which
-``bench.verbs.allow_block`` maps to zero OVS commands. Running the bench
-against it leaves the data plane exactly as ``build_topology`` left it, so
-every check that still passes under ``noop`` is a check no model can
-influence, whatever plan it produced. That is the measurement this control
-exists to produce: it separates checks that discriminate from checks that
-only look like they do.
+Two of the five strategies are controls, not routing strategies. Neither calls
+a model, so neither costs anything.
+
+``noop`` is the negative control. It emits a plan that is valid, translatable
+and inert: a single selector-less ``allow`` between two of the intent's own
+endpoints, which ``bench.verbs.allow_block`` maps to zero OVS commands. The
+data plane stays exactly as ``build_topology`` left it, so every check that
+still passes under ``noop`` is a check no model can influence.
+
+``oracle`` is the positive control (see :mod:`bench.oracle`). It emits the
+plan derived mechanically from the intent's own checks, so every check that
+still fails under ``oracle`` is a check no model can satisfy.
+
+Together they bound each check from both sides. One alone does not: a check
+that always fails passes the negative control while measuring nothing, which
+is how ``path_used`` stayed dead for a whole campaign while looking strict.
 """
 from __future__ import annotations
 
@@ -33,6 +40,7 @@ from app.llm.intent_plan import (
 from app.llm.inferrouter import route
 from app.llm.openrouter_client import call_model
 from app.llm.schema import Intent, ModelResponse
+from bench.oracle import ORACLE_STRATEGY, oracle_plan
 from bench.subset import SubsetEntry, load_subset
 
 _RESULTS = Path(__file__).with_name("results") / "realworld"
@@ -40,7 +48,7 @@ _RESULTS = Path(__file__).with_name("results") / "realworld"
 #: The negative control (see module docstring). Never resolves to a model.
 NOOP_STRATEGY = "noop"
 
-_STRATEGIES = ("light", "heavy", "inferrouter", NOOP_STRATEGY)
+_STRATEGIES = ("light", "heavy", "inferrouter", NOOP_STRATEGY, ORACLE_STRATEGY)
 
 
 def noop_plan(entry: SubsetEntry) -> IntentPlan:
@@ -77,11 +85,13 @@ def plan_for(
 ) -> IntentPlan:
     """Ask the strategy's model for this intent's operation plan.
 
-    ``noop`` short-circuits here, before anything can reach the API: the
+    Both controls short-circuit here, before anything can reach the API: a
     control must be impossible to run up a bill with.
     """
     if strategy == NOOP_STRATEGY:
         return noop_plan(entry)
+    if strategy == ORACLE_STRATEGY:
+        return oracle_plan(entry)
     model_id = _model_for(entry, strategy)
     prompt = build_plan_prompt(entry.text, list(entry.endpoints))
     reply = call(model_id, prompt, max_tokens=config.RESPONSE_MAX_TOKENS)
