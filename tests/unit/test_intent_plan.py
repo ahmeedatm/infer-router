@@ -197,23 +197,68 @@ def test_prompt_states_that_a_port_requires_tcp_or_udp():
     assert 'requires "proto"' in prompt
 
 
-def test_one_invalid_operation_silently_truncates_the_plan_CHARACTERISATION():
-    """DEFECT, pinned rather than fixed (out of this pass's scope).
+# --- a chosen array is the model's answer: all of it, or nothing -----------
 
-    When an array holds one invalid operation, the extractor moves on to the
-    bare-object spans and returns the first single operation that validates.
-    The plan is not rejected; it is silently truncated to one of the
-    operations the model asked for, and the rest are dropped without a trace.
 
-    This predates the Selector rule but the rule makes it far easier to
-    reach, and it bites hardest on multi-operation (complex) intents: the
-    checks for the dropped operations then fail as if the model had never
-    asked for them. Fixing it means validating array candidates strictly
-    instead of falling through to bare objects.
-    """
+def test_one_invalid_operation_rejects_the_whole_array():
+    """An array is the model's answer. If one operation is unusable, the
+    answer is unusable: that is a measured model failure. Falling through to
+    the bare-object branch instead returned the first standalone object that
+    validated, silently truncating a four-operation plan to one and scoring
+    it as a partial success — worse than either honest outcome, and biased
+    against multi-operation (complex) intents."""
     raw = ('[{"verb": "block", "src": "a", "dst": "b", '
            '"selector": {"port": 22}}, '
            '{"verb": "bandwidth_max", "src": "a", "dst": "b", "bw_mbps": 8}]')
-    plan = parse_plan_response("c-004", raw)
+    with pytest.raises(IntentPlanError):
+        parse_plan_response("c-004", raw)
+
+
+def test_a_bad_selector_mid_array_names_the_operation_and_the_problem():
+    raw = ('[{"verb": "allow", "src": "a", "dst": "b"}, '
+           '{"verb": "block", "src": "a", "dst": "b", "selector": {"port": 22}}, '
+           '{"verb": "bandwidth_max", "src": "a", "dst": "b", "bw_mbps": 8}]')
+    with pytest.raises(IntentPlanError) as excinfo:
+        parse_plan_response("c-004", raw)
+    message = str(excinfo.value)
+    assert "1" in message, "the failing operation's index must be named"
+    assert "proto" in message, "the selector problem must be described"
+
+
+def test_an_unknown_verb_mid_array_rejects_the_whole_array():
+    raw = ('[{"verb": "teleport", "src": "a", "dst": "b"}, '
+           '{"verb": "block", "src": "a", "dst": "b"}]')
+    with pytest.raises(IntentPlanError) as excinfo:
+        parse_plan_response("c-004", raw)
+    assert "teleport" in str(excinfo.value)
+
+
+def test_incidental_json_before_a_valid_array_still_yields_the_full_array():
+    """Candidate selection is unchanged: only a *chosen* array's schema
+    failure became terminal."""
+    raw = ('ports [80, 443] and context {"site": "A"}, plan: '
+           '[{"verb": "allow", "src": "a", "dst": "b"}, '
+           '{"verb": "bandwidth_max", "src": "a", "dst": "b", "bw_mbps": 8}]')
+    plan = parse_plan_response("t-11", raw)
+    assert [op.verb for op in plan.operations] == ["allow", "bandwidth_max"]
+
+
+def test_a_lone_bare_object_is_still_a_one_operation_plan():
+    """The bare-object branch survives for the case it was built for: a
+    completion holding no array at all."""
+    raw = 'Here is what I would do: {"verb": "block", "src": "a", "dst": "b"}'
+    plan = parse_plan_response("t-12", raw)
     assert len(plan.operations) == 1
-    assert plan.operations[0].verb == "bandwidth_max"
+    assert plan.operations[0].verb == "block"
+
+
+def test_a_four_operation_array_is_returned_whole():
+    """Nothing truncates on the happy path."""
+    raw = ('[{"verb": "allow", "src": "a", "dst": "b"}, '
+           '{"verb": "block", "src": "a", "dst": "c"}, '
+           '{"verb": "bandwidth_max", "src": "a", "dst": "b", "bw_mbps": 8}, '
+           '{"verb": "mirror", "src": "a", "dst": "b", "to": "probe"}]')
+    plan = parse_plan_response("c-001", raw)
+    assert [op.verb for op in plan.operations] == [
+        "allow", "block", "bandwidth_max", "mirror",
+    ]

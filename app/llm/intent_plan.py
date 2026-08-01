@@ -26,6 +26,14 @@ lighter, more verbose model in this project's benchmark):
   fooled by incidental bracketed content earlier in the text (a port list
   like "[80, 443]", an unrelated object) that is valid JSON but not a valid
   plan.
+
+An array recognised as the model's answer is all-or-nothing. Its operations
+are validated as a set, and a schema failure raises instead of falling
+through to the bare-object branch: that fallthrough returned the first
+standalone object that validated, so a four-operation plan containing one
+malformed operation silently became a one-operation plan and scored as a
+partial success. The bias ran the same way as the two above, against
+multi-operation (complex) intents.
 """
 from __future__ import annotations
 
@@ -204,48 +212,93 @@ def _iter_balanced_spans(raw: str, open_char: str, close_char: str) -> Iterator[
         search_from = start + 1
 
 
-def _iter_json_candidates(raw: str) -> Iterator[object]:
-    """Yield every JSON value decodable from a balanced span in ``raw``,
-    array spans before bare-object spans, each group in order of appearance.
+def _iter_json_values(raw: str, open_char: str, close_char: str) -> Iterator[object]:
+    """Yield every JSON value decodable from a balanced span in ``raw``, in
+    order of appearance.
 
     A span that fails to parse as JSON at all is silently skipped here (it
     is never a real candidate); only spans that decode successfully are
     yielded, so the caller only has to reason about schema validity.
     """
-    for open_char, close_char in (("[", "]"), ("{", "}")):
-        for span in _iter_balanced_spans(raw, open_char, close_char):
-            try:
-                yield json.loads(span)
-            except json.JSONDecodeError:
-                continue
+    for span in _iter_balanced_spans(raw, open_char, close_char):
+        try:
+            yield json.loads(span)
+        except json.JSONDecodeError:
+            continue
 
 
-def _as_operations(data: object) -> list:
-    """Normalise a decoded JSON value into an operations list: a bare object
-    is wrapped as a single-operation plan (see module docstring)."""
-    return data if isinstance(data, list) else [data]
+def _is_the_models_answer(data: object) -> bool:
+    """Is this decoded array the model's plan, or incidental bracketed text?
+
+    The prompt asks for an array of operation objects, so an array qualifies
+    when every element is an object and at least one carries the ``verb``
+    discriminator. That skips the incidental content the scan is meant to
+    step over (a port list like ``[80, 443]``, an array of unrelated
+    records) without letting a genuine but malformed plan disguise itself as
+    incidental.
+
+    An empty array counts: the model answered, and its answer was "no
+    operations", which the ``min_length`` rule reports far more usefully than
+    "no JSON found".
+    """
+    if not isinstance(data, list) or not all(isinstance(x, dict) for x in data):
+        return False
+    return not data or any("verb" in item for item in data)
+
+
+def _describe(exc: ValidationError) -> str:
+    """Name the offending operations, keeping pydantic's account of why.
+
+    The index is what makes the failure actionable when a plan holds four
+    operations; the underlying message is what tells a malformed completion
+    apart from a bench problem in the VM run.
+    """
+    indices = sorted({
+        error["loc"][1] for error in exc.errors()
+        if len(error["loc"]) > 1 and isinstance(error["loc"][1], int)
+    })
+    if not indices:
+        return str(exc)
+    listed = ", ".join(str(i) for i in indices)
+    return f"operation(s) at index {listed} invalid: {exc}"
 
 
 def parse_plan_response(intent_id: str, raw: str) -> IntentPlan:
     """Extract and validate the operation plan from a raw model completion.
 
-    Tries every JSON-decodable candidate span in ``raw`` (arrays before bare
-    objects, each group in order of appearance) and returns the first one
-    that also validates as an ``IntentPlan``. This keeps incidental
-    bracketed content elsewhere in the completion (a port list, an unrelated
-    object) from shadowing the real plan merely because it parses as JSON
-    and comes first.
+    Candidate selection is unchanged: array spans are considered before bare
+    objects, each group in order of appearance, so incidental bracketed
+    content elsewhere in the completion (a port list, an unrelated object)
+    cannot shadow the real plan merely because it parses as JSON and comes
+    first.
 
-    If no candidate validates, the raised error describes the schema failure
-    of the last JSON-decodable candidate seen, since that is the one most
-    likely to be the model's actual (if malformed) attempt at a plan. If
-    nothing in the completion parses as JSON at all, that is reported
-    instead.
+    What an array's schema failure means, however, is not a fallback. Once a
+    span is recognised as the model's answer (see ``_is_the_models_answer``),
+    its operations are validated as a set and a failure is terminal. Falling
+    through to the bare-object branch used to return the first standalone
+    object that validated, which silently truncated a four-operation plan to
+    one and scored it as a partial success. A model that emitted four
+    operations, one of them malformed, produced an unusable plan; that is a
+    measured model failure and must be recorded as one.
+
+    The bare-object branch remains for the case it was built for: a
+    completion holding no array at all, where a single object is the whole
+    answer.
     """
-    last_schema_error: Optional[Exception] = None
-    for data in _iter_json_candidates(raw):
+    for data in _iter_json_values(raw, "[", "]"):
+        if not _is_the_models_answer(data):
+            continue
         try:
-            return IntentPlan(intent_id=intent_id, operations=tuple(_as_operations(data)))
+            return IntentPlan(intent_id=intent_id, operations=tuple(data))
+        except (ValidationError, TypeError) as exc:
+            raise IntentPlanError(
+                f"plan array rejected, {_describe(exc)}"
+            ) from exc
+
+    last_schema_error: Optional[Exception] = None
+    for data in _iter_json_values(raw, "{", "}"):
+        try:
+            return IntentPlan(intent_id=intent_id, operations=(data,))
         except (ValidationError, TypeError) as exc:
             last_schema_error = exc
     if last_schema_error is not None:
