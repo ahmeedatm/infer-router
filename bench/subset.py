@@ -1,0 +1,177 @@
+"""Curated realizable intents + ground truth for the OVS bench.
+
+Ground truth describes the expected network state, never the expected
+operations: a model reaching that state by another route is not penalised, and
+an omitted operation fails its check on its own.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Annotated, Literal, Optional, Union
+
+import yaml
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+_DEFAULT_PATH = Path(__file__).with_name("subset.yaml")
+
+Complexity = Literal["simple", "medium", "complex"]
+
+
+class SubsetError(RuntimeError):
+    """Raised on a malformed or internally inconsistent subset file."""
+
+
+class EndpointRef(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    host: str
+    mac: str
+    ip: Optional[str] = None
+
+
+class _BaseCheck(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+
+class PingOk(_BaseCheck):
+    check: Literal["ping_ok"]
+    src: str
+    dst: str
+
+
+class PingFail(_BaseCheck):
+    check: Literal["ping_fail"]
+    src: str
+    dst: str
+
+
+class ThroughputMax(_BaseCheck):
+    check: Literal["throughput_max"]
+    src: str
+    dst: str
+    max_mbps: float = Field(gt=0)
+
+
+class ThroughputMin(_BaseCheck):
+    """Guaranteed floor under contention. NOT USED by ``subset.yaml``.
+
+    Retired from the measured scope: the positive control failed it on all six
+    intents that carried it, because the ``bandwidth_min`` verb installs its
+    htb queue on the port facing the source and never on the s2-s4 bottleneck
+    the contention actually runs through. See ``bench/verbs/bandwidth.py``.
+
+    The model and its ``run_check`` branch stay because they record what was
+    attempted and how it was meant to be read. A test pins the absence
+    (``test_throughput_min_is_not_measured_anywhere``) so nobody re-adds a
+    check the control has already proved unpassable.
+    """
+
+    check: Literal["throughput_min"]
+    src: str
+    dst: str
+    min_mbps: float = Field(gt=0)
+    contender_src: str
+    contender_dst: str
+
+
+class PortBlocked(_BaseCheck):
+    check: Literal["port_blocked"]
+    src: str
+    dst: str
+    port: int = Field(ge=1, le=65535)
+    proto: Literal["tcp", "udp"]
+
+
+class PortOpen(_BaseCheck):
+    """One port still carries traffic while the pair is otherwise cut off.
+
+    The dual of :class:`PortBlocked`, and the only shape in which a permission
+    is observable: base connectivity is total, so "this flow works" says
+    nothing until something broader denies it.
+    """
+
+    check: Literal["port_open"]
+    src: str
+    dst: str
+    port: int = Field(ge=1, le=65535)
+    proto: Literal["tcp", "udp"]
+
+
+class MirrorSeen(_BaseCheck):
+    check: Literal["mirror_seen"]
+    src: str
+    dst: str
+    probe_host: str
+    min_packets: int = Field(ge=1)
+
+
+class PathUsed(_BaseCheck):
+    check: Literal["path_used"]
+    src: str
+    dst: str
+    via: str
+    not_via: str
+
+
+class TosMarked(_BaseCheck):
+    check: Literal["tos_marked"]
+    src: str
+    dst: str
+    tos: int = Field(ge=0, le=255)
+
+
+Check = Annotated[
+    Union[PingOk, PingFail, ThroughputMax, ThroughputMin,
+          PortBlocked, PortOpen, MirrorSeen, PathUsed, TosMarked],
+    Field(discriminator="check"),
+]
+
+
+class SubsetEntry(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    intent_id: str
+    text: str
+    domain: str
+    criticality: str
+    expected_complexity: Complexity
+    topology: str
+    endpoints: dict[str, EndpointRef]
+    checks: tuple[Check, ...] = Field(min_length=1)
+
+
+_ENDPOINT_FIELDS = ("src", "dst", "contender_src", "contender_dst")
+
+
+def _validate_refs(entry: SubsetEntry) -> None:
+    """Every endpoint a check names must exist in the entry's endpoint table.
+
+    ``mirror_seen.probe_host`` is a Mininet host name, not a logical
+    endpoint key, so it is deliberately excluded from this check.
+    """
+    for check in entry.checks:
+        for field in _ENDPOINT_FIELDS:
+            who = getattr(check, field, None)
+            if who is not None and who not in entry.endpoints:
+                raise SubsetError(
+                    f"{entry.intent_id}: check {check.check} references "
+                    f"unknown endpoint {who!r}"
+                )
+
+
+def load_subset(path: Optional[str] = None) -> tuple[SubsetEntry, ...]:
+    """Load and validate the curated subset; fail fast on inconsistency."""
+    target = Path(path) if path is not None else _DEFAULT_PATH
+    try:
+        raw = yaml.safe_load(target.read_text())
+    except (OSError, yaml.YAMLError) as exc:
+        raise SubsetError(f"cannot read subset {target}: {exc}") from exc
+    if not isinstance(raw, list):
+        raise SubsetError(f"subset {target} must be a YAML list")
+    entries = []
+    for i, item in enumerate(raw):
+        try:
+            entry = SubsetEntry(**item)
+        except (ValidationError, TypeError) as exc:
+            raise SubsetError(f"entry {i} invalid: {exc}") from exc
+        _validate_refs(entry)
+        entries.append(entry)
+    return tuple(entries)

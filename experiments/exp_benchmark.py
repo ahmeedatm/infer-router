@@ -50,6 +50,7 @@ from app.llm.judge import judge_rocketeval
 from app.llm.metrics import aiq, p50, p99
 from app.llm.openrouter_client import call_model as call_api_model
 from app.llm.pool import PoolModel, generic_pool
+from app.llm.prompting import base_model_id, build_prompt, is_local_model_id
 from app.llm.schema import Intent
 
 RESULTS_DIR = Path("experiments/results")
@@ -57,10 +58,9 @@ OUT_PATH = RESULTS_DIR / "benchmark.json"
 
 STRATEGIES: tuple[str, ...] = ("always_heavy", "always_light", "random", "inferrouter")
 
-SYSTEM_PREFIX = (
-    "You are a network operations assistant for a 5G/O-RAN operator. "
-    "Answer the following operator intent precisely and concisely.\n\nIntent: "
-)
+# Framing et conventions d'id partagés avec le CLI interactif (app.llm.prompting),
+# pour que la démo interroge les modèles dans les conditions publiées.
+_base_model_id = base_model_id
 
 
 class Budgets(BaseModel):
@@ -130,18 +130,6 @@ def choose_model(
 
 
 # ── Coût-proxy et exécution avec cache anti-coût ────────────────────────────
-
-
-def _base_model_id(model_id: str) -> str:
-    """Retire le suffixe de domaine : '<heavy>#ran' -> '<heavy>' (id réseau réel)."""
-    return model_id.split("#", 1)[0]
-
-
-def is_local_model_id(model_id: str) -> bool:
-    """Convention : un tag Ollama contient ':' (ex. 'qwen2.5:14b-instruct'),
-    un model_id OpenRouter contient '/' (ex. 'anthropic/claude-sonnet-4.6').
-    """
-    return ":" in model_id
 
 
 def cost_proxy(model_id: str, latency_ms: float) -> float:
@@ -229,10 +217,6 @@ def aggregate_benchmark(records: list[dict]) -> dict:
 
 
 # ── Runner reprenable (appels réseau réels) ─────────────────────────────────
-
-
-def build_prompt(intent: Intent) -> str:
-    return f"{SYSTEM_PREFIX}{intent.text}"
 
 
 def _make_executor(

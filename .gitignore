@@ -22,6 +22,9 @@ __pycache__/
 venv/
 env/
 
+# --- Worktrees git (espaces de travail isolés, jamais versionnés) ---
+.worktrees/
+
 # --- Test / coverage ---
 .pytest_cache/
 .coverage

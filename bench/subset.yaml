@@ -1,0 +1,381 @@
+# Sous-ensemble réalisable sur banc Mininet + OVS (sans contrôleur externe).
+# topology: diamond4 (h1, h2 et h4 sur s1 ; h3 sur s4 ; s2 = chemin nord par
+# défaut, plafonné à 10 Mbps ; s3 = chemin sud, non plafonné). h4 est l'hôte
+# sonde des checks mirror_seen : un mirror OVS est local à un bridge, donc la
+# source mirée doit toujours être sur s1 (h1 ou h2).
+#
+# 24 intents stratifiés (8 simple / 8 medium / 8 complex). Les checks décrivent
+# l'état réseau attendu, jamais les opérations : un modèle qui atteint cet état
+# par une autre route n'est pas pénalisé.
+#
+# HORS PÉRIMÈTRE : throughput_min. Le contrôle positif échouait sur les 6
+# intents qui le portaient, sur tous, ce qui en faisait un check impassable et
+# donc mort. La cause est dans la réalisation du verbe bandwidth_min (file htb
+# posée sur le port face à la source, jamais sur le goulot s2-s4) ; la corriger
+# obligerait le module de verbe à connaître la topologie. Le verbe reste dans
+# le vocabulaire et dans le prompt -- un modèle a le droit de l'émettre et le
+# parseur doit l'accepter -- mais plus aucun check ne l'observe. Détail dans
+# bench/verbs/bandwidth.py et dans le rapport de clôture.
+#
+# Conséquence assumée : m-004 et m-008 ne sont plus notés que sur un check,
+# c-002, c-003 et c-008 sur deux. Leur énoncé demande toujours l'opération
+# retirée du périmètre ; c'est la mesure qui a reculé, pas la consigne. Ajouter
+# un check qui ne peut pas échouer pour regonfler le compte serait pire.
+
+# --- simple (8) : un intent court et sans ambiguïté, un check par intent ---
+# s-allow-001 est le seul dont la réalisation demande deux opérations. La
+# raison est structurelle : la connectivité de base est totale, et un `allow`
+# sans sélecteur se traduit par zéro commande OVS. Un intent dont la seule
+# vérité terrain est « X joint Y » est donc infalsifiable par construction --
+# le contrôle négatif l'a marqué 1/1 avec un plan inerte. Une permission n'est
+# observable que comme exception à une interdiction, ce qui la rend
+# intrinsèquement binaire. L'énoncé, lui, reste une directive simple.
+- intent_id: s-allow-001
+  text: "Cut the legacy RAN probe off from the core telemetry collector, except its metrics feed on TCP port 9100."
+  domain: core
+  criticality: med
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    edge_mon: {host: h1, mac: "00:00:00:00:00:01"}
+    core_tel: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: port_open, src: edge_mon, dst: core_tel, port: 9100, proto: tcp}
+
+- intent_id: s-block-001
+  text: "Ensure the billing host is entirely unreachable from the RAN management host."
+  domain: security
+  criticality: high
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    ran_mgmt: {host: h1, mac: "00:00:00:00:00:01"}
+    billing: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: ping_fail, src: ran_mgmt, dst: billing}
+
+- intent_id: s-blocksel-001
+  text: "Deny SSH from the legacy RAN probe to the security operations host, but keep the host reachable otherwise."
+  domain: security
+  criticality: high
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    legacy_ran: {host: h1, mac: "00:00:00:00:00:01"}
+    sec_ops: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: port_blocked, src: legacy_ran, dst: sec_ops, port: 22, proto: tcp}
+
+- intent_id: s-bwmax-001
+  text: "Cap the best-effort slice between site A and site B at 4 Mbps."
+  domain: slice
+  criticality: high
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    site_a: {host: h1, mac: "00:00:00:00:00:01"}
+    site_b: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: throughput_max, src: site_a, dst: site_b, max_mbps: 4.0}
+
+- intent_id: s-mirror-001
+  text: "Duplicate the guest tenant traffic to the security probe for inspection."
+  domain: security
+  criticality: med
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    guest: {host: h1, mac: "00:00:00:00:00:01"}
+    core_tel: {host: h3, mac: "00:00:00:00:00:03"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: mirror_seen, src: guest, dst: core_tel, probe_host: h4, min_packets: 3}
+
+- intent_id: s-reroute-001
+  text: "Move the backhaul flow from the RAN scheduler to the core collector onto the southern path s3."
+  domain: ran
+  criticality: med
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    ran_sched: {host: h1, mac: "00:00:00:00:00:01"}
+    core_coll: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: path_used, src: ran_sched, dst: core_coll, via: s3, not_via: s2}
+
+# Remplace s-bwmin-001, dont le seul check était throughput_min. Le choix du
+# verbe n'est pas neutre : reroute est le verbe dont la réalisation a changé
+# lors du passage au pipeline multi-tables, et c'est sur path_used que porte le
+# risque de régression. Une deuxième instance indépendante, à une opération et
+# un check, sur une paire MAC (h4 -> h3) qu'aucun autre intent ne dévie.
+- intent_id: s-reroute-002
+  text: "Send the spare aggregation node's backhaul to the core collector over the southern path s3."
+  domain: ran
+  criticality: med
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    spare_agg: {host: h4, mac: "00:00:00:00:00:04"}
+    core_coll: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: path_used, src: spare_agg, dst: core_coll, via: s3, not_via: s2}
+
+- intent_id: s-prio-001
+  text: "Mark the URLLC signalling flow from the slice controller to the RAN scheduler as expedited forwarding (ToS 184)."
+  domain: slice
+  criticality: high
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    slice_ctrl: {host: h1, mac: "00:00:00:00:00:01"}
+    ran_sched: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: tos_marked, src: slice_ctrl, dst: ran_sched, tos: 184}
+
+# --- medium (8) : deux opérations, deux checks chacun ---
+- intent_id: m-001
+  text: "Isolate the compromised tenant from the billing host and cap its remaining uplink to the collector at 6 Mbps."
+  domain: security
+  criticality: high
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    tenant: {host: h1, mac: "00:00:00:00:00:01"}
+    billing: {host: h3, mac: "00:00:00:00:00:03"}
+    collector: {host: h2, mac: "00:00:00:00:00:02"}
+  checks:
+    - {check: ping_fail, src: tenant, dst: billing}
+    - {check: throughput_max, src: tenant, dst: collector, max_mbps: 6.0}
+
+- intent_id: m-002
+  text: "Cut off the rogue IoT sensor from the core network entirely, and duplicate the traffic from the rogue sensor to the local relay host onto the security probe for forensic capture."
+  domain: security
+  criticality: high
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    rogue: {host: h2, mac: "00:00:00:00:00:02"}
+    core_dst: {host: h3, mac: "00:00:00:00:00:03"}
+    relay: {host: h1, mac: "00:00:00:00:00:01"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: ping_fail, src: rogue, dst: core_dst}
+    - {check: mirror_seen, src: rogue, dst: relay, probe_host: h4, min_packets: 3}
+
+- intent_id: m-003
+  text: "For the eMBB slice: cap user data from the guest terminal to the edge gateway at 4 Mbps, and mark the control channel from the slice orchestrator to the same gateway as expedited forwarding (ToS 184)."
+  domain: slice
+  criticality: med
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    guest_terminal: {host: h2, mac: "00:00:00:00:00:02"}
+    edge_gw: {host: h3, mac: "00:00:00:00:00:03"}
+    slice_orch: {host: h1, mac: "00:00:00:00:00:01"}
+  checks:
+    - {check: throughput_max, src: guest_terminal, dst: edge_gw, max_mbps: 4.0}
+    - {check: tos_marked, src: slice_orch, dst: edge_gw, tos: 184}
+
+- intent_id: m-004
+  text: "Move the RAN management backhaul from the aggregation node to the core server onto the southern path, and guarantee the URLLC control channel from the RAN controller to that same server at least 5 Mbps, even while a secondary uplink competes for the same link."
+  domain: ran
+  criticality: high
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    mgmt_link: {host: h2, mac: "00:00:00:00:00:02"}
+    core_srv: {host: h3, mac: "00:00:00:00:00:03"}
+    urllc_ctrl: {host: h1, mac: "00:00:00:00:00:01"}
+    secondary_link: {host: h4, mac: "00:00:00:00:00:04"}
+  # Le second volet de l'énoncé (plancher de débit) n'est plus mesuré.
+  checks:
+    - {check: path_used, src: mgmt_link, dst: core_srv, via: s3, not_via: s2}
+
+- intent_id: m-005
+  text: "Deny remote desktop access from the contractor laptop to the ops console, and duplicate the contractor laptop's traffic to the historian server for the security probe to inspect."
+  domain: security
+  criticality: high
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    contractor: {host: h1, mac: "00:00:00:00:00:01"}
+    ops_console: {host: h3, mac: "00:00:00:00:00:03"}
+    historian: {host: h2, mac: "00:00:00:00:00:02"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: port_blocked, src: contractor, dst: ops_console, port: 3389, proto: tcp}
+    - {check: mirror_seen, src: contractor, dst: historian, probe_host: h4, min_packets: 3}
+
+- intent_id: m-006
+  text: "Ensure the management API can reach the core orchestrator, and cap the nightly backup sync from the backup agent to the orchestrator at 4 Mbps."
+  domain: core
+  criticality: med
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    mgmt_api: {host: h1, mac: "00:00:00:00:00:01"}
+    orchestrator: {host: h3, mac: "00:00:00:00:00:03"}
+    backup_agent: {host: h2, mac: "00:00:00:00:00:02"}
+  checks:
+    - {check: ping_ok, src: mgmt_api, dst: orchestrator}
+    - {check: throughput_max, src: backup_agent, dst: orchestrator, max_mbps: 4.0}
+
+- intent_id: m-007
+  text: "Move the RAN sensor feed from the base station to the core analytics server onto the southern path, and mark the alarm control channel from the RAN controller to the same analytics server as expedited forwarding (ToS 184)."
+  domain: ran
+  criticality: med
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    base_station: {host: h1, mac: "00:00:00:00:00:01"}
+    core_analytics: {host: h3, mac: "00:00:00:00:00:03"}
+    ran_ctrl: {host: h2, mac: "00:00:00:00:00:02"}
+  checks:
+    - {check: path_used, src: base_station, dst: core_analytics, via: s3, not_via: s2}
+    - {check: tos_marked, src: ran_ctrl, dst: core_analytics, tos: 184}
+
+- intent_id: m-008
+  text: "Guarantee at least 4 Mbps for the URLLC slice flow from the field sensor to the core aggregator even while the bulk telemetry uplink competes for the same link, and duplicate the field sensor's traffic to the security probe for audit."
+  domain: slice
+  criticality: high
+  expected_complexity: medium
+  topology: diamond4
+  endpoints:
+    field_sensor: {host: h1, mac: "00:00:00:00:00:01"}
+    aggregator: {host: h3, mac: "00:00:00:00:00:03"}
+    bulk_uplink: {host: h2, mac: "00:00:00:00:00:02"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  # Le premier volet de l'énoncé (plancher de débit) n'est plus mesuré.
+  checks:
+    - {check: mirror_seen, src: field_sensor, dst: aggregator, probe_host: h4, min_packets: 3}
+
+# --- complex (8) : trois à quatre opérations, autant de checks ---
+- intent_id: c-001
+  text: "For the factory slice: keep the sensors reachable from the collector, isolate them from the guest tenant, cap the uplink at 4 Mbps, and duplicate the slice traffic to the security probe."
+  domain: slice
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    sensors: {host: h1, mac: "00:00:00:00:00:01"}
+    collector: {host: h3, mac: "00:00:00:00:00:03"}
+    guest: {host: h2, mac: "00:00:00:00:00:02"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: ping_ok, src: sensors, dst: collector}
+    - {check: ping_fail, src: guest, dst: sensors}
+    - {check: throughput_max, src: sensors, dst: collector, max_mbps: 4.0}
+    - {check: mirror_seen, src: sensors, dst: collector, probe_host: h4, min_packets: 3}
+
+- intent_id: c-002
+  text: "Contain the incident: cut off the compromised host from the security gateway, duplicate the traffic from the compromised host to the supervisor console onto the security probe, and guarantee at least 5 Mbps to the supervisor's own monitoring flow toward the security gateway even while the probe link is under load."
+  domain: security
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    compromised: {host: h2, mac: "00:00:00:00:00:02"}
+    sec_gateway: {host: h3, mac: "00:00:00:00:00:03"}
+    supervisor: {host: h1, mac: "00:00:00:00:00:01"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: ping_fail, src: compromised, dst: sec_gateway}
+    - {check: mirror_seen, src: compromised, dst: supervisor, probe_host: h4, min_packets: 3}
+    # Troisième volet (plancher de débit du superviseur) : plus mesuré.
+
+- intent_id: c-003
+  text: "For the URLLC slice: force the control signalling from the primary controller to the core anchor onto the southern path and mark it as expedited forwarding (ToS 184), and guarantee at least 5 Mbps to the data flow from the secondary controller to the same anchor even while a background link competes for the same route."
+  domain: slice
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    primary_ctrl: {host: h1, mac: "00:00:00:00:00:01"}
+    core_anchor: {host: h3, mac: "00:00:00:00:00:03"}
+    secondary_ctrl: {host: h2, mac: "00:00:00:00:00:02"}
+    bg_link: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: path_used, src: primary_ctrl, dst: core_anchor, via: s3, not_via: s2}
+    - {check: tos_marked, src: primary_ctrl, dst: core_anchor, tos: 184}
+    # Troisième volet (plancher de débit du contrôleur secondaire) : plus mesuré.
+    # Les deux checks restants portent sur le MÊME flux : c'est l'intent qui a
+    # révélé la collision reroute/priority, les deux verbes se disputant la même
+    # règle. Ils composent depuis le passage au pipeline multi-tables.
+
+- intent_id: c-004
+  text: "On the management plane: deny SSH from the management host to the ops server while keeping other management traffic reachable, cut off the client-plane host from the same server entirely, and cap the management host's remaining traffic to the server at 4 Mbps."
+  domain: core
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    mgmt_host: {host: h1, mac: "00:00:00:00:00:01"}
+    client_plane: {host: h2, mac: "00:00:00:00:00:02"}
+    ops_srv: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: port_blocked, src: mgmt_host, dst: ops_srv, port: 22, proto: tcp}
+    - {check: ping_fail, src: client_plane, dst: ops_srv}
+    - {check: throughput_max, src: mgmt_host, dst: ops_srv, max_mbps: 4.0}
+
+- intent_id: c-005
+  text: "On RAN backhaul failover: move the primary base station's traffic to the core server onto the southern path while confirming the base station stays reachable from the core, and cap the secondary backhaul link's traffic to the same server at 4 Mbps."
+  domain: ran
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    primary_bs: {host: h1, mac: "00:00:00:00:00:01"}
+    core_srv: {host: h3, mac: "00:00:00:00:00:03"}
+    backup_link: {host: h2, mac: "00:00:00:00:00:02"}
+  checks:
+    - {check: path_used, src: primary_bs, dst: core_srv, via: s3, not_via: s2}
+    - {check: ping_ok, src: primary_bs, dst: core_srv}
+    - {check: throughput_max, src: backup_link, dst: core_srv, max_mbps: 4.0}
+
+- intent_id: c-006
+  text: "For the degraded eMBB slice: cap best-effort user data from the slice terminal to the core edge at 4 Mbps, tag the slice's control channel from the slice agent to the same edge with ToS value 32 to mark it as scavenger-class traffic, and duplicate that control channel to the security probe for monitoring."
+  domain: slice
+  criticality: low
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    embb_user: {host: h1, mac: "00:00:00:00:00:01"}
+    core_edge: {host: h3, mac: "00:00:00:00:00:03"}
+    ctrl_chan: {host: h2, mac: "00:00:00:00:00:02"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: throughput_max, src: embb_user, dst: core_edge, max_mbps: 4.0}
+    - {check: tos_marked, src: ctrl_chan, dst: core_edge, tos: 32}
+    - {check: mirror_seen, src: ctrl_chan, dst: core_edge, probe_host: h4, min_packets: 3}
+
+- intent_id: c-007
+  text: "Audit the tenant: duplicate its traffic toward the application server to the security probe, deny its access to the application server's port 8080, and confirm the tenant can still reach the management server."
+  domain: security
+  criticality: med
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    tenant: {host: h1, mac: "00:00:00:00:00:01"}
+    app_srv: {host: h3, mac: "00:00:00:00:00:03"}
+    mgmt_srv: {host: h2, mac: "00:00:00:00:00:02"}
+    probe: {host: h4, mac: "00:00:00:00:00:04"}
+  checks:
+    - {check: mirror_seen, src: tenant, dst: app_srv, probe_host: h4, min_packets: 3}
+    - {check: port_blocked, src: tenant, dst: app_srv, port: 8080, proto: tcp}
+    - {check: ping_ok, src: tenant, dst: mgmt_srv}
+
+- intent_id: c-008
+  text: "Across domains: cut off the compromised host from the primary control console locally, move the secondary uplink's traffic to the core hub onto the southern path, and guarantee at least 4 Mbps to the control console's own telemetry toward the core hub, even while the compromised host's remaining traffic competes for the same route."
+  domain: core
+  criticality: high
+  expected_complexity: complex
+  topology: diamond4
+  endpoints:
+    breach_src: {host: h4, mac: "00:00:00:00:00:04"}
+    primary_host: {host: h1, mac: "00:00:00:00:00:01"}
+    secondary_uplink: {host: h2, mac: "00:00:00:00:00:02"}
+    core_hub: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: ping_fail, src: breach_src, dst: primary_host}
+    - {check: path_used, src: secondary_uplink, dst: core_hub, via: s3, not_via: s2}
+    # Troisième volet (plancher de débit de la console) : plus mesuré.
