@@ -124,16 +124,16 @@ def _print_matrix(rows: list[dict], candidate: str) -> None:
         if not sub:
             continue
         n = len(sub)
-        l = sum(r["q_light2"] for r in sub) / n
+        q_light = sum(r["q_light2"] for r in sub) / n
         s = sum(r["q_heavy_sonnet"] for r in sub) / n
         c = sum(r["q_heavy_candidate"] for r in sub) / n
-        print(f"  {cx:8s}    {n:2d}   {l:.2f}    {s:.2f}     {c:.2f}")
+        print(f"  {cx:8s}    {n:2d}   {q_light:.2f}    {s:.2f}     {c:.2f}")
     if rows:
         n = len(rows)
-        l = sum(r["q_light2"] for r in rows) / n
+        q_light = sum(r["q_light2"] for r in rows) / n
         s = sum(r["q_heavy_sonnet"] for r in rows) / n
         c = sum(r["q_heavy_candidate"] for r in rows) / n
-        print(f"  {'overall':8s}   {n:2d}   {l:.2f}    {s:.2f}     {c:.2f}")
+        print(f"  {'overall':8s}   {n:2d}   {q_light:.2f}    {s:.2f}     {c:.2f}")
 
 
 if __name__ == "__main__":

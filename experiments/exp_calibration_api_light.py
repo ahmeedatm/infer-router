@@ -118,15 +118,15 @@ def _print_matrix(rows: list[dict], light2: str) -> None:
         if not sub:
             continue
         n = len(sub)
-        l = sum(r["q_light2"] for r in sub) / n
+        q_light = sum(r["q_light2"] for r in sub) / n
         h = sum(r["q_heavy"] for r in sub) / n
         lat = sorted(r["latency_light2_ms"] for r in sub)[n // 2]
-        print(f"  {cx:8s}    {n:2d}   {l:.2f}    {h:.2f}    {h - l:+.2f}       {lat:.0f}")
+        print(f"  {cx:8s}    {n:2d}   {q_light:.2f}    {h:.2f}    {h - q_light:+.2f}       {lat:.0f}")
     if rows:
         n = len(rows)
-        l = sum(r["q_light2"] for r in rows) / n
+        q_light = sum(r["q_light2"] for r in rows) / n
         h = sum(r["q_heavy"] for r in rows) / n
-        print(f"  {'overall':8s}   {n:2d}   {l:.2f}    {h:.2f}    {h - l:+.2f}")
+        print(f"  {'overall':8s}   {n:2d}   {q_light:.2f}    {h:.2f}    {h - q_light:+.2f}")
 
 
 if __name__ == "__main__":

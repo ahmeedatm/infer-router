@@ -176,13 +176,13 @@ def _print_matrix(rows: list[dict], light: str) -> None:
         if not sub:
             continue
         n = len(sub)
-        l = sum(r["q_light_local"] for r in sub) / n
+        q_light = sum(r["q_light_local"] for r in sub) / n
         h = sum(r["q_heavy"] for r in sub) / n
-        print(f"  {cx:8s}    {n:2d}   {l:.2f}    {h:.2f}    {h - l:+.2f}")
+        print(f"  {cx:8s}    {n:2d}   {q_light:.2f}    {h:.2f}    {h - q_light:+.2f}")
     if rows:
-        l = sum(r["q_light_local"] for r in rows) / len(rows)
+        q_light = sum(r["q_light_local"] for r in rows) / len(rows)
         h = sum(r["q_heavy"] for r in rows) / len(rows)
-        print(f"  {'overall':8s}   {len(rows):2d}   {l:.2f}    {h:.2f}    {h - l:+.2f}")
+        print(f"  {'overall':8s}   {len(rows):2d}   {q_light:.2f}    {h:.2f}    {h - q_light:+.2f}")
 
 
 if __name__ == "__main__":

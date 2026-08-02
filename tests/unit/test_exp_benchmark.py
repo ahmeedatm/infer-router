@@ -14,8 +14,6 @@ import random
 from app.config import (
     MODEL_HEAVY,
     MODEL_LIGHT,
-    POOL_HEAVY_COST,
-    POOL_HEAVY_LATENCY_MS,
     POOL_LIGHT_COST,
     POOL_LIGHT_LATENCY_MS,
 )

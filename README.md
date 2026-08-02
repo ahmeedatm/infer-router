@@ -300,16 +300,33 @@ Pour réentraîner l'estimateur de complexité :
 
 ## Banc de validation en réseau émulé
 
-`bench/` applique les actions produites par les modèles directement en règles
+`bench/` applique les plans produits par les modèles directement en règles
 OpenFlow sur Open vSwitch, dans une VM Linux avec Mininet, et vérifie dans le
-plan de données que l'intent est réellement satisfait (isolation par règle de
-rejet, QoS par limitation de débit). Le provisionnement de la VM Lima est dans
-`bench/provision/`.
+plan de données que l'intent est réellement satisfait. Le modèle cible émet un
+plan de plusieurs opérations sur sept verbes (autoriser et bloquer, y compris
+sur un port applicatif, plafonner un débit, dupliquer un flux vers une sonde,
+imposer un chemin, marquer une priorité), appliqué sur une topologie en losange
+à deux chemins. Le provisionnement de la VM Lima est dans `bench/provision/`.
 
-Résultat sur 12 intents avec le couple local : le modèle lourd réalise 100 % des
-intents, le léger 83 %, InferRouter 83 %. Le léger échoue sur deux intents (JSON
-absent, nom d'hôte inventé), donc router vers un léger faible a un coût mesurable
-dans le plan de données, pas seulement une note de juge plus basse.
+Chaque vérification est validée par deux contrôles avant toute mesure. Le
+contrôle négatif rejoue le jeu avec un plan sans effet réseau et doit tout faire
+échouer ; le contrôle positif le rejoue avec le plan dérivé de la vérité terrain
+et doit tout faire réussir. Les deux sont gratuits, aucun n'appelle de modèle :
+
+```bash
+python experiments/run_realworld_validation.py --strategy noop
+limactl shell inferbench bash -c 'cd /opt/infer-router && sudo python3 -m bench.run_bench --strategy noop'
+```
+
+Ce dispositif a écarté plusieurs vérifications qui produisaient un résultat
+lisible sans dépendre du modèle évalué, dont un test de chemin satisfait par
+l'acheminement par défaut.
+
+Résultat sur 24 intents stratifiés, pool de production : le modèle lourd réalise
+79 % des intents, InferRouter 75 %, le léger 67 %. Le léger produit en outre un
+plan inexploitable sur 24, rejeté avant toute application. Router vers un léger
+faible a donc un coût mesurable dans le plan de données, pas seulement une note
+de juge plus basse.
 
 ## Limites connues
 
@@ -324,11 +341,23 @@ même classe, et la décision de routage qui suit sera la même.
 Le juge local distingue de façon fiable une bonne réponse d'une réponse
 clairement mauvaise (100 % en discrimination grossière), ce qui suffit au
 routage. Il ne détecte pas une erreur subtile injectée dans une réponse par
-ailleurs correcte (0 à 5 %). La limite vient du discernement du petit modèle,
-pas de la méthode.
+ailleurs correcte : sur vingt paires correct/dégradé, il rend vingt égalités.
+Un juge fort accessible par API en tranche la moitié, donc la capacité du
+modèle déplace la limite sans la lever.
 
-Aucun spécialiste de domaine n'a été construit ni mesuré. La contribution
-correspondante reste conceptuelle.
+Les spécialistes de domaine sont mesurés : un cadrage d'expertise gagne 0,038
+sur son domaine et perd 0,137 hors de lui. La pénalité vaut 3,6 fois le gain,
+si bien que la spécialisation ne paie que si le routage par domaine vise juste.
+Ce gain reste en revanche sous la résolution du juge, et ne ressort donc pas
+du score agrégé.
+
+Le gain économique dépend de la composition du flux traité : 30 % d'économie
+sur un jeu, 11 % sur un autre, parce que seuls les intents à la fois simples et
+peu critiques descendent au tier économique.
 
 Les latences mesurées viennent d'un MacBook Air M5 et de l'API OpenRouter. Elles
 sont indicatives, pas représentatives d'un déploiement en périphérie.
+
+## Licence
+
+MIT, voir [LICENSE](LICENSE).
