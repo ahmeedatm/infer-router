@@ -6,6 +6,11 @@ through s2. Static ARP removes broadcast entirely, which makes the data plane
 deterministic and removes the MAC-learning settle delay the linear topology
 needed.
 
+The switches run the staged pipeline defined in :mod:`bench.verbs.base`: a
+marking table, a queueing table, then the forwarding table this module
+populates. The two upstream stages get a priority-0 ``resubmit`` here, without
+which an empty table would drop everything in secure mode.
+
 Imported only inside the Lima VM (needs mininet). Never import from unit tests.
 """
 from __future__ import annotations
@@ -20,18 +25,29 @@ from mininet.node import OVSSwitch
 from mininet.topo import Topo
 
 from bench.apply_result import ApplyError, raise_if_failed  # noqa: F401
-from bench.verbs.base import OvsCommand
+from bench.verbs.base import (  # noqa: F401
+    PIPELINE_DEFAULT_PRIORITY,
+    PRIORITY_BASE_FLOW,
+    PRIORITY_PAIR_FLOW,
+    TABLE_FORWARD,
+    TABLE_MARK,
+    TABLE_QUEUE,
+    OvsCommand,
+)
 
-BASE_FLOW_PRIORITY = 100
-
-# Per-pair flows on the transit switches, just above the dl_dst catch-all and
-# below every priority the verbs use (block 200, reroute/priority 150).
-# Without them nothing on s2 or s3 matches both MACs, so ``flow_packets`` --
-# which needs dl_src and dl_dst on the same line -- could never count a
-# packet and ``path_used`` could never be true. The catch-all stays underneath
-# so connectivity never depends on this table being exhaustive.
-PAIR_FLOW_PRIORITY = 110
-
+# The pipeline scheme (tables and priority tiers) lives in ``bench.verbs.base``
+# so the verb modules and the topology read the same one. Two names are used
+# here:
+#   PRIORITY_BASE_FLOW  forwarding by destination MAC, the floor of the
+#                       forwarding table.
+#   PRIORITY_PAIR_FLOW  per-pair flows on the transit switches, just above
+#                       that floor. They forward identically; they exist so
+#                       traversal is countable. ``flow_packets`` needs dl_src
+#                       and dl_dst on one line, which a dl_dst-only table
+#                       never provides, so without them ``path_used`` could
+#                       never be true. The catch-all stays underneath, so
+#                       connectivity never depends on this table being
+#                       exhaustive.
 _TRANSIT_SWITCHES = ("s2", "s3")
 
 # iperf's default control port. Passed explicitly so the server can be killed
@@ -122,14 +138,30 @@ _ROUTES = {
 }
 
 
+def _install_pipeline_defaults(net) -> None:
+    """Carry a packet no verb touched through the marking and queueing stages.
+
+    Without these the two upstream stages are empty tables, and in secure mode
+    an empty table drops. Every stage therefore ends in a priority-0
+    ``resubmit`` to the next one, and only the forwarding table decides
+    anything. See the scheme in :mod:`bench.verbs.base`.
+    """
+    for stage, nxt in ((TABLE_MARK, TABLE_QUEUE), (TABLE_QUEUE, TABLE_FORWARD)):
+        for sw in net.switches:
+            command = (
+                f"ovs-ofctl add-flow {sw.name} "
+                f"'table={stage},priority={PIPELINE_DEFAULT_PRIORITY},"
+                f"actions=resubmit(,{nxt})'"
+            )
+            raise_if_failed(sw.name, command, sw.cmd(command))
+
+
 def _install_base_flows(net) -> None:
     """Unicast forwarding by destination MAC, default path through s2.
 
-    The transit switches additionally carry one flow per ordered MAC pair, at
-    a priority just above the catch-all. They forward identically; they exist
-    so that traversal is countable. ``path_used`` reads per-flow packet
-    counters and needs a flow naming both endpoints, which a dl_dst-only table
-    never provides.
+    Everything installed here lives in the pipeline's forwarding table, below
+    every verb tier, so a verb can override a route without the base table
+    having to be edited or removed.
 
     A rejection here breaks every case at once and is invisible without
     reading the output, so it raises like any other rejected command.
@@ -140,8 +172,8 @@ def _install_base_flows(net) -> None:
             port = _port_to(net, switch, nexthop)
             command = (
                 f"ovs-ofctl add-flow {switch} "
-                f"'priority={BASE_FLOW_PRIORITY},dl_dst={_HOSTS[host]},"
-                f"actions=output:{port}'"
+                f"'table={TABLE_FORWARD},priority={PRIORITY_BASE_FLOW},"
+                f"dl_dst={_HOSTS[host]},actions=output:{port}'"
             )
             raise_if_failed(switch, command, sw.cmd(command))
 
@@ -152,7 +184,8 @@ def _install_base_flows(net) -> None:
             port = _port_to(net, switch, table[dst])
             command = (
                 f"ovs-ofctl add-flow {switch} "
-                f"'priority={PAIR_FLOW_PRIORITY},dl_src={_HOSTS[src]},"
+                f"'table={TABLE_FORWARD},priority={PRIORITY_PAIR_FLOW},"
+                f"dl_src={_HOSTS[src]},"
                 f"dl_dst={_HOSTS[dst]},actions=output:{port}'"
             )
             raise_if_failed(switch, command, sw.cmd(command))
@@ -168,6 +201,7 @@ def build_topology(name: str) -> Mininet:
     for sw in net.switches:
         sw.cmd(f"ovs-vsctl set-fail-mode {sw.name} secure")
     net.staticArp()
+    _install_pipeline_defaults(net)
     _install_base_flows(net)
     return net
 
@@ -375,15 +409,21 @@ class MininetRunner:
             return 0
 
     def flow_packets(self, switch: str, dl_src: str, dl_dst: str) -> int:
-        """Packets counted by flows matching this ordered MAC pair.
+        """Packets forwarded by flows matching this ordered MAC pair.
 
         The field names are part of the match. A bare substring test counted
         ``dl_src=B,dl_dst=A`` for the pair (A, B) as well, so the two
         directions of a flow were summed together and a reroute that only
         moved one of them read as if it had moved both.
+
+        Only the forwarding table is dumped. The marking stage matches on the
+        same MAC pair and its counters would otherwise be added to the
+        forwarding counters, so a marked flow would be counted twice on the
+        path it took. ``path_used`` compares two paths and survives a uniform
+        factor, but the number would stop meaning "packets forwarded here".
         """
         sw = self._net.get(switch)
-        out = sw.cmd(f"ovs-ofctl dump-flows {switch}")
+        out = sw.cmd(f"ovs-ofctl dump-flows {switch} table={TABLE_FORWARD}")
         total = 0
         for line in out.splitlines():
             if f"dl_src={dl_src}" in line and f"dl_dst={dl_dst}" in line:

@@ -37,5 +37,7 @@ def test_bandwidth_min_creates_an_htb_queue_and_steers_the_flow():
     assert "linux-htb" in qos.command
     assert "min-rate=5000000" in qos.command
     assert "set_queue:1" in flow.command
-    assert "dl_src=00:00:00:00:00:01" in flow.command
+    # The ordered pair, not the source alone: a floor is granted to one
+    # flow, and a dl_src-only match swept every packet the host sent.
+    assert "dl_src=00:00:00:00:00:01,dl_dst=00:00:00:00:00:03" in flow.command
     assert "priority=150" in flow.command

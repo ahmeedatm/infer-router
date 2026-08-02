@@ -52,6 +52,19 @@ class ThroughputMax(_BaseCheck):
 
 
 class ThroughputMin(_BaseCheck):
+    """Guaranteed floor under contention. NOT USED by ``subset.yaml``.
+
+    Retired from the measured scope: the positive control failed it on all six
+    intents that carried it, because the ``bandwidth_min`` verb installs its
+    htb queue on the port facing the source and never on the s2-s4 bottleneck
+    the contention actually runs through. See ``bench/verbs/bandwidth.py``.
+
+    The model and its ``run_check`` branch stay because they record what was
+    attempted and how it was meant to be read. A test pins the absence
+    (``test_throughput_min_is_not_measured_anywhere``) so nobody re-adds a
+    check the control has already proved unpassable.
+    """
+
     check: Literal["throughput_min"]
     src: str
     dst: str

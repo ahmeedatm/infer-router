@@ -90,6 +90,10 @@ def run_check(check, entry: SubsetEntry, runner) -> bool:
         return measured <= check.max_mbps * THROUGHPUT_TOLERANCE
 
     if isinstance(check, ThroughputMin):
+        # Unreachable from the current subset: no entry carries this check any
+        # more (see ``bench.subset.ThroughputMin``). Kept, with the probe it
+        # drives, because it documents how a guaranteed floor was meant to be
+        # observed. It is not evidence that guarantees are verified here.
         measured = parse_iperf_mbps(runner.iperf_contended(
             src, dst,
             _host(entry, check.contender_src),

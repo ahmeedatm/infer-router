@@ -4,10 +4,23 @@
 # sonde des checks mirror_seen : un mirror OVS est local à un bridge, donc la
 # source mirée doit toujours être sur s1 (h1 ou h2).
 #
-# 24 intents stratifiés (8 simple / 8 medium / 8 complex), un check par verbe
-# minimum couvert. Les checks décrivent l'état réseau attendu, jamais les
-# opérations : un modèle qui atteint cet état par une autre route n'est pas
-# pénalisé.
+# 24 intents stratifiés (8 simple / 8 medium / 8 complex). Les checks décrivent
+# l'état réseau attendu, jamais les opérations : un modèle qui atteint cet état
+# par une autre route n'est pas pénalisé.
+#
+# HORS PÉRIMÈTRE : throughput_min. Le contrôle positif échouait sur les 6
+# intents qui le portaient, sur tous, ce qui en faisait un check impassable et
+# donc mort. La cause est dans la réalisation du verbe bandwidth_min (file htb
+# posée sur le port face à la source, jamais sur le goulot s2-s4) ; la corriger
+# obligerait le module de verbe à connaître la topologie. Le verbe reste dans
+# le vocabulaire et dans le prompt -- un modèle a le droit de l'émettre et le
+# parseur doit l'accepter -- mais plus aucun check ne l'observe. Détail dans
+# bench/verbs/bandwidth.py et dans le rapport de clôture.
+#
+# Conséquence assumée : m-004 et m-008 ne sont plus notés que sur un check,
+# c-002, c-003 et c-008 sur deux. Leur énoncé demande toujours l'opération
+# retirée du périmètre ; c'est la mesure qui a reculé, pas la consigne. Ajouter
+# un check qui ne peut pas échouer pour regonfler le compte serait pire.
 
 # --- simple (8) : un intent court et sans ambiguïté, un check par intent ---
 # s-allow-001 est le seul dont la réalisation demande deux opérations. La
@@ -65,20 +78,6 @@
   checks:
     - {check: throughput_max, src: site_a, dst: site_b, max_mbps: 4.0}
 
-- intent_id: s-bwmin-001
-  text: "Guarantee at least 5 Mbps to the URLLC control flow from the RAN edge to the core gateway."
-  domain: slice
-  criticality: high
-  expected_complexity: simple
-  topology: diamond4
-  endpoints:
-    ran_edge: {host: h1, mac: "00:00:00:00:00:01"}
-    core_gw: {host: h3, mac: "00:00:00:00:00:03"}
-    bulk_src: {host: h2, mac: "00:00:00:00:00:02"}
-  checks:
-    - {check: throughput_min, src: ran_edge, dst: core_gw, min_mbps: 5.0,
-       contender_src: bulk_src, contender_dst: core_gw}
-
 - intent_id: s-mirror-001
   text: "Duplicate the guest tenant traffic to the security probe for inspection."
   domain: security
@@ -103,6 +102,23 @@
     core_coll: {host: h3, mac: "00:00:00:00:00:03"}
   checks:
     - {check: path_used, src: ran_sched, dst: core_coll, via: s3, not_via: s2}
+
+# Remplace s-bwmin-001, dont le seul check était throughput_min. Le choix du
+# verbe n'est pas neutre : reroute est le verbe dont la réalisation a changé
+# lors du passage au pipeline multi-tables, et c'est sur path_used que porte le
+# risque de régression. Une deuxième instance indépendante, à une opération et
+# un check, sur une paire MAC (h4 -> h3) qu'aucun autre intent ne dévie.
+- intent_id: s-reroute-002
+  text: "Send the spare aggregation node's backhaul to the core collector over the southern path s3."
+  domain: ran
+  criticality: med
+  expected_complexity: simple
+  topology: diamond4
+  endpoints:
+    spare_agg: {host: h4, mac: "00:00:00:00:00:04"}
+    core_coll: {host: h3, mac: "00:00:00:00:00:03"}
+  checks:
+    - {check: path_used, src: spare_agg, dst: core_coll, via: s3, not_via: s2}
 
 - intent_id: s-prio-001
   text: "Mark the URLLC signalling flow from the slice controller to the RAN scheduler as expedited forwarding (ToS 184)."
@@ -171,10 +187,9 @@
     core_srv: {host: h3, mac: "00:00:00:00:00:03"}
     urllc_ctrl: {host: h1, mac: "00:00:00:00:00:01"}
     secondary_link: {host: h4, mac: "00:00:00:00:00:04"}
+  # Le second volet de l'énoncé (plancher de débit) n'est plus mesuré.
   checks:
     - {check: path_used, src: mgmt_link, dst: core_srv, via: s3, not_via: s2}
-    - {check: throughput_min, src: urllc_ctrl, dst: core_srv, min_mbps: 5.0,
-       contender_src: secondary_link, contender_dst: core_srv}
 
 - intent_id: m-005
   text: "Deny remote desktop access from the contractor laptop to the ops console, and duplicate the contractor laptop's traffic to the historian server for the security probe to inspect."
@@ -230,9 +245,8 @@
     aggregator: {host: h3, mac: "00:00:00:00:00:03"}
     bulk_uplink: {host: h2, mac: "00:00:00:00:00:02"}
     probe: {host: h4, mac: "00:00:00:00:00:04"}
+  # Le premier volet de l'énoncé (plancher de débit) n'est plus mesuré.
   checks:
-    - {check: throughput_min, src: field_sensor, dst: aggregator, min_mbps: 4.0,
-       contender_src: bulk_uplink, contender_dst: aggregator}
     - {check: mirror_seen, src: field_sensor, dst: aggregator, probe_host: h4, min_packets: 3}
 
 # --- complex (8) : trois à quatre opérations, autant de checks ---
@@ -267,8 +281,7 @@
   checks:
     - {check: ping_fail, src: compromised, dst: sec_gateway}
     - {check: mirror_seen, src: compromised, dst: supervisor, probe_host: h4, min_packets: 3}
-    - {check: throughput_min, src: supervisor, dst: sec_gateway, min_mbps: 5.0,
-       contender_src: probe, contender_dst: sec_gateway}
+    # Troisième volet (plancher de débit du superviseur) : plus mesuré.
 
 - intent_id: c-003
   text: "For the URLLC slice: force the control signalling from the primary controller to the core anchor onto the southern path and mark it as expedited forwarding (ToS 184), and guarantee at least 5 Mbps to the data flow from the secondary controller to the same anchor even while a background link competes for the same route."
@@ -284,8 +297,10 @@
   checks:
     - {check: path_used, src: primary_ctrl, dst: core_anchor, via: s3, not_via: s2}
     - {check: tos_marked, src: primary_ctrl, dst: core_anchor, tos: 184}
-    - {check: throughput_min, src: secondary_ctrl, dst: core_anchor, min_mbps: 5.0,
-       contender_src: bg_link, contender_dst: core_anchor}
+    # Troisième volet (plancher de débit du contrôleur secondaire) : plus mesuré.
+    # Les deux checks restants portent sur le MÊME flux : c'est l'intent qui a
+    # révélé la collision reroute/priority, les deux verbes se disputant la même
+    # règle. Ils composent depuis le passage au pipeline multi-tables.
 
 - intent_id: c-004
   text: "On the management plane: deny SSH from the management host to the ops server while keeping other management traffic reachable, cut off the client-plane host from the same server entirely, and cap the management host's remaining traffic to the server at 4 Mbps."
@@ -363,5 +378,4 @@
   checks:
     - {check: ping_fail, src: breach_src, dst: primary_host}
     - {check: path_used, src: secondary_uplink, dst: core_hub, via: s3, not_via: s2}
-    - {check: throughput_min, src: primary_host, dst: core_hub, min_mbps: 4.0,
-       contender_src: breach_src, contender_dst: core_hub}
+    # Troisième volet (plancher de débit de la console) : plus mesuré.

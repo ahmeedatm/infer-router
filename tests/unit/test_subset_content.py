@@ -20,18 +20,51 @@ def test_simple_intents_carry_exactly_one_check():
             assert len(entry.checks) == 1, entry.intent_id
 
 
-def test_complex_intents_carry_at_least_three_checks():
+def test_complex_intents_carry_at_least_two_checks():
+    """The bound was three. Retiring ``throughput_min`` from the measured
+    scope took the third check off c-002, c-003 and c-008; their text still
+    asks for three operations, but only two of them are observable on this
+    bench. Two is the floor that keeps a complex intent scored on more than
+    one dimension. Padding the count back to three with a check that cannot
+    fail would be worse than lowering it."""
     for entry in load_subset():
         if entry.expected_complexity == "complex":
-            assert len(entry.checks) >= 3, entry.intent_id
+            assert len(entry.checks) >= 2, entry.intent_id
+
+
+def test_every_intent_keeps_at_least_one_check():
+    """``throughput_min`` was struck from five intents. One left with no check
+    would be scored on an empty conjunction, i.e. satisfied for free.
+    pydantic's ``min_length`` already refuses that; asserting it here is what
+    keeps the reason attached to the rule."""
+    for entry in load_subset():
+        assert entry.checks, entry.intent_id
 
 
 def test_every_check_type_appears_somewhere():
+    """What the bench measures, enumerated. This is what stops a stratum
+    rotting silently: a check type that quietly stops being used anywhere
+    fails here rather than disappearing from the results unnoticed."""
     seen = {c.check for e in load_subset() for c in e.checks}
     assert seen == {
-        "ping_ok", "ping_fail", "throughput_max", "throughput_min",
+        "ping_ok", "ping_fail", "throughput_max",
         "port_blocked", "port_open", "mirror_seen", "path_used", "tos_marked",
     }
+
+
+def test_throughput_min_is_not_measured_anywhere():
+    """Deliberately out of scope, and pinned so it stays a decision rather
+    than an accident. The positive control failed it on all six intents that
+    carried it: the ``bandwidth_min`` verb puts its htb queue on the port
+    facing the source, never on the s2-s4 bottleneck the contention runs
+    through, so the guarantee could not reach the measurement. The verb stays
+    in the vocabulary (a model may legitimately emit it, and the parser must
+    accept it); no check observes it. Re-adding one without moving the queue
+    re-adds an unpassable check."""
+    assert not [
+        e.intent_id for e in load_subset()
+        for c in e.checks if c.check == "throughput_min"
+    ]
 
 
 def test_no_intent_is_scored_on_ping_ok_alone():
