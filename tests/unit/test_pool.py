@@ -1,9 +1,10 @@
 """Tests du pool de modèles (app.llm.pool).
 
 Contrat : generic_pool() ne contient QUE les deux tiers génériques (light,
-heavy), sans les 4 "spécialistes" de default_pool() dont la qualité
-(QUALITY_SPECIALIST_ON_DOMAIN) n'a jamais été mesurée et dominerait tout
-comparatif light/heavy calibré si elle restait dans le pool du benchmark.
+heavy), sans les 4 spécialistes de default_pool(). Ce pool réduit sert
+désormais d'ablation à deux tiers : la qualité des spécialistes, longtemps
+posée a priori, est mesurée depuis exp_specialist, donc elle ne fausse plus
+le comparatif light/heavy et default_pool redevient le pool de référence.
 """
 from app.llm.pool import default_pool, generic_pool
 

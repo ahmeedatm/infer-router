@@ -90,14 +90,11 @@ def default_pool() -> tuple[PoolModel, ...]:
 def generic_pool() -> tuple[PoolModel, ...]:
     """Light-generic + heavy-generic only, no domain specialist.
 
-    Use this pool where the routing decision must reflect ONLY what has been
-    empirically calibrated (app.config QUALITY_LIGHT_BY_COMPLEXITY /
-    QUALITY_HEAVY_GENERIC, cf. calibration du 2026-07-22). The 4 domain
-    specialists of default_pool()
-    share the heavy base model and rely on QUALITY_SPECIALIST_ON_DOMAIN
-    (0.92), a prototype value never measured on a real specialized model — it
-    dominates any light/heavy comparison and would mask the calibrated
-    finding in a benchmark. No specialist model has been built or evaluated
-    to date (cf. ch.4, "à confirmer en ADR-004 Plan 3").
+    Kept for the ablation that isolates a two-tier light/heavy comparison.
+    The reason it once had to be the default is gone: the specialists' quality
+    was a posed constant (0.92 on domain, 0.88 off it) until exp_specialist
+    measured both arms, +0.038 on domain and -0.137 off it, and prompt_for
+    gave them a framing of their own. They no longer mask a calibrated
+    finding with an invented one.
     """
     return _generic_models()

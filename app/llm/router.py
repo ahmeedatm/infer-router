@@ -80,9 +80,16 @@ def admissible(
     )
 
 
-def _cost_key(candidate: RouteCandidate) -> tuple[float, float]:
-    """Cost-minimising sort key: cheaper first, then faster."""
-    return (candidate.cost, candidate.latency_ms)
+def _cost_key(candidate: RouteCandidate) -> tuple[float, float, float]:
+    """Cost-minimising sort key: cheaper first, then better, then faster.
+
+    Quality breaks cost ties because a domain specialist shares its base
+    model's price: without this, two candidates at the same cost are ordered
+    arbitrarily and the specialist's measured advantage (+0.038 on its
+    domain, exp_specialist) is never claimed. Cost still dominates, so the
+    objective remains minimising spend under the quality floor.
+    """
+    return (candidate.cost, -candidate.q, candidate.latency_ms)
 
 
 def _best_effort_key(candidate: RouteCandidate) -> tuple[float, float, float]:

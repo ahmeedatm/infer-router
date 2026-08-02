@@ -49,7 +49,7 @@ from app.llm.ollama_client import call_model as call_local_model
 from app.llm.judge import judge_rocketeval
 from app.llm.metrics import aiq, p50, p99
 from app.llm.openrouter_client import call_model as call_api_model
-from app.llm.pool import PoolModel, generic_pool
+from app.llm.pool import PoolModel, default_pool
 from app.llm.prompting import base_model_id, build_prompt, is_local_model_id
 from app.llm.schema import Intent
 
@@ -310,7 +310,7 @@ def run(intents: Sequence[Intent], budgets: Budgets) -> list[dict]:
     # generic_pool (pas default_pool) : les 4 "spécialistes" partagent le
     # modèle heavy et une qualité jamais mesurée (0.92) qui dominerait tout
     # comparatif light/heavy calibré. Cf. app.llm.pool.generic_pool.
-    pool = generic_pool()
+    pool = default_pool()
     rng = random.Random(config.BENCH_SEED)
 
     for i, intent in enumerate(intents, 1):
