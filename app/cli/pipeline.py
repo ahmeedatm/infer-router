@@ -33,7 +33,7 @@ from app.llm.inferrouter import quality_floor, route
 from app.llm.judge import judge_rocketeval
 from app.llm.policy import expected_quality
 from app.llm.pool import PoolModel, default_pool, generic_pool
-from app.llm.prompting import build_prompt
+from app.llm.prompting import prompt_for
 from app.llm.router import RouteCandidate, admissible
 from app.llm.schema import Intent
 
@@ -218,7 +218,8 @@ def execute(
     provider = providers.resolve(options.provider)
     serving = providers.serving_model_id(provider, chosen)
     response = providers.call(
-        serving, build_prompt(intent), max_tokens=options.max_tokens
+        serving, prompt_for(intent, chosen.model_id),
+        max_tokens=options.max_tokens,
     )
     return ExecutionStage(
         provider=provider.name, serving_model_id=serving, response=response

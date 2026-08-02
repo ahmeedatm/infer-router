@@ -82,3 +82,18 @@ def build_specialist_prompt(intent: Intent) -> str:
         "Answer the following operator intent precisely and concisely.\n\n"
         f"Intent: {intent.text}"
     )
+
+
+def prompt_for(intent: Intent, model_id: str) -> str:
+    """Framing to send to ``model_id`` for ``intent``.
+
+    Single place where a pool id decides the framing. A specialist id carries
+    a ``#<domain>`` suffix, and until this existed the suffix was purely
+    nominal: base_model_id stripped it before the call and every tier got the
+    generic framing, so a "specialist" was the generic model under another
+    name. Route every call site through here so the pool's promise and the
+    request actually sent cannot drift apart again.
+    """
+    if "#" in model_id:
+        return build_specialist_prompt(intent)
+    return build_prompt(intent)

@@ -44,3 +44,38 @@ def test_is_local_model_id_detects_ollama_tag():
 
 def test_is_local_model_id_rejects_openrouter_id():
     assert is_local_model_id("anthropic/claude-opus-4.8") is False
+
+
+class TestPromptFor:
+    """A specialist id must actually change the framing sent.
+
+    Regression guard for the defect this function was written to close: the
+    pool advertised four domain specialists whose quality the router relied
+    on, while every call went out with the generic framing.
+    """
+
+    def _intent(self):
+        from app.llm.schema import Intent
+        return Intent(id="i", text="Check RSRP on cell 42.", domain="ran",
+                      expected_complexity="simple", criticality="low")
+
+    def test_generic_id_gets_generic_framing(self):
+        from app.llm.prompting import build_prompt, prompt_for
+        intent = self._intent()
+        assert prompt_for(intent, "anthropic/claude-opus-4.8") == build_prompt(intent)
+
+    def test_specialist_id_gets_domain_expertise(self):
+        from app.llm.prompting import build_prompt, prompt_for
+        intent = self._intent()
+        got = prompt_for(intent, "anthropic/claude-opus-4.8#ran")
+        assert got != build_prompt(intent)
+        assert "radio access network" in got
+        assert intent.text in got
+
+    def test_unknown_domain_falls_back_to_generic(self):
+        from app.llm.prompting import build_prompt, prompt_for
+        from app.llm.schema import Intent
+        intent = Intent(id="i", text="x", domain="core",
+                        expected_complexity="simple", criticality="low")
+        object.__setattr__(intent, "domain", "unknown-domain")
+        assert prompt_for(intent, "m#unknown-domain") == build_prompt(intent)
