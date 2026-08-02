@@ -1,0 +1,1 @@
+{"intent_id": "sec-004", "action": "block", "src": "compromised_tenant", "dst": "core_tel2", "bw_mbps": null}

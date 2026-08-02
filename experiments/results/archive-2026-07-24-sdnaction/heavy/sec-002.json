@@ -1,0 +1,1 @@
+{"intent_id": "sec-002", "action": "block", "src": "guest_diag", "dst": "core_billing", "bw_mbps": null}

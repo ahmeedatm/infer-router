@@ -57,11 +57,22 @@ class TestLightQualityProfile:
 
 
 class TestSpecialistOffDomain:
-    def test_specialist_off_domain_no_bonus(self):
-        # security specialist on a ran intent behaves like a heavy-generic.
+    def test_specialist_off_domain_is_worse_than_generic(self):
+        # Measured, not assumed (exp_specialist): a RAN framing applied to core
+        # intents scored 0.777 against 0.914 for the generic framing. Off-domain
+        # specialisation actively hurts; it does not merely forgo the bonus, as
+        # the earlier hardcoded constants implied.
         q_off = expected_quality(SEC, "complex", "ran")
         q_heavy = expected_quality(HEAVY, "complex", "ran")
-        assert q_off == q_heavy
+        assert q_off < q_heavy
+
+    def test_off_domain_penalty_exceeds_on_domain_gain(self):
+        # The asymmetry is what justifies routing by domain at all: picking the
+        # wrong specialist costs 3.6x what picking the right one gains.
+        q_on = expected_quality(SEC, "complex", "security")
+        q_heavy = expected_quality(HEAVY, "complex", "security")
+        q_off = expected_quality(SEC, "complex", "ran")
+        assert (q_heavy - q_off) > (q_on - q_heavy)
 
     def test_specialist_on_domain_better_than_off_domain(self):
         q_on = expected_quality(SEC, "complex", "security")

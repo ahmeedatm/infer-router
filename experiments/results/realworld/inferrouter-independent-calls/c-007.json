@@ -1,0 +1,1 @@
+{"intent_id": "c-007", "operations": [{"src": "tenant", "dst": "app_srv", "verb": "mirror", "to": "probe"}, {"src": "tenant", "dst": "app_srv", "verb": "block", "selector": {"proto": "tcp", "port": 8080}}, {"src": "tenant", "dst": "mgmt_srv", "verb": "allow", "selector": null}]}

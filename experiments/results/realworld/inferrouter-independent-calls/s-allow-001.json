@@ -1,0 +1,1 @@
+{"intent_id": "s-allow-001", "operations": [{"src": "edge_mon", "dst": "core_tel", "verb": "allow", "selector": {"proto": "tcp", "port": 9100}}, {"src": "edge_mon", "dst": "core_tel", "verb": "block", "selector": null}]}

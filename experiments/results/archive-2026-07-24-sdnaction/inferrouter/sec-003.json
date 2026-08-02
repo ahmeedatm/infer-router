@@ -1,0 +1,1 @@
+{"intent_id": "sec-003", "action": "block", "src": "legacy_ran", "dst": "sec_ops", "bw_mbps": null}

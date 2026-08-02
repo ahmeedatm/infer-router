@@ -117,15 +117,15 @@ QUALITY_LIGHT_BY_COMPLEXITY: dict[str, float] = {
 # comme plat par complexité (il reste fort partout ; la légère décroissance est
 # dans le bruit du juge).
 QUALITY_HEAVY_GENERIC: float = float(os.getenv("QUALITY_HEAVY_GENERIC", "0.88"))
-# Spécialistes de domaine : jamais mesurés (pool à 1 spécialiste par domaine
-# non instancié dans les runs de calibration/benchmark actuels) ; valeurs de
-# prototype non calibrées, cf. app/llm/policy.py.
-QUALITY_SPECIALIST_ON_DOMAIN: float = float(os.getenv("QUALITY_SPECIALIST_ON_DOMAIN", "0.92"))
-# Doit valoir QUALITY_HEAVY_GENERIC par construction (même modèle de base,
-# sans bonus de domaine) : synchroniser si l'un des deux est recalibré.
-QUALITY_SPECIALIST_OFF_DOMAIN: float = float(
-    os.getenv("QUALITY_SPECIALIST_OFF_DOMAIN", "0.88")
-)
+# Effet mesuré d'un cadrage spécialiste, exprimé en écart sur le générique
+# (exp_specialist.py). Mesuré sur claude-opus-4.8, juge gemma2:9b + RocketEval :
+#   sur son domaine  : 0,962 contre 0,924 sur 15 intents RAN      -> +0,038
+#   hors son domaine : 0,777 contre 0,914 sur 6 intents coeur     -> -0,137
+# Ces valeurs remplacent deux constantes posées a priori (0,92 / 0,88). La
+# pénalité hors domaine vaut 3,6 fois le gain : un pool de spécialistes ne
+# vaut que si le routage par domaine est fiable.
+SPECIALIST_ON_DOMAIN_DELTA: float = float(os.getenv("SPECIALIST_ON_DOMAIN_DELTA", "0.038"))
+SPECIALIST_OFF_DOMAIN_DELTA: float = float(os.getenv("SPECIALIST_OFF_DOMAIN_DELTA", "-0.137"))
 
 # Plancher de qualité minimale par criticité (q_min), consommé par le routeur
 # (app/llm/router.py:select). Le routeur MINIMISE le coût sous contrainte

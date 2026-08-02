@@ -1,0 +1,40 @@
+{
+  "specialist_domain": "ran",
+  "intents_domain": "core",
+  "n": 6,
+  "q_generic": 0.9137,
+  "q_specialist_off_domain": 0.7768,
+  "delta": -0.1369,
+  "records": [
+    {
+      "intent_id": "ran-amf-load-rebalance-slice-aware-registration",
+      "q_generic": 0.75,
+      "q_specialist_off": 0.875
+    },
+    {
+      "intent_id": "ran-qos-flow-remap-upf-relocation-latency",
+      "q_generic": 0.875,
+      "q_specialist_off": 0.75
+    },
+    {
+      "intent_id": "core-read-smf-sessions-count",
+      "q_generic": 1.0,
+      "q_specialist_off": 0.5714285714285714
+    },
+    {
+      "intent_id": "core-read-upf-n6-interface-status",
+      "q_generic": 1.0,
+      "q_specialist_off": 0.7142857142857143
+    },
+    {
+      "intent_id": "core-read-amf-cpu-utilization",
+      "q_generic": 0.8571428571428571,
+      "q_specialist_off": 1.0
+    },
+    {
+      "intent_id": "core-read-ausf-auth-failures",
+      "q_generic": 1.0,
+      "q_specialist_off": 0.75
+    }
+  ]
+}

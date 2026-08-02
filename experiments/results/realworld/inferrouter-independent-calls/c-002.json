@@ -1,0 +1,1 @@
+{"intent_id": "c-002", "operations": [{"src": "compromised", "dst": "sec_gateway", "verb": "block", "selector": null}, {"src": "compromised", "dst": "supervisor", "verb": "mirror", "to": "probe"}, {"src": "supervisor", "dst": "sec_gateway", "verb": "bandwidth_min", "bw_mbps": 5.0}]}

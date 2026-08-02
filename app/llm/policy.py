@@ -42,12 +42,20 @@ def _light_quality(complexity: str) -> float:
 
 
 def _heavy_quality(model: PoolModel, domain: str) -> float:
-    """Heavy tier: specialist bonus only when matched on the intent domain."""
+    """Heavy tier: a specialist framing helps on its domain and hurts off it.
+
+    Both effects are expressed as deltas on the generic tier rather than as
+    absolute levels: the measurement (exp_specialist) yields a reliable gap
+    between two arms answering the same intents, while the absolute level
+    moves with the intent set. Off-domain is the load-bearing figure, being
+    3.6x the on-domain gain: a specialist pool is only worth having if the
+    router reliably picks the right domain.
+    """
     if model.domain is None:
         return _clamp_unit(config.QUALITY_HEAVY_GENERIC)
     if model.domain == domain:
-        return _clamp_unit(config.QUALITY_SPECIALIST_ON_DOMAIN)
-    return _clamp_unit(config.QUALITY_SPECIALIST_OFF_DOMAIN)
+        return _clamp_unit(config.QUALITY_HEAVY_GENERIC + config.SPECIALIST_ON_DOMAIN_DELTA)
+    return _clamp_unit(config.QUALITY_HEAVY_GENERIC + config.SPECIALIST_OFF_DOMAIN_DELTA)
 
 
 def expected_quality(model: PoolModel, complexity: str, domain: str) -> float:
