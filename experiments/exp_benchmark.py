@@ -49,12 +49,19 @@ from app.llm.ollama_client import call_model as call_local_model
 from app.llm.judge import judge_rocketeval
 from app.llm.metrics import aiq, p50, p99
 from app.llm.openrouter_client import call_model as call_api_model
-from app.llm.pool import PoolModel, default_pool
+from app.llm.pool import PoolModel, default_pool, generic_pool
 from app.llm.prompting import base_model_id, build_prompt, is_local_model_id
 from app.llm.schema import Intent
 
 RESULTS_DIR = Path("experiments/results")
-OUT_PATH = RESULTS_DIR / "benchmark.json"
+# POOL=generic isole l'ablation à deux tiers : même échantillon, même seed,
+# seul le pool change, de sorte que l'écart mesuré soit attribuable au pool et
+# non à un changement d'intents. Chaque pool écrit son propre fichier pour que
+# les deux runs ne se mélangent pas dans le cache de reprise.
+_POOL_NAME = os.getenv("POOL", "default")
+OUT_PATH = RESULTS_DIR / (
+    "benchmark.json" if _POOL_NAME == "default" else f"benchmark_{_POOL_NAME}_pool.json"
+)
 
 STRATEGIES: tuple[str, ...] = ("always_heavy", "always_light", "random", "inferrouter")
 
@@ -307,10 +314,10 @@ def run(intents: Sequence[Intent], budgets: Budgets) -> list[dict]:
 
     intents_by_id = {it.id: it for it in intents}
     checklist_cache: dict[str, tuple[str, ...]] = {}
-    # generic_pool (pas default_pool) : les 4 "spécialistes" partagent le
-    # modèle heavy et une qualité jamais mesurée (0.92) qui dominerait tout
-    # comparatif light/heavy calibré. Cf. app.llm.pool.generic_pool.
-    pool = default_pool()
+    # Le pool par défaut inclut les 4 spécialistes de domaine, dont la qualité
+    # est mesurée depuis exp_specialist. POOL=generic rejoue l'ablation à deux
+    # tiers sur le même échantillon, ce qui isole l'effet du pool.
+    pool = default_pool() if _POOL_NAME == "default" else generic_pool()
     rng = random.Random(config.BENCH_SEED)
 
     for i, intent in enumerate(intents, 1):
