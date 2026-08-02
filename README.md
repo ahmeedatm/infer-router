@@ -1,62 +1,57 @@
 # InferRouter-LLM
 
-Routage d'intents réseau en langage naturel vers un pool de LLM, sous garantie
-de qualité. Le système choisit le modèle le moins cher dont la qualité attendue
-dépasse un plancher fixé par la criticité de l'intent.
+Routes natural-language network intents to a pool of LLMs under a quality
+guarantee. For each intent, the system picks the cheapest model whose expected
+quality clears a floor set by the intent's operational criticality.
 
-Travail de mémoire de Master (CNAM Paris, Réseaux & Objets Connectés). Le
-rapport complet est dans `docs/InferRouter-LLM.pdf`.
+Master's thesis work (CNAM Paris, Networks & Connected Objects). The full report
+is in `docs/InferRouter-LLM.pdf` (French).
 
-## Ce que fait le système
+## What it does
 
-Un intent du type « corrèle les alarmes de congestion RAN du site B avec les
-pertes UPF et propose un redimensionnement de slice » arrive avec deux
-métadonnées opérateur : son domaine réseau et sa criticité. Le système en estime
-la complexité sémantique, puis arbitre :
+An intent such as *"correlate the RAN congestion alarms on site B with the UPF
+losses and propose a slice resize"* arrives with two operator-supplied fields:
+its network domain and its criticality. The system estimates its semantic
+complexity, then arbitrates:
 
 ```
-minimiser le coût   sous contrainte   q(m) >= q_min(criticité)
-                                      latence(m) <= L_max
-                                      coût(m)    <= C_max
+minimise cost   subject to   q(m) >= q_min(criticality)
+                             latency(m) <= L_max
+                             cost(m)    <= C_max
 ```
 
-La criticité fixe le plancher (`low` 0,35 / `med` 0,50 / `high` 0,70). Un intent
-peu critique part au modèle léger et coûte 170 fois moins ; un intent critique
-exige le lourd. C'est le curseur économie/qualité de l'opérateur.
+Criticality sets the floor (`low` 0.35 / `med` 0.50 / `high` 0.70). A
+low-criticality intent goes to the cheap tier and costs roughly 170x less; a
+critical one requires the strong tier. That floor is the operator's
+cost-versus-quality dial.
 
-Le routeur ne maximise pas la qualité. Avec un modèle lourd fort, maximiser la
-qualité renvoie tout au lourd et le routage disparaît.
+The router does not maximise quality. With a strong heavy tier, maximising
+quality sends everything to it and routing disappears.
 
-## Démarrage rapide
+## Quick start
 
-Deux chemins au choix. En local :
+Locally:
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r requirements-runtime.txt
 ```
 
-`requirements-runtime.txt` suffit pour faire tourner le routeur et les tests.
-`requirements.txt` ajoute torch et sentence-transformers, utiles seulement pour
-réentraîner la variante combinée de l'estimateur.
+`requirements-runtime.txt` is enough to run the router and the test suite.
+`requirements.txt` adds torch and sentence-transformers, needed only to retrain
+the combined variant of the complexity estimator.
 
-Par Docker, sans rien installer (voir la section Docker plus bas) :
-
-```bash
-docker compose run --rm cli "Show the PRB utilisation of cell 12 on site A." --domain ran --criticality low --stage decision
-```
-
-La décision de routage ne demande ni clé API ni Ollama :
+The routing decision needs neither an API key nor Ollama:
 
 ```bash
 .venv/bin/python -m app.cli "Show the PRB utilisation of cell 12 on site A." --domain ran --criticality low --stage decision
 ```
 
-Sortie : les attributs lus par l'estimateur, la classe prédite, le tableau des
-candidats avec leur qualité attendue, leur coût et leur admissibilité SLA, et le
-modèle retenu avec sa justification.
+It prints the attributes the estimator read, the predicted class, the candidate
+table with expected quality, cost and SLA admissibility, and the selected model
+with the reason it won.
 
-Pour aller jusqu'à l'appel du modèle et sa notation par le juge, il faut Ollama
-et quatre modèles locaux (environ 21 Go) :
+Going all the way to a real model call and its judge grading requires Ollama and
+four local models (about 21 GB):
 
 ```bash
 ollama pull gemma2:2b && ollama pull qwen2.5:14b-instruct && ollama pull qwen2.5:7b-instruct && ollama pull gemma2:9b
@@ -66,32 +61,38 @@ ollama pull gemma2:2b && ollama pull qwen2.5:14b-instruct && ollama pull qwen2.5
 .venv/bin/python -m app.cli "Show the PRB utilisation of cell 12 on site A." --domain ran --criticality low
 ```
 
-Environ 20 secondes, aucun coût. Le pipeline complet s'affiche étape par étape :
-estimation, arbitrage, appel réel, checklist RocketEval critère par critère,
-puis comparaison entre la qualité promise et la qualité mesurée.
+Roughly 20 seconds, no cost. The full pipeline is printed stage by stage:
+estimation, arbitration, real call, RocketEval checklist item by item, then
+promised quality against measured quality.
 
-## Le CLI
+Through Docker, with nothing installed (see the Docker section):
+
+```bash
+docker compose run --rm cli "Show the PRB utilisation of cell 12 on site A." --domain ran --criticality low --stage decision
+```
+
+## The CLI
 
 `python -m app.cli "<intent>" [options]`
 
-| Option | Défaut | Effet |
+| Option | Default | Effect |
 |---|---|---|
-| `--domain` | `core` | Domaine réseau : `ran`, `core`, `security`, `slice` |
-| `--criticality` | `med` | `low`, `med`, `high` ; fixe le plancher `q_min` |
-| `--stage` | `judge` | `decision`, `execute` ou `judge` |
-| `--provider` | `local` | `local` (Ollama, gratuit) ou `api` (OpenRouter, facturé) |
-| `--pool` | `generic` | `generic` (2 tiers calibrés) ou `default` (+ 4 spécialistes) |
-| `--q-min` | dérivé | Force le plancher au lieu de le dériver de la criticité |
-| `--l-max`, `--c-max` | illimité | Budgets SLA (ms, USD par appel) |
-| `--max-tokens` | 4096 | Plafond de génération du modèle cible |
-| `--expected-complexity` | l'estimation | Étiquette de vérité-terrain, si connue |
-| `--json` | non | Trace brute en JSON au lieu du rapport lisible |
+| `--domain` | `core` | Network domain: `ran`, `core`, `security`, `slice` |
+| `--criticality` | `med` | `low`, `med`, `high`; sets the `q_min` floor |
+| `--stage` | `judge` | `decision`, `execute` or `judge` |
+| `--provider` | `local` | `local` (Ollama, free) or `api` (OpenRouter, billed) |
+| `--pool` | `generic` | `generic` (two tiers) or `default` (+ 4 domain specialists) |
+| `--q-min` | derived | Forces the floor instead of deriving it from criticality |
+| `--l-max`, `--c-max` | unlimited | SLA budgets (ms, USD per call) |
+| `--max-tokens` | 4096 | Generation cap for the target model |
+| `--expected-complexity` | the estimate | Ground-truth label, when known |
+| `--json` | off | Raw JSON trace instead of the readable report |
 
-Le domaine et la criticité ne sont pas devinés. Ce sont des métadonnées
-opérateur, pas des propriétés du texte : les inférer reviendrait à décider du
-SLA à la place de l'opérateur. Seule la complexité est estimée depuis l'énoncé.
+Domain and criticality are not guessed. They are operator metadata, not
+properties of the text: inferring them would mean deciding the SLA on the
+operator's behalf. Only complexity is estimated from the wording.
 
-Quelques usages typiques :
+A few typical uses:
 
 ```bash
 .venv/bin/python -m app.cli "Reroute core NF traffic after the DC-2 outage." --domain core --criticality high --stage decision
@@ -101,137 +102,149 @@ Quelques usages typiques :
 .venv/bin/python -m app.cli "List the active gNBs on site A." --l-max 12000 --stage decision
 ```
 
-Un budget de latence serré exclut le lourd du jeu admissible, ce que la colonne
-`SLA` du tableau montre directement.
+A tight latency budget removes the heavy tier from the admissible set, which the
+`SLA` column of the table shows directly.
 
 ```bash
 .venv/bin/python -m app.cli "Create a URLLC slice under 5 ms for factory X." --domain slice --criticality high --json
 ```
 
-En mode `local`, les deux tiers du pool sont servis par le couple Ollama du banc
-réseau réel (gemma2:2b pour le léger, qwen2.5:14b-instruct pour le lourd). La
-décision, elle, reste prise sur les profils coût/latence calibrés du pool API :
-seul le modèle qui sert le tier change, pas l'arbitrage.
+In `local` mode, both tiers are served by the Ollama pair used on the network
+bench (gemma2:2b for the light tier, qwen2.5:14b-instruct for the heavy one).
+The decision itself still uses the calibrated cost and latency profiles of the
+API pool: only the model serving the tier changes, not the arbitration.
 
-En mode `api`, le pool réel est utilisé (qwen-2.5-72b et claude-opus-4.8) et
-`OPENROUTER_API_KEY` doit être renseignée.
+In `api` mode the production pool is used (qwen-2.5-72b and claude-opus-4.8) and
+`OPENROUTER_API_KEY` must be set.
 
-## Composants
+## Components
 
-L'estimateur de complexité prédit `simple`, `medium` ou `complex` à partir
-d'attributs indépendants de la longueur : nombre d'entités réseau, nombre de
-contraintes, nombre de domaines croisés, nombre de valeurs numériques. Coût
-mesuré 3,4 ms par intent, en régime établi.
+The **complexity estimator** predicts `simple`, `medium` or `complex` from
+length-independent attributes: number of network entities, number of
+constraints, number of crossed domains, number of numeric values. Measured at
+3.4 ms per intent in steady state.
 
-Le routeur tri-critère écarte d'abord les candidats hors budget SLA, garde ceux
-qui atteignent le plancher de qualité, et retient le moins cher. Si aucun
-candidat n'atteint le plancher, il bascule au mieux-disant plutôt que de refuser
-l'intent.
+The **router** first discards candidates outside the SLA budgets, keeps those
+reaching the quality floor, and returns the cheapest. Cost ties are broken by
+quality, then latency — a domain specialist shares its base model's price, so
+without that rule its measured advantage would never be claimed. When no
+candidate reaches the floor, the router falls back to the best available rather
+than refusing the intent.
 
-Le LLM-Juge évalue une réponse par la méthode RocketEval : un modèle tiers
-génère une checklist de critères vérifiables propres à l'intent, un petit modèle
-local (gemma2:9b) coche chaque critère, et `q` vaut la proportion de critères
-validés. Le juge sert à la calibration hors ligne, pas à la décision : au
-runtime le routeur lit la matrice de qualité déjà mesurée
+The **LLM judge** grades a response with the RocketEval method: a stronger model
+generates a checklist of verifiable, intent-specific criteria, a small local
+model (gemma2:9b) ticks each one, and `q` is the share of criteria met. The
+judge is used for offline calibration, not for the decision: at runtime the
+router reads the already-measured quality matrix
 (`config.QUALITY_LIGHT_BY_COMPLEXITY`).
 
-## Résultats mesurés
+## Measured results
 
-Benchmark sur 74 intents, juge gemma2:9b, checklists neutres générées par
-claude-sonnet-4.6 :
+Benchmark over 74 intents, gemma2:9b judge, neutral checklists generated by
+claude-sonnet-4.6:
 
-| Stratégie | Qualité | Coût moyen | Latence P50 |
+| Strategy | Quality | Mean cost | P50 latency |
 |---|---|---|---|
-| Always-Heavy | 0,88 | 0,0285 $ | 19,1 s |
-| InferRouter | 0,78 | 0,0201 $ | 19,5 s |
-| Random | 0,65 | 0,0124 $ | 11,9 s |
-| Always-Light | 0,46 | 0,0002 $ | 7,9 s |
+| Always-Heavy | 0.88 | $0.0285 | 19.1 s |
+| InferRouter | 0.78 | $0.0201 | 19.5 s |
+| Random | 0.65 | $0.0124 | 11.9 s |
+| Always-Light | 0.46 | $0.0002 | 7.9 s |
 
-Le gain est économique : 30 % de coût en moins que le tout-lourd, pour 0,10 de
-qualité en moins. Ni la latence ni la qualité ne s'améliorent, les deux tiers du
-pool étant lents.
+The gain is economic: 30 % less cost than always-heavy for 0.10 less quality.
+Neither latency nor quality improves, both tiers of this pool being slow.
 
-Le résultat le plus intéressant du travail concerne le choix du modèle léger.
-Sur six candidats testés, le meilleur en absolu (deepseek-v3.2, robuste et moins
-cher) casse le routage : InferRouter tombe sous le tirage aléatoire. Comme ce
-modèle est bon partout uniformément, aucun signal n'indique où le lourd apporte
-quelque chose. À l'inverse qwen-2.5-72b, moins bon mais dont la qualité décroît
-avec la complexité (0,64 / 0,39 / 0,32), fait fonctionner le routage. Le bon
-modèle léger n'est pas le plus fort, c'est celui dont la faiblesse est
-prédictible.
+That 30 % is not a property of the system. Replayed on a different sample it
+drops to 11 % at unchanged quality, because only intents that are both simple
+and low-criticality reach the cheap tier. The saving measures the composition of
+the intent flow as much as the policy itself, which is the expected behaviour of
+an arbitration indexed on criticality.
 
-## Structure du dépôt
+**The most interesting result concerns the choice of the light model.** Of six
+candidates tested, the best one in absolute terms (deepseek-v3.2, more robust
+and cheaper) *breaks* routing: InferRouter falls below random selection. Being
+uniformly capable, it leaves no signal indicating where the heavy tier is worth
+paying for. Conversely qwen-2.5-72b, weaker overall but whose quality decreases
+with complexity (0.64 / 0.39 / 0.32), makes routing work. The right light model
+is not the strongest one, it is the one whose weakness is predictable.
+
+**Domain specialisation is measured, not assumed.** An expertise framing gains
+0.038 on its own domain (0.962 against 0.924) and loses 0.137 outside it (0.777
+against 0.914). The penalty is 3.6x the gain, so specialisation only pays when
+domain routing is reliable — a system that picks the wrong specialist loses more
+than one that uses none. That gain sits below the judge's resolution, though, so
+it does not show up in the aggregate score.
+
+## Repository layout
 
 ```
 app/
-  cli/                  CLI interactif (pipeline, rendu, trace, providers)
-  config.py             tous les paramètres, surchargeables par variable d'env
+  cli/                  interactive CLI (pipeline, rendering, trace, providers)
+  config.py             every parameter, overridable by environment variable
   llm/
     schema.py           Intent, ModelResponse, JudgeScore (pydantic, frozen)
-    intents.py          chargement et validation du jeu d'intents
-    features.py         attributs de complexité
-    prompting.py        framing des prompts et conventions d'id de modèle
-    openrouter_client.py  appel des LLM cibles (API)
-    ollama_client.py    appel des modèles locaux
-    judge.py            LLM-Juge (RocketEval, notation absolue et par paires)
-    checklist.py        génération de checklist par intent
-    pool.py             pool de modèles (generic_pool et default_pool)
-    policy.py           qualité attendue par candidat
-    router.py           sélection sous contraintes (décision pure)
-    inferrouter.py      orchestrateur de la décision
-    sdn_action.py       traduction d'une réponse en action réseau structurée
+    intents.py          intent set loading and validation
+    features.py         complexity attributes
+    prompting.py        prompt framing and model-id conventions
+    intent_plan.py      the target model's output contract (typed plan)
+    openrouter_client.py  target LLM calls (API)
+    ollama_client.py    local model calls
+    judge.py            LLM judge (RocketEval, absolute and pairwise)
+    checklist.py        per-intent checklist generation
+    pool.py             model pool (generic_pool and default_pool)
+    policy.py           expected quality per candidate
+    router.py           constrained selection (pure decision)
+    inferrouter.py      decision orchestrator
 
-bench/                  banc de validation en réseau émulé (Mininet + OVS)
-data/                   datasets d'intents, estimateur persisté
-experiments/            campagnes de mesure, results/ contient les mesures
-tests/unit/             tests sans réseau ni service
-tests/integration/      tests nécessitant Ollama ou le banc
-docs/                   rapport de mémoire et findings
+bench/                  emulated-network validation bench (Mininet + OVS)
+  verbs/                one pure module per verb family
+data/                   intent datasets, persisted estimator
+experiments/            measurement campaigns; results/ holds the measurements
+tests/unit/             no network, no service
+tests/integration/      require Ollama or the bench VM
+docs/                   thesis report
 
-Dockerfile              cibles runtime et full
-docker-compose.yml      services cli, tests, bench, train, ollama
-requirements-runtime.txt  dépendances d'exécution (sans torch)
-requirements.txt          + pile embeddings
+Dockerfile              runtime and full targets
+docker-compose.yml      cli, tests, bench, train, ollama services
+requirements-runtime.txt  runtime dependencies (no torch)
+requirements.txt          + embeddings stack
 ```
 
-`data/complexity_estimator.joblib` et `experiments/results/` sont versionnés :
-sans eux, un clone frais ne peut ni router un intent ni rejouer une mesure.
-L'estimateur est déterministe (`random_state=42`) et pèse 1,1 Mo.
+`data/complexity_estimator.joblib` and `experiments/results/` are versioned:
+without them a fresh clone can neither route an intent nor recompute a
+measurement. The estimator is deterministic (`random_state=42`) and weighs
+1.1 MB.
 
-Le pool par défaut du CLI est `generic_pool`, qui ne contient que les deux tiers
-réellement calibrés. `default_pool` ajoute quatre spécialistes de domaine dont
-la qualité (0,92) est une valeur de prototype jamais mesurée : elle domine toute
-comparaison et masquerait le finding ci-dessus. À n'utiliser que pour illustrer
-l'architecture cible.
+The CLI defaults to `generic_pool`, which holds only the two generic tiers.
+`default_pool` adds four domain specialists; use it to see the specialisation
+effect described above.
 
 ## Configuration
 
-Tout passe par `app/config.py`, surchargeable par variables d'environnement.
-Celles qui comptent en pratique :
+Everything goes through `app/config.py`, overridable by environment variables.
+The ones that matter in practice:
 
-| Variable | Défaut | Rôle |
+| Variable | Default | Role |
 |---|---|---|
-| `OPENROUTER_API_KEY` | vide | Requise pour `--provider api` |
-| `MODEL_LIGHT` | `qwen/qwen-2.5-72b-instruct` | Tier léger du pool |
-| `MODEL_HEAVY` | `anthropic/claude-opus-4.8` | Tier lourd du pool |
-| `JUDGE_MODEL` | `gemma2:9b` | Juge local |
-| `CHECKLIST_MODEL` | `anthropic/claude-sonnet-4.6` | Génère les checklists |
-| `OLLAMA_HOST` | `http://localhost:11434` | Serveur Ollama |
-| `QMIN_LOW/MED/HIGH` | 0,35 / 0,50 / 0,70 | Planchers de qualité |
+| `OPENROUTER_API_KEY` | empty | Required for `--provider api` |
+| `MODEL_LIGHT` | `qwen/qwen-2.5-72b-instruct` | Light tier of the pool |
+| `MODEL_HEAVY` | `anthropic/claude-opus-4.8` | Heavy tier of the pool |
+| `JUDGE_MODEL` | `gemma2:9b` | Local judge |
+| `CHECKLIST_MODEL` | `anthropic/claude-sonnet-4.6` | Generates the checklists |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server |
+| `QMIN_LOW/MED/HIGH` | 0.35 / 0.50 / 0.70 | Quality floors |
 
-Ne pas rétrograder `JUDGE_MODEL` vers gemma2:2b : ce modèle a montré 40 à 50 %
-d'accord seulement et invalide toute mesure de qualité.
+Do not downgrade `JUDGE_MODEL` to gemma2:2b: that model showed only 40 to 50 %
+agreement and invalidates any quality measurement.
 
 ## Docker
 
-Deux cibles dans le `Dockerfile`. `runtime` (561 Mo) porte la décision de
-routage, les appels LLM, le juge, les tests et le benchmark hors ligne. `full`
-(1,5 Go) ajoute torch et sentence-transformers pour réentraîner l'estimateur
-combiné.
+Two targets in the `Dockerfile`. `runtime` (561 MB) carries the routing
+decision, the LLM calls, the judge, the tests and the offline benchmark. `full`
+(1.5 GB) adds torch and sentence-transformers to retrain the combined estimator.
 
-Aucun LLM ne tourne dans l'image. Le pool API passe par OpenRouter, les modèles
-locaux par un serveur Ollama : celui de l'hôte par défaut, via
-`host.docker.internal`, puisque c'est lui qui détient déjà les 21 Go de poids.
+No LLM runs inside the image. The API pool goes through OpenRouter, local models
+through an Ollama server — the host's by default, via `host.docker.internal`,
+since it already holds the 21 GB of weights.
 
 ```bash
 docker compose run --rm cli "Create a URLLC slice under 5 ms for factory X." --domain slice --criticality high --stage decision
@@ -245,12 +258,12 @@ docker compose run --rm tests
 docker compose run --rm bench
 ```
 
-Le service `bench` rejoue le benchmark hors ligne et reproduit les quatre lignes
-du tableau ci-dessus sans un seul appel payant. C'est la vérification la plus
-directe que les chiffres du rapport sont reconstructibles.
+The `bench` service replays the offline benchmark and reproduces the four rows
+of the table above without a single billed call. It is the most direct check
+that the report's figures are reconstructible.
 
-Sur une machine sans Ollama installé, un serveur conteneurisé est disponible en
-profil :
+On a machine without Ollama installed, a containerised server is available as a
+profile:
 
 ```bash
 docker compose --profile ollama up -d ollama
@@ -260,7 +273,7 @@ docker compose --profile ollama up -d ollama
 docker compose --profile ollama exec ollama ollama pull gemma2:2b
 ```
 
-Il faut alors pointer `OLLAMA_HOST` sur `http://ollama:11434` dans `.env`.
+`OLLAMA_HOST` must then point at `http://ollama:11434` in `.env`.
 
 ## Tests
 
@@ -268,96 +281,92 @@ Il faut alors pointer `OLLAMA_HOST` sur `http://ollama:11434` dans `.env`.
 .venv/bin/pytest -q
 ```
 
-326 tests unitaires, sans réseau ni service : les clients HTTP sont injectables
-et les tests passent par `httpx.MockTransport`. Les tests d'intégration
-(`tests/integration/`) demandent Ollama vivant, ou le banc Mininet pour ceux
-marqués `bench`, et ne sont pas collectés par défaut.
+478 unit tests, no network and no service: HTTP clients are injectable and the
+tests go through `httpx.MockTransport`. Integration tests
+(`tests/integration/`) need a live Ollama, or the Mininet bench for those marked
+`bench`, and are not collected by default.
 
 ```bash
 .venv/bin/ruff check .
 ```
 
-## Reproduire les campagnes
+Lint settings live in `ruff.toml` and the CI pins the linter version, so the
+same command yields the same verdict locally and in CI.
 
-`experiments/` contient les scripts de mesure : fiabilité du juge, séparabilité
-de la complexité, calibration de la qualité par modèle, frontière de Pareto,
-comparaison des stratégies. Les résultats déjà produits sont dans
+## Reproducing the campaigns
+
+`experiments/` holds the measurement scripts: judge reliability, complexity
+separability, per-model quality calibration, Pareto frontier, strategy
+comparison, domain specialisation. Results already produced are under
 `experiments/results/`.
 
-Ces scripts appellent des API payantes. Ils valident sur un petit échantillon
-avant tout passage à l'échelle, réutilisent les artefacts existants et sont
-reprenables. Le benchmark hors ligne rejoue les mesures sans nouvel appel :
+These scripts call billed APIs. They validate on a small sample before scaling
+up, reuse existing artefacts and are resumable. The offline benchmark replays
+the measurements with no new call:
 
 ```bash
 .venv/bin/python -m experiments.exp_benchmark_offline
 ```
 
-Pour réentraîner l'estimateur de complexité :
+To retrain the complexity estimator:
 
 ```bash
 .venv/bin/python -m experiments.train_complexity_estimator
 ```
 
-## Banc de validation en réseau émulé
+## Emulated-network bench
 
-`bench/` applique les plans produits par les modèles directement en règles
-OpenFlow sur Open vSwitch, dans une VM Linux avec Mininet, et vérifie dans le
-plan de données que l'intent est réellement satisfait. Le modèle cible émet un
-plan de plusieurs opérations sur sept verbes (autoriser et bloquer, y compris
-sur un port applicatif, plafonner un débit, dupliquer un flux vers une sonde,
-imposer un chemin, marquer une priorité), appliqué sur une topologie en losange
-à deux chemins. Le provisionnement de la VM Lima est dans `bench/provision/`.
+`bench/` applies the plans produced by the models directly as OpenFlow rules on
+Open vSwitch, inside a Linux VM running Mininet, and verifies in the data plane
+that the intent was actually realised. The target model emits a plan of several
+operations over seven verbs (allow and block, including on a specific
+application port, cap a bitrate, mirror a flow to a probe, pin a path, mark a
+priority class), applied on a four-switch diamond topology with two paths. Lima
+VM provisioning is under `bench/provision/`.
 
-Chaque vérification est validée par deux contrôles avant toute mesure. Le
-contrôle négatif rejoue le jeu avec un plan sans effet réseau et doit tout faire
-échouer ; le contrôle positif le rejoue avec le plan dérivé de la vérité terrain
-et doit tout faire réussir. Les deux sont gratuits, aucun n'appelle de modèle :
+Every check is validated by two controls before any measurement. The negative
+control replays the set with a plan that has no network effect and must fail
+everything; the positive control replays it with the plan derived from the
+ground truth and must pass everything. Both are free, neither calls a model:
 
 ```bash
 python experiments/run_realworld_validation.py --strategy noop
 limactl shell inferbench bash -c 'cd /opt/infer-router && sudo python3 -m bench.run_bench --strategy noop'
 ```
 
-Ce dispositif a écarté plusieurs vérifications qui produisaient un résultat
-lisible sans dépendre du modèle évalué, dont un test de chemin satisfait par
-l'acheminement par défaut.
+This two-sided proof ruled out several checks that produced a readable result
+without depending on the model under test, among them a path check satisfied by
+the default forwarding.
 
-Résultat sur 24 intents stratifiés, pool de production : le modèle lourd réalise
-79 % des intents, InferRouter 75 %, le léger 67 %. Le léger produit en outre un
-plan inexploitable sur 24, rejeté avant toute application. Router vers un léger
-faible a donc un coût mesurable dans le plan de données, pas seulement une note
-de juge plus basse.
+Result over 24 stratified intents on the production pool: the heavy model
+realises 79 % of the intents, InferRouter 75 %, the light one 67 %. The light
+model also emits one unusable plan out of 24, rejected before any network
+application. Routing to a weak light tier therefore has a cost measurable in the
+data plane, not merely a lower judge score.
 
-## Limites connues
+## Known limits
 
-L'estimateur persisté dans `data/complexity_estimator.joblib` est la variante à
-quatre attributs de fond, mesurée à 65-73 % en validation croisée. C'est un
-choix assumé du prototype (attributs lisibles en termes métier, insensibles à la
-verbosité par construction, cf. §5.2 du rapport), pas la variante combinée
-attributs + embeddings qui atteint 85-94 %. En pratique le CLI classe donc assez
-grossièrement : deux intents de difficulté très différente peuvent recevoir la
-même classe, et la décision de routage qui suit sera la même.
+The estimator persisted in `data/complexity_estimator.joblib` is the
+four-attribute variant, measured at 65-73 % under cross-validation. This is a
+deliberate prototype choice — attributes readable in domain terms, insensitive
+to verbosity by construction — rather than the combined attributes + embeddings
+variant, which reaches 85-94 %. In practice the CLI therefore classifies
+coarsely: two intents of very different difficulty may land in the same class,
+and the routing decision that follows will be the same.
 
-Le juge local distingue de façon fiable une bonne réponse d'une réponse
-clairement mauvaise (100 % en discrimination grossière), ce qui suffit au
-routage. Il ne détecte pas une erreur subtile injectée dans une réponse par
-ailleurs correcte : sur vingt paires correct/dégradé, il rend vingt égalités.
-Un juge fort accessible par API en tranche la moitié, donc la capacité du
-modèle déplace la limite sans la lever.
+The local judge reliably tells a good answer from a clearly bad one (100 % on
+coarse discrimination), which is what routing needs. It does not detect a subtle
+error injected into an otherwise correct answer: over twenty correct/degraded
+pairs it returns twenty ties. A strong API judge settles half of them, so model
+capability moves the limit without lifting it.
 
-Les spécialistes de domaine sont mesurés : un cadrage d'expertise gagne 0,038
-sur son domaine et perd 0,137 hors de lui. La pénalité vaut 3,6 fois le gain,
-si bien que la spécialisation ne paie que si le routage par domaine vise juste.
-Ce gain reste en revanche sous la résolution du juge, et ne ressort donc pas
-du score agrégé.
+The economic gain depends on the composition of the intent flow, 30 % on one
+sample and 11 % on another, because only intents that are both simple and
+low-criticality reach the cheap tier.
 
-Le gain économique dépend de la composition du flux traité : 30 % d'économie
-sur un jeu, 11 % sur un autre, parce que seuls les intents à la fois simples et
-peu critiques descendent au tier économique.
+Measured latencies come from a MacBook Air M5 and the OpenRouter API. They are
+indicative, not representative of an edge deployment.
 
-Les latences mesurées viennent d'un MacBook Air M5 et de l'API OpenRouter. Elles
-sont indicatives, pas représentatives d'un déploiement en périphérie.
+## License
 
-## Licence
-
-MIT, voir [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
