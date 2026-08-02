@@ -50,6 +50,13 @@ NOOP_STRATEGY = "noop"
 
 _STRATEGIES = ("light", "heavy", "inferrouter", NOOP_STRATEGY, ORACLE_STRATEGY)
 
+# Novita serves qwen-2.5-72b-instruct but rejects this request shape with
+# HTTP 400 "does not support endpoint: completions"; other providers accept
+# it. Routing is per-request, so leaving it in makes a run fail on whichever
+# intents happen to land there. The campaign's other experiments already
+# exclude it (exp_benchmark, exp_calibration_api_light).
+EXCLUDED_PROVIDERS = {"ignore": ["novita"]}
+
 
 def noop_plan(entry: SubsetEntry) -> IntentPlan:
     """The control's inert plan: valid, translatable, zero commands."""
@@ -94,7 +101,8 @@ def plan_for(
         return oracle_plan(entry)
     model_id = _model_for(entry, strategy)
     prompt = build_plan_prompt(entry.text, list(entry.endpoints))
-    reply = call(model_id, prompt, max_tokens=config.RESPONSE_MAX_TOKENS)
+    reply = call(model_id, prompt, max_tokens=config.RESPONSE_MAX_TOKENS,
+                 provider=EXCLUDED_PROVIDERS)
     return parse_plan_response(entry.intent_id, reply.text)
 
 

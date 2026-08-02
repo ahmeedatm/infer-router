@@ -55,7 +55,8 @@ def _entry() -> SubsetEntry:
 
 
 def _reply(text: str):
-    def _call(model_id, prompt, max_tokens=None):
+    def _call(model_id, prompt, max_tokens=None, provider=None):
+        _call.provider = provider
         _call.prompt = prompt
         return ModelResponse(
             model_id=model_id, text=text, latency_ms=1.0,
@@ -120,7 +121,7 @@ def test_main_records_a_failure_and_keeps_processing(tmp_path):
 
     call_count = {"n": 0}
 
-    def fake_call(model_id, prompt, max_tokens=None):
+    def fake_call(model_id, prompt, max_tokens=None, provider=None):
         call_count["n"] += 1
         # Iteration order is deterministic: e1/light, e1/heavy,
         # e1/inferrouter, e2/light, e2/heavy, e2/inferrouter. Fail exactly
@@ -157,7 +158,7 @@ def test_main_records_a_failure_and_keeps_processing(tmp_path):
 # --- the noop negative control ----------------------------------------------
 
 
-def _forbidden_call(model_id, prompt, max_tokens=None):
+def _forbidden_call(model_id, prompt, max_tokens=None, provider=None):
     raise AssertionError(f"the noop control called the API: {model_id}")
 
 
@@ -211,3 +212,13 @@ def test_main_runs_the_noop_control_without_spending_anything(tmp_path):
         payload = json.loads((results_dir / NOOP_STRATEGY / f"{intent_id}.json").read_text())
         assert payload["operations"]
         assert "failed" not in payload
+
+
+def test_plan_for_excludes_the_provider_that_rejects_this_request_shape():
+    """Novita serves the light model but answers HTTP 400 to this request
+    shape, and OpenRouter routes per request: without the exclusion a run
+    fails on whichever intents happen to land there, which is what happened
+    on the first campaign attempt. Pin it so the omission cannot return."""
+    call = _reply('[{"verb": "block", "src": "a", "dst": "b"}]')
+    plan_for(_entry(), "light", call)
+    assert call.provider == {"ignore": ["novita"]}
