@@ -1,0 +1,1 @@
+{"intent_id": "m-002", "operations": [{"src": "rogue", "dst": "core_dst", "verb": "allow", "selector": null}]}

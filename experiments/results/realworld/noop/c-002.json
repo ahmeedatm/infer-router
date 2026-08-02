@@ -1,0 +1,1 @@
+{"intent_id": "c-002", "operations": [{"src": "compromised", "dst": "sec_gateway", "verb": "allow", "selector": null}]}

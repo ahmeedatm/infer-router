@@ -1,0 +1,668 @@
+[
+  {
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1453.631542,
+    "cost_light2": 0.0003788
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.25,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2905.6254580000004,
+    "cost_light2": 0.0009059
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.25,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 10407.2685,
+    "cost_light2": 0.0034073
+  },
+  {
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1018.5762079999989,
+    "cost_light2": 0.0001972
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "q_light2": 0.625,
+    "q_heavy": 0.875,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2813.7601250000016,
+    "cost_light2": 0.0009042999999999999
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2624.640833000001,
+    "cost_light2": 0.0009270999999999999
+  },
+  {
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 623.6526250000054,
+    "cost_light2": 9.88e-05
+  },
+  {
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.25,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1212.2697919999864,
+    "cost_light2": 0.0002778
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.375,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 13791.672540999996,
+    "cost_light2": 0.0051332999999999995
+  },
+  {
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 581.8614589999811,
+    "cost_light2": 5.9699999999999994e-05
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.75,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 3801.007625000011,
+    "cost_light2": 0.00114
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4298.120957999999,
+    "cost_light2": 0.0014555000000000002
+  },
+  {
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1022.665791999998,
+    "cost_light2": 0.00023
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.625,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2247.548207999955,
+    "cost_light2": 0.000813
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.25,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 5864.2515829999975,
+    "cost_light2": 0.0018268
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1273.6360840000316,
+    "cost_light2": 0.0002975
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4363.399625,
+    "cost_light2": 0.0013478
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4910.323041000027,
+    "cost_light2": 0.0018618
+  },
+  {
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2713.742167000021,
+    "cost_light2": 0.0009165999999999999
+  },
+  {
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "q_light2": 0.625,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2540.3122499999995,
+    "cost_light2": 0.0008086
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.375,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2133.695958999965,
+    "cost_light2": 0.0008461
+  },
+  {
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 717.5261250000062,
+    "cost_light2": 0.0001188
+  },
+  {
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "q_light2": 0.625,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2335.881957999959,
+    "cost_light2": 0.0007084000000000001
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 7764.369750000014,
+    "cost_light2": 0.0035385
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2931.5948749999734,
+    "cost_light2": 0.0007591
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 3678.1029170000465,
+    "cost_light2": 0.0011393000000000002
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4768.632582999999,
+    "cost_light2": 0.0015628
+  },
+  {
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "q_light2": 0.75,
+    "q_heavy": 0.375,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1077.0608750000292,
+    "cost_light2": 0.00023679999999999998
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "q_light2": 0.14285714285714285,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1331.6273330000286,
+    "cost_light2": 0.00028209999999999997
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.625,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 5465.888791999987,
+    "cost_light2": 0.0022098
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1170.913583000015,
+    "cost_light2": 0.0003225
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4941.777457999933,
+    "cost_light2": 0.0015485
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4290.107792000072,
+    "cost_light2": 0.0013997
+  },
+  {
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1350.696040999992,
+    "cost_light2": 0.0003206
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 5282.275249999998,
+    "cost_light2": 0.0014981999999999999
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.0,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 8025.195040999961,
+    "cost_light2": 0.0032475
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2145.6440420000717,
+    "cost_light2": 0.0006269
+  },
+  {
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2080.5149169999595,
+    "cost_light2": 0.0004965
+  },
+  {
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy": 0.375,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2797.6307079999287,
+    "cost_light2": 0.0007587999999999999
+  },
+  {
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 836.2600000000384,
+    "cost_light2": 0.0001456
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1391.5546250000261,
+    "cost_light2": 0.0003441
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.0,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2009.461209000051,
+    "cost_light2": 0.0006575999999999999
+  },
+  {
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2117.5175000000763,
+    "cost_light2": 0.0005244
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "q_light2": 0.625,
+    "q_heavy": 0.75,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 3509.370542000056,
+    "cost_light2": 0.0005403
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 5091.094624999982,
+    "cost_light2": 0.0020239000000000004
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 847.1450000000686,
+    "cost_light2": 0.0001337
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.375,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1816.7021250000062,
+    "cost_light2": 0.0005041000000000001
+  },
+  {
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1453.7429590000102,
+    "cost_light2": 0.0005191999999999999
+  },
+  {
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 802.5974589997986,
+    "cost_light2": 0.0001341
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1674.3174160001217,
+    "cost_light2": 0.00046039999999999997
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 16238.350333,
+    "cost_light2": 0.005910500000000001
+  },
+  {
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1128.4400830000009,
+    "cost_light2": 0.00014309999999999998
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2270.46949999999,
+    "cost_light2": 0.0004391
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.625,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 4471.092708,
+    "cost_light2": 0.0017326000000000002
+  },
+  {
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 618.0472079999788,
+    "cost_light2": 6.25e-05
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "q_light2": 0.14285714285714285,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 651.3899579999816,
+    "cost_light2": 0.00010520000000000001
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.0,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 3635.7624580000165,
+    "cost_light2": 0.0010269
+  },
+  {
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 1.0,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1149.5104580000088,
+    "cost_light2": 0.00019090000000000003
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "q_light2": 0.625,
+    "q_heavy": 0.375,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 6149.505959000009,
+    "cost_light2": 0.0018172
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 3113.777915999947,
+    "cost_light2": 0.0009682
+  },
+  {
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1686.328417000027,
+    "cost_light2": 0.00021119999999999998
+  },
+  {
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "q_light2": 0.25,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2228.3771250000086,
+    "cost_light2": 0.0005570999999999999
+  },
+  {
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.0,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2413.617625000029,
+    "cost_light2": 0.0008576
+  },
+  {
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "q_light2": 0.14285714285714285,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 806.1715829999798,
+    "cost_light2": 6.91e-05
+  },
+  {
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "q_light2": 0.125,
+    "q_heavy": 0.25,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 815.4855000000225,
+    "cost_light2": 8.999999999999999e-05
+  },
+  {
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 7970.132332999981,
+    "cost_light2": 0.0034541000000000003
+  },
+  {
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 2977.7376669999853,
+    "cost_light2": 0.0006056
+  },
+  {
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "q_light2": 0.125,
+    "q_heavy": 0.625,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1285.2214580000236,
+    "cost_light2": 0.0002977
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.0,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 6197.062249999988,
+    "cost_light2": 0.0021064
+  },
+  {
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 1146.7095829999607,
+    "cost_light2": 6.280000000000001e-05
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.625,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 744.0437499999462,
+    "cost_light2": 9.71e-05
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.125,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 10829.667458,
+    "cost_light2": 0.0034950999999999997
+  },
+  {
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "q_light2": 0.25,
+    "q_heavy": 0.5,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 957.9054999999954,
+    "cost_light2": 7.87e-05
+  },
+  {
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "q_light2": 0.14285714285714285,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "google/gemini-2.5-flash",
+    "latency_light2_ms": 930.7007499999997,
+    "cost_light2": 2.22e-05
+  }
+]

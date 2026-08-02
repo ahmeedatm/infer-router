@@ -1,0 +1,1 @@
+{"intent_id": "s-mirror-001", "operations": [{"src": "guest", "dst": "core_tel", "verb": "allow", "selector": null}]}

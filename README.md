@@ -29,8 +29,20 @@ qualité renvoie tout au lourd et le routage disparaît.
 
 ## Démarrage rapide
 
+Deux chemins au choix. En local :
+
 ```bash
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
+python -m venv .venv && .venv/bin/pip install -r requirements-runtime.txt
+```
+
+`requirements-runtime.txt` suffit pour faire tourner le routeur et les tests.
+`requirements.txt` ajoute torch et sentence-transformers, utiles seulement pour
+réentraîner la variante combinée de l'estimateur.
+
+Par Docker, sans rien installer (voir la section Docker plus bas) :
+
+```bash
+docker compose run --rm cli "Show the PRB utilisation of cell 12 on site A." --domain ran --criticality low --stage decision
 ```
 
 La décision de routage ne demande ni clé API ni Ollama :
@@ -171,11 +183,20 @@ app/
 
 bench/                  banc de validation en réseau émulé (Mininet + OVS)
 data/                   datasets d'intents, estimateur persisté
-experiments/            campagnes de mesure et résultats
+experiments/            campagnes de mesure, results/ contient les mesures
 tests/unit/             tests sans réseau ni service
 tests/integration/      tests nécessitant Ollama ou le banc
 docs/                   rapport de mémoire et findings
+
+Dockerfile              cibles runtime et full
+docker-compose.yml      services cli, tests, bench, train, ollama
+requirements-runtime.txt  dépendances d'exécution (sans torch)
+requirements.txt          + pile embeddings
 ```
+
+`data/complexity_estimator.joblib` et `experiments/results/` sont versionnés :
+sans eux, un clone frais ne peut ni router un intent ni rejouer une mesure.
+L'estimateur est déterministe (`random_state=42`) et pèse 1,1 Mo.
 
 Le pool par défaut du CLI est `generic_pool`, qui ne contient que les deux tiers
 réellement calibrés. `default_pool` ajoute quatre spécialistes de domaine dont
@@ -200,6 +221,46 @@ Celles qui comptent en pratique :
 
 Ne pas rétrograder `JUDGE_MODEL` vers gemma2:2b : ce modèle a montré 40 à 50 %
 d'accord seulement et invalide toute mesure de qualité.
+
+## Docker
+
+Deux cibles dans le `Dockerfile`. `runtime` (561 Mo) porte la décision de
+routage, les appels LLM, le juge, les tests et le benchmark hors ligne. `full`
+(1,5 Go) ajoute torch et sentence-transformers pour réentraîner l'estimateur
+combiné.
+
+Aucun LLM ne tourne dans l'image. Le pool API passe par OpenRouter, les modèles
+locaux par un serveur Ollama : celui de l'hôte par défaut, via
+`host.docker.internal`, puisque c'est lui qui détient déjà les 21 Go de poids.
+
+```bash
+docker compose run --rm cli "Create a URLLC slice under 5 ms for factory X." --domain slice --criticality high --stage decision
+```
+
+```bash
+docker compose run --rm tests
+```
+
+```bash
+docker compose run --rm bench
+```
+
+Le service `bench` rejoue le benchmark hors ligne et reproduit les quatre lignes
+du tableau ci-dessus sans un seul appel payant. C'est la vérification la plus
+directe que les chiffres du rapport sont reconstructibles.
+
+Sur une machine sans Ollama installé, un serveur conteneurisé est disponible en
+profil :
+
+```bash
+docker compose --profile ollama up -d ollama
+```
+
+```bash
+docker compose --profile ollama exec ollama ollama pull gemma2:2b
+```
+
+Il faut alors pointer `OLLAMA_HOST` sur `http://ollama:11434` dans `.env`.
 
 ## Tests
 

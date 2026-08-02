@@ -1,0 +1,1 @@
+{"intent_id": "c-006", "operations": [{"src": "embb_user", "dst": "core_edge", "verb": "bandwidth_max", "bw_mbps": 4.0}, {"src": "ctrl_chan", "dst": "core_edge", "verb": "priority", "klass": "low"}, {"src": "ctrl_chan", "dst": "core_edge", "verb": "mirror", "to": "probe"}]}

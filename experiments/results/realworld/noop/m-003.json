@@ -1,0 +1,1 @@
+{"intent_id": "m-003", "operations": [{"src": "guest_terminal", "dst": "edge_gw", "verb": "allow", "selector": null}]}

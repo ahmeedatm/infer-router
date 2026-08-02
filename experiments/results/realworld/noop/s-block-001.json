@@ -1,0 +1,1 @@
+{"intent_id": "s-block-001", "operations": [{"src": "ran_mgmt", "dst": "billing", "verb": "allow", "selector": null}]}

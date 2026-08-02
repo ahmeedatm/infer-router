@@ -1,0 +1,162 @@
+[
+  {
+    "intent_id": "ran-read-throughput",
+    "expected_complexity": "simple",
+    "q_light": 0.2857142857142857,
+    "q_heavy": 0.8571428571428571,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "ran-read-prb-utilization",
+    "expected_complexity": "simple",
+    "q_light": 0.2857142857142857,
+    "q_heavy": 0.8571428571428571,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "core-read-amf-registrations",
+    "expected_complexity": "simple",
+    "q_light": 0.2857142857142857,
+    "q_heavy": 1.0,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "core-read-upf-status",
+    "expected_complexity": "simple",
+    "q_light": 0.0,
+    "q_heavy": 0.875,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "security-list-firewall-rules",
+    "expected_complexity": "simple",
+    "q_light": 0.2857142857142857,
+    "q_heavy": 1.0,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "slice-read-active-count",
+    "expected_complexity": "simple",
+    "q_light": 0.2857142857142857,
+    "q_heavy": 1.0,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "security-read-auth-failures",
+    "expected_complexity": "simple",
+    "q_light": 0.2857142857142857,
+    "q_heavy": 1.0,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "ran-diagnose-handover-failures",
+    "expected_complexity": "medium",
+    "q_light": 0.25,
+    "q_heavy": 1.0,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "ran-adjust-tilt-coverage-hole",
+    "expected_complexity": "medium",
+    "q_light": 0.25,
+    "q_heavy": 0.875,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "core-scale-smf-sessions",
+    "expected_complexity": "medium",
+    "q_light": 0.125,
+    "q_heavy": 1.0,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "slice-reconfigure-urllc-latency",
+    "expected_complexity": "medium",
+    "q_light": 0.375,
+    "q_heavy": 0.625,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "security-mitigate-signaling-storm",
+    "expected_complexity": "medium",
+    "q_light": 0.125,
+    "q_heavy": 0.75,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "core-diagnose-pdu-session-drops",
+    "expected_complexity": "medium",
+    "q_light": 0.125,
+    "q_heavy": 0.625,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "slice-resize-mmtc-capacity",
+    "expected_complexity": "medium",
+    "q_light": 0.14285714285714285,
+    "q_heavy": 0.8571428571428571,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "ran-optimize-multicell-load-balance",
+    "expected_complexity": "complex",
+    "q_light": 0.25,
+    "q_heavy": 0.875,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "slice-admission-multitenant-contention",
+    "expected_complexity": "complex",
+    "q_light": 0.0,
+    "q_heavy": 0.75,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "security-isolate-compromised-slice",
+    "expected_complexity": "complex",
+    "q_light": 0.25,
+    "q_heavy": 0.875,
+    "label_A": "light",
+    "label_B": "heavy"
+  },
+  {
+    "intent_id": "core-redesign-edge-upf-placement",
+    "expected_complexity": "complex",
+    "q_light": 0.125,
+    "q_heavy": 0.875,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "ran-energy-saving-vs-sla",
+    "expected_complexity": "complex",
+    "q_light": 0.125,
+    "q_heavy": 0.75,
+    "label_A": "heavy",
+    "label_B": "light"
+  },
+  {
+    "intent_id": "security-zero-trust-rollout-impact",
+    "expected_complexity": "complex",
+    "q_light": 0.125,
+    "q_heavy": 0.875,
+    "label_A": "light",
+    "label_B": "heavy"
+  }
+]

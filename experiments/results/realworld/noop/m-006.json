@@ -1,0 +1,1 @@
+{"intent_id": "m-006", "operations": [{"src": "mgmt_api", "dst": "orchestrator", "verb": "allow", "selector": null}]}

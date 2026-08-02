@@ -1,0 +1,1 @@
+{"intent_id": "c-008", "operations": [{"src": "breach_src", "dst": "primary_host", "verb": "allow", "selector": null}]}

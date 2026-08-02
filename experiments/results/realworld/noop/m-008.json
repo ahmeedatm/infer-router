@@ -1,0 +1,1 @@
+{"intent_id": "m-008", "operations": [{"src": "field_sensor", "dst": "aggregator", "verb": "allow", "selector": null}]}

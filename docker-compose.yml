@@ -1,0 +1,75 @@
+# InferRouter-LLM — services de développement et de reproduction.
+#
+# Les LLM ne tournent pas dans ces conteneurs. Le pool API passe par
+# OpenRouter ; les modèles locaux passent par un serveur Ollama, celui de
+# l'hôte par défaut, ou le service `ollama` de ce fichier si on l'active.
+#
+#   docker compose run --rm cli "List the active gNBs on site A." --stage decision
+#   docker compose run --rm tests
+#   docker compose run --rm bench
+#   docker compose --profile ollama up -d ollama   # serveur Ollama conteneurisé
+
+x-common: &common
+  build:
+    context: .
+    target: runtime
+  image: inferrouter-llm:runtime
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    # Depuis un conteneur, localhost désigne le conteneur lui-même. On vise
+    # l'hôte, où tourne l'Ollama qui détient déjà les modèles (21 Go).
+    OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+  extra_hosts:
+    # Docker Desktop résout host.docker.internal nativement ; sous Linux il
+    # faut cette ligne pour obtenir la même chose.
+    - "host.docker.internal:host-gateway"
+
+services:
+  # Le CLI. Les arguments passés après le nom du service vont au CLI.
+  cli:
+    <<: *common
+
+  # Suite unitaire : ni réseau ni service externe.
+  tests:
+    <<: *common
+    entrypoint: ["python", "-m", "pytest", "-q"]
+    command: []
+
+  # Benchmark hors ligne : rejoue les mesures sans aucun appel payant.
+  bench:
+    <<: *common
+    entrypoint: ["python", "-m", "experiments.exp_benchmark_offline"]
+    command: []
+    volumes:
+      - ./experiments/results:/app/experiments/results
+
+  # Environnement complet (torch, sentence-transformers) pour réentraîner
+  # l'estimateur combiné. Build long, image de plus d'un Go.
+  train:
+    <<: *common
+    build:
+      context: .
+      target: full
+    image: inferrouter-llm:full
+    entrypoint: ["python", "-m", "experiments.train_complexity_estimator"]
+    command: []
+    volumes:
+      - ./data:/app/data
+      - ./experiments/results:/app/experiments/results
+
+  # Serveur Ollama conteneurisé, pour une machine sans Ollama installé.
+  # Les modèles sont téléchargés dans le volume, pas dans l'image.
+  #   docker compose --profile ollama up -d ollama
+  #   docker compose --profile ollama exec ollama ollama pull gemma2:2b
+  ollama:
+    profiles: ["ollama"]
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+
+volumes:
+  ollama-models:

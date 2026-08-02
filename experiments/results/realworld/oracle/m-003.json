@@ -1,0 +1,1 @@
+{"intent_id": "m-003", "operations": [{"src": "guest_terminal", "dst": "edge_gw", "verb": "bandwidth_max", "bw_mbps": 4.0}, {"src": "slice_orch", "dst": "edge_gw", "verb": "priority", "klass": "high"}]}

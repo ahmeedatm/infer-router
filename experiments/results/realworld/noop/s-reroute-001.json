@@ -1,0 +1,1 @@
+{"intent_id": "s-reroute-001", "operations": [{"src": "ran_sched", "dst": "core_coll", "verb": "allow", "selector": null}]}

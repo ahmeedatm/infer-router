@@ -1,0 +1,962 @@
+[
+  {
+    "intent_id": "s-allow-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[block,block,allow] 0/1 checks; failed: port_open"
+  },
+  {
+    "intent_id": "s-allow-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow] 1/1 checks"
+  },
+  {
+    "intent_id": "s-allow-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-allow-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: port_open"
+  },
+  {
+    "intent_id": "s-allow-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow] 1/1 checks"
+  },
+  {
+    "intent_id": "s-block-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-block-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-block-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-block-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: ping_fail"
+  },
+  {
+    "intent_id": "s-block-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-blocksel-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-blocksel-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow] 1/1 checks"
+  },
+  {
+    "intent_id": "s-blocksel-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-blocksel-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: port_blocked"
+  },
+  {
+    "intent_id": "s-blocksel-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-bwmax-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max] 1/1 checks"
+  },
+  {
+    "intent_id": "s-bwmax-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max] 1/1 checks"
+  },
+  {
+    "intent_id": "s-bwmax-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max] 1/1 checks"
+  },
+  {
+    "intent_id": "s-bwmax-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: throughput_max"
+  },
+  {
+    "intent_id": "s-bwmax-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max] 1/1 checks"
+  },
+  {
+    "intent_id": "s-mirror-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "s-mirror-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "s-mirror-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "s-mirror-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: mirror_seen"
+  },
+  {
+    "intent_id": "s-mirror-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: path_used"
+  },
+  {
+    "intent_id": "s-reroute-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-002",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-002",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-002",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-002",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: path_used"
+  },
+  {
+    "intent_id": "s-reroute-002",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-prio-001",
+    "strategy": "light",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "LLM produced no valid plan"
+  },
+  {
+    "intent_id": "s-prio-001",
+    "strategy": "heavy",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[priority] 1/1 checks"
+  },
+  {
+    "intent_id": "s-prio-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[priority] 1/1 checks"
+  },
+  {
+    "intent_id": "s-prio-001",
+    "strategy": "noop",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: tos_marked"
+  },
+  {
+    "intent_id": "s-prio-001",
+    "strategy": "oracle",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[priority] 1/1 checks"
+  },
+  {
+    "intent_id": "m-001",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-001",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-001",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: ping_fail, throughput_max"
+  },
+  {
+    "intent_id": "m-001",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-002",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-002",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-002",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-002",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: ping_fail, mirror_seen"
+  },
+  {
+    "intent_id": "m-002",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-003",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "m-003",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "m-003",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "m-003",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: throughput_max, tos_marked"
+  },
+  {
+    "intent_id": "m-003",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "m-004",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-004: 'southern_path' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-004",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-004: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-004",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-004: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-004",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: path_used"
+  },
+  {
+    "intent_id": "m-004",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "m-005",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.5,
+    "detail": "[block,mirror] 1/2 checks; failed: mirror_seen"
+  },
+  {
+    "intent_id": "m-005",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-005",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-005",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: port_blocked, mirror_seen"
+  },
+  {
+    "intent_id": "m-005",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-006",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-006",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-006",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-006",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.5,
+    "detail": "[allow] 1/2 checks; failed: throughput_max"
+  },
+  {
+    "intent_id": "m-006",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-007",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-007: 'southern_path' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-007",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-007: 'south' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-007",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-007: 'southern_path' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-007",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: path_used, tos_marked"
+  },
+  {
+    "intent_id": "m-007",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "m-008",
+    "strategy": "light",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_min,mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "m-008",
+    "strategy": "heavy",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_min,mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "m-008",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_min,mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "m-008",
+    "strategy": "noop",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/1 checks; failed: mirror_seen"
+  },
+  {
+    "intent_id": "m-008",
+    "strategy": "oracle",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "c-001",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,block,bandwidth_max,mirror] 4/4 checks"
+  },
+  {
+    "intent_id": "c-001",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,block,block,bandwidth_max,mirror] 4/4 checks"
+  },
+  {
+    "intent_id": "c-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.75,
+    "detail": "[allow,block,block,bandwidth_max,mirror] 3/4 checks; failed: mirror_seen"
+  },
+  {
+    "intent_id": "c-001",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.25,
+    "detail": "[allow] 1/4 checks; failed: ping_fail, throughput_max, mirror_seen"
+  },
+  {
+    "intent_id": "c-001",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,bandwidth_max,mirror] 4/4 checks"
+  },
+  {
+    "intent_id": "c-002",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror,bandwidth_min] 2/2 checks"
+  },
+  {
+    "intent_id": "c-002",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror,bandwidth_min] 2/2 checks"
+  },
+  {
+    "intent_id": "c-002",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror,bandwidth_min] 2/2 checks"
+  },
+  {
+    "intent_id": "c-002",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: ping_fail, mirror_seen"
+  },
+  {
+    "intent_id": "c-002",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "c-003",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-003: 'southern_switch' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-003",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-003: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-003",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-003: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-003",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: path_used, tos_marked"
+  },
+  {
+    "intent_id": "c-003",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "c-004",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,block,bandwidth_max] 3/3 checks"
+  },
+  {
+    "intent_id": "c-004",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow,block,bandwidth_max] 3/3 checks"
+  },
+  {
+    "intent_id": "c-004",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow,block,bandwidth_max] 3/3 checks"
+  },
+  {
+    "intent_id": "c-004",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/3 checks; failed: port_blocked, ping_fail, throughput_max"
+  },
+  {
+    "intent_id": "c-004",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,block,bandwidth_max] 3/3 checks"
+  },
+  {
+    "intent_id": "c-005",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-005: 'southern_switch' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-005",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-005: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-005",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-005: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-005",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.3333333333333333,
+    "detail": "[allow] 1/3 checks; failed: path_used, throughput_max"
+  },
+  {
+    "intent_id": "c-005",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute,bandwidth_max] 3/3 checks"
+  },
+  {
+    "intent_id": "c-006",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority,mirror] 3/3 checks"
+  },
+  {
+    "intent_id": "c-006",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority,mirror] 3/3 checks"
+  },
+  {
+    "intent_id": "c-006",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority,mirror] 3/3 checks"
+  },
+  {
+    "intent_id": "c-006",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/3 checks; failed: throughput_max, tos_marked, mirror_seen"
+  },
+  {
+    "intent_id": "c-006",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority,mirror] 3/3 checks"
+  },
+  {
+    "intent_id": "c-007",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror,block,allow] 3/3 checks"
+  },
+  {
+    "intent_id": "c-007",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror,block,allow] 3/3 checks"
+  },
+  {
+    "intent_id": "c-007",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror,block,allow] 3/3 checks"
+  },
+  {
+    "intent_id": "c-007",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.3333333333333333,
+    "detail": "[allow] 1/3 checks; failed: mirror_seen, port_blocked"
+  },
+  {
+    "intent_id": "c-007",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror,block] 3/3 checks"
+  },
+  {
+    "intent_id": "c-008",
+    "strategy": "light",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-008: 'southern_path' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-008",
+    "strategy": "heavy",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-008: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-008",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-008: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-008",
+    "strategy": "noop",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[allow] 0/2 checks; failed: ping_fail, path_used"
+  },
+  {
+    "intent_id": "c-008",
+    "strategy": "oracle",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,reroute] 2/2 checks"
+  }
+]

@@ -1,0 +1,668 @@
+[
+  {
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 5384.158209000001,
+    "cost_light2": 0.0002678
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.25,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 23656.088417,
+    "cost_light2": 0.0009591399999999998
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.25,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 19005.561125000007,
+    "cost_light2": 0.0008165949999999999
+  },
+  {
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 19167.257082999997,
+    "cost_light2": 0.000733395
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "q_light2": 0.625,
+    "q_heavy": 0.875,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 20516.965916000005,
+    "cost_light2": 0.000878735
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 24154.667208000006,
+    "cost_light2": 0.00104689
+  },
+  {
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 12397.125709000022,
+    "cost_light2": 0.000601965
+  },
+  {
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.25,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 18906.49720800002,
+    "cost_light2": 0.0009725299999999999
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.375,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 43082.41545799996,
+    "cost_light2": 0.0035337899999999998
+  },
+  {
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 28792.128499999995,
+    "cost_light2": 0.0012843999999999998
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.75,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 27942.068292000004,
+    "cost_light2": 0.00101101
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 10143.749584000005,
+    "cost_light2": 0.00038726999999999994
+  },
+  {
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 493297.32379199995,
+    "cost_light2": 0.021313759999999998
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.625,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 29042.75683399999,
+    "cost_light2": 0.001356225
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.25,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15160.004082999989,
+    "cost_light2": 0.0008498749999999999
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 8366.426082999966,
+    "cost_light2": 0.00048698
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "q_light2": 0.14285714285714285,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 16421.87883400004,
+    "cost_light2": 0.000938405
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 23433.846208999967,
+    "cost_light2": 0.001227915
+  },
+  {
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "q_light2": 1.0,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 8983.37845900005,
+    "cost_light2": 0.0005384599999999999
+  },
+  {
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 472186.926083,
+    "cost_light2": 0.021325979999999998
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy": 0.375,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 23711.86141599992,
+    "cost_light2": 0.00126815
+  },
+  {
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 9365.697458000113,
+    "cost_light2": 0.00047372
+  },
+  {
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 13579.598958000133,
+    "cost_light2": 0.000759395
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 423695.44100000005,
+    "cost_light2": 0.02149537
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15273.073208000142,
+    "cost_light2": 0.000840905
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 14593.377542000098,
+    "cost_light2": 0.0008204299999999999
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15344.651459000033,
+    "cost_light2": 0.0008812049999999998
+  },
+  {
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "q_light2": 0.375,
+    "q_heavy": 0.375,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 25589.31795900003,
+    "cost_light2": 0.0016777149999999998
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 13679.549916000042,
+    "cost_light2": 0.000781365
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.625,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 18972.042832999934,
+    "cost_light2": 0.0009404849999999999
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 14009.08762500012,
+    "cost_light2": 0.0008619649999999999
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 17780.068458000187,
+    "cost_light2": 0.000996905
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 20017.976625000076,
+    "cost_light2": 0.001168375
+  },
+  {
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 489885.8370419998,
+    "cost_light2": 0.021314214999999997
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15859.274583000115,
+    "cost_light2": 0.0007336549999999999
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy": 0.0,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 14382.383582999864,
+    "cost_light2": 0.000659165
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 12127.370082999732,
+    "cost_light2": 0.0007075899999999999
+  },
+  {
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15744.20283299969,
+    "cost_light2": 0.0009152649999999999
+  },
+  {
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.375,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 11470.59866699965,
+    "cost_light2": 0.000595855
+  },
+  {
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 52506.62933300009,
+    "cost_light2": 0.006470554999999999
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "q_light2": 0.42857142857142855,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 16784.114249999675,
+    "cost_light2": 0.00098384
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy": 0.0,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 20878.775209000196,
+    "cost_light2": 0.00090038
+  },
+  {
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 8040.4462080000485,
+    "cost_light2": 0.00045201
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "q_light2": 0.875,
+    "q_heavy": 0.75,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 11843.771208999897,
+    "cost_light2": 0.0005995599999999999
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 19284.09829200018,
+    "cost_light2": 0.0009772749999999999
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15808.708500000193,
+    "cost_light2": 0.0009095449999999999
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.375,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 424421.7631249999,
+    "cost_light2": 0.021314149999999997
+  },
+  {
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 5358.649083000273,
+    "cost_light2": 0.00030868499999999995
+  },
+  {
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy": 0.2857142857142857,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 4460.836250000284,
+    "cost_light2": 0.000247585
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 22291.26108299988,
+    "cost_light2": 0.001181375
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 28054.087875000278,
+    "cost_light2": 0.0013703300000000001
+  },
+  {
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 11932.12187500012,
+    "cost_light2": 0.00060827
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "q_light2": 0.25,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 24854.771000000255,
+    "cost_light2": 0.002645175
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.625,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 535700.458541,
+    "cost_light2": 0.021379669999999996
+  },
+  {
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 14364.040915999794,
+    "cost_light2": 0.0006188000000000001
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 18162.40987500032,
+    "cost_light2": 0.0008860799999999999
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.0,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15401.404707999973,
+    "cost_light2": 0.0008945299999999999
+  },
+  {
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 1.0,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 10291.167165999923,
+    "cost_light2": 0.000523315
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "q_light2": 0.25,
+    "q_heavy": 0.375,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 17806.597000000238,
+    "cost_light2": 0.00101491
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15547.123125000326,
+    "cost_light2": 0.0009021999999999999
+  },
+  {
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 7915.507250000246,
+    "cost_light2": 0.00037953499999999996
+  },
+  {
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 21819.586084000093,
+    "cost_light2": 0.001089205
+  },
+  {
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy": 0.0,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 33810.91270800016,
+    "cost_light2": 0.001559155
+  },
+  {
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.8571428571428571,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 12015.135792000365,
+    "cost_light2": 0.0007041449999999999
+  },
+  {
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "q_light2": 0.25,
+    "q_heavy": 0.25,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 21554.83945799915,
+    "cost_light2": 0.001040065
+  },
+  {
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 19519.173959,
+    "cost_light2": 0.001032915
+  },
+  {
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.42857142857142855,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 12084.446709000076,
+    "cost_light2": 0.00064103
+  },
+  {
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "q_light2": 0.125,
+    "q_heavy": 0.625,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 13501.675417000115,
+    "cost_light2": 0.000773305
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy": 0.0,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 21301.851124999303,
+    "cost_light2": 0.0011194949999999999
+  },
+  {
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy": 0.5714285714285714,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 48165.47179200006,
+    "cost_light2": 0.005233864999999999
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy": 0.625,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15671.66158300006,
+    "cost_light2": 0.0007285849999999999
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy": 0.125,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 16835.474333000093,
+    "cost_light2": 0.0007978099999999999
+  },
+  {
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "q_light2": 0.5,
+    "q_heavy": 0.5,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 14809.717790999457,
+    "cost_light2": 0.0007216949999999998
+  },
+  {
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy": 0.7142857142857143,
+    "model_light2": "qwen/qwen3.5-flash-02-23",
+    "latency_light2_ms": 15584.307084000102,
+    "cost_light2": 0.0009320349999999999
+  }
+]

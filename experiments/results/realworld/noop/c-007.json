@@ -1,0 +1,1 @@
+{"intent_id": "c-007", "operations": [{"src": "tenant", "dst": "app_srv", "verb": "allow", "selector": null}]}

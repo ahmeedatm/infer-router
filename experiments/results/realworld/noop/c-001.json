@@ -1,0 +1,1 @@
+{"intent_id": "c-001", "operations": [{"src": "sensors", "dst": "collector", "verb": "allow", "selector": null}]}

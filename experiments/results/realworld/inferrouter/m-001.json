@@ -1,0 +1,1 @@
+{"intent_id": "m-001", "operations": [{"src": "tenant", "dst": "billing", "verb": "block", "selector": null}, {"src": "tenant", "dst": "collector", "verb": "bandwidth_max", "bw_mbps": 6.0}]}

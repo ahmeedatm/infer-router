@@ -1,0 +1,1 @@
+{"intent_id": "c-004", "operations": [{"src": "mgmt_host", "dst": "ops_srv", "verb": "block", "selector": {"proto": "tcp", "port": 22}}, {"src": "mgmt_host", "dst": "ops_srv", "verb": "allow", "selector": null}, {"src": "client_plane", "dst": "ops_srv", "verb": "block", "selector": null}, {"src": "mgmt_host", "dst": "ops_srv", "verb": "bandwidth_max", "bw_mbps": 4.0}]}

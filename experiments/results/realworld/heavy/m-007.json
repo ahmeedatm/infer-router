@@ -1,0 +1,1 @@
+{"intent_id": "m-007", "operations": [{"src": "base_station", "dst": "core_analytics", "verb": "reroute", "via": "south"}, {"src": "ran_ctrl", "dst": "core_analytics", "verb": "priority", "klass": "high"}]}

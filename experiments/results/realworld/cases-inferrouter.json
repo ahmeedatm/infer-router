@@ -1,0 +1,194 @@
+[
+  {
+    "intent_id": "s-allow-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "[block,block,allow] 0/1 checks; failed: port_open"
+  },
+  {
+    "intent_id": "s-block-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block] 1/1 checks"
+  },
+  {
+    "intent_id": "s-blocksel-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow] 1/1 checks"
+  },
+  {
+    "intent_id": "s-bwmax-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max] 1/1 checks"
+  },
+  {
+    "intent_id": "s-mirror-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-reroute-002",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[reroute] 1/1 checks"
+  },
+  {
+    "intent_id": "s-prio-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "simple",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[priority] 1/1 checks"
+  },
+  {
+    "intent_id": "m-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-002",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-003",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority] 2/2 checks"
+  },
+  {
+    "intent_id": "m-004",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-004: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-005",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror] 2/2 checks"
+  },
+  {
+    "intent_id": "m-006",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,bandwidth_max] 2/2 checks"
+  },
+  {
+    "intent_id": "m-007",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: m-007: 'southern_path' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "m-008",
+    "strategy": "inferrouter",
+    "expected_complexity": "medium",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_min,mirror] 1/1 checks"
+  },
+  {
+    "intent_id": "c-001",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[allow,block,block,bandwidth_max,mirror] 4/4 checks"
+  },
+  {
+    "intent_id": "c-002",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,mirror,bandwidth_min] 2/2 checks"
+  },
+  {
+    "intent_id": "c-003",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-003: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-004",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[block,allow,block,bandwidth_max] 3/3 checks"
+  },
+  {
+    "intent_id": "c-005",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-005: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  },
+  {
+    "intent_id": "c-006",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[bandwidth_max,priority,mirror] 3/3 checks"
+  },
+  {
+    "intent_id": "c-007",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": true,
+    "realization_rate": 1.0,
+    "detail": "[mirror,block,allow] 3/3 checks"
+  },
+  {
+    "intent_id": "c-008",
+    "strategy": "inferrouter",
+    "expected_complexity": "complex",
+    "satisfied": false,
+    "realization_rate": 0.0,
+    "detail": "untranslatable plan: c-008: 'southern' is not a path switch; expected one of ['s2', 's3']"
+  }
+]

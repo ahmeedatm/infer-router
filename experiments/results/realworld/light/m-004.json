@@ -1,0 +1,1 @@
+{"intent_id": "m-004", "operations": [{"src": "mgmt_link", "dst": "core_srv", "verb": "reroute", "via": "southern_path"}, {"src": "urllc_ctrl", "dst": "core_srv", "verb": "bandwidth_min", "bw_mbps": 5.0}, {"src": "urllc_ctrl", "dst": "core_srv", "verb": "priority", "klass": "high"}, {"src": "secondary_link", "dst": "core_srv", "verb": "priority", "klass": "low"}]}

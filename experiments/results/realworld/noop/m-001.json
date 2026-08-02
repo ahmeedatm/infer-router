@@ -1,0 +1,1 @@
+{"intent_id": "m-001", "operations": [{"src": "tenant", "dst": "billing", "verb": "allow", "selector": null}]}

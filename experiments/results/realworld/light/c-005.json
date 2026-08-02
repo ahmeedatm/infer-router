@@ -1,0 +1,1 @@
+{"intent_id": "c-005", "operations": [{"src": "primary_bs", "dst": "core_srv", "verb": "reroute", "via": "southern_switch"}, {"src": "backup_link", "dst": "core_srv", "verb": "bandwidth_max", "bw_mbps": 4.0}]}

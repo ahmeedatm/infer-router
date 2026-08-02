@@ -1,0 +1,2402 @@
+[
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.0,
+    "latency_ms": 69663.056833,
+    "cost_proxy": 13932.6113666
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.125,
+    "latency_ms": 26328.805415999996,
+    "cost_proxy": 1895.6739899519996
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.125,
+    "latency_ms": 26328.805415999996,
+    "cost_proxy": 1895.6739899519996
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.0,
+    "latency_ms": 69663.056833,
+    "cost_proxy": 13932.6113666
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 67410.980666,
+    "cost_proxy": 13482.1961332
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 15596.710375000015,
+    "cost_proxy": 1122.963147000001
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 15596.710375000015,
+    "cost_proxy": 1122.963147000001
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 67410.980666,
+    "cost_proxy": 13482.1961332
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.25,
+    "latency_ms": 69819.176083,
+    "cost_proxy": 13963.8352166
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 17117.3895,
+    "cost_proxy": 1232.4520440000001
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 17117.3895,
+    "cost_proxy": 1232.4520440000001
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.25,
+    "latency_ms": 69819.176083,
+    "cost_proxy": 13963.8352166
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 62749.08162500003,
+    "cost_proxy": 12549.816325000007
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 25364.941208000004,
+    "cost_proxy": 1826.2757669760003
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 62749.08162500003,
+    "cost_proxy": 12549.816325000007
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 62749.08162500003,
+    "cost_proxy": 12549.816325000007
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 67775.452166,
+    "cost_proxy": 13555.090433200001
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 7797.100915999977,
+    "cost_proxy": 561.3912659519983
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 7797.100915999977,
+    "cost_proxy": 561.3912659519983
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 67775.452166,
+    "cost_proxy": 13555.090433200001
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 46715.70312500001,
+    "cost_proxy": 9343.140625
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 58385.14312500002,
+    "cost_proxy": 4203.730305000002
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 58385.14312500002,
+    "cost_proxy": 4203.730305000002
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 46715.70312500001,
+    "cost_proxy": 9343.140625
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 68727.28358399996,
+    "cost_proxy": 13745.456716799992
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 54212.72095900008,
+    "cost_proxy": 3903.315909048006
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 68727.28358399996,
+    "cost_proxy": 13745.456716799992
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 68727.28358399996,
+    "cost_proxy": 13745.456716799992
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.125,
+    "latency_ms": 58116.522749999946,
+    "cost_proxy": 11623.30454999999
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 32175.474791000055,
+    "cost_proxy": 2316.634184952004
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 32175.474791000055,
+    "cost_proxy": 2316.634184952004
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.125,
+    "latency_ms": 58116.522749999946,
+    "cost_proxy": 11623.30454999999
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 72296.993667,
+    "cost_proxy": 14459.398733400001
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 12688.244291000005,
+    "cost_proxy": 913.5535889520003
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 12688.244291000005,
+    "cost_proxy": 913.5535889520003
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 72296.993667,
+    "cost_proxy": 14459.398733400001
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 72377.86733299999,
+    "cost_proxy": 14475.573466599997
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 30388.144166000016,
+    "cost_proxy": 2187.9463799520013
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 30388.144166000016,
+    "cost_proxy": 2187.9463799520013
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 72377.86733299999,
+    "cost_proxy": 14475.573466599997
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 63774.18,
+    "cost_proxy": 12754.836
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 12966.545666000002,
+    "cost_proxy": 933.5912879520001
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 12966.545666000002,
+    "cost_proxy": 933.5912879520001
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 63774.18,
+    "cost_proxy": 12754.836
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 69233.88849999999,
+    "cost_proxy": 13846.777699999999
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 28413.811332999998,
+    "cost_proxy": 2045.794415976
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 28413.811332999998,
+    "cost_proxy": 2045.794415976
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 69233.88849999999,
+    "cost_proxy": 13846.777699999999
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 59005.12037500002,
+    "cost_proxy": 11801.024075000003
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 28359.081916999996,
+    "cost_proxy": 2041.8538980239998
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 28359.081916999996,
+    "cost_proxy": 2041.8538980239998
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 59005.12037500002,
+    "cost_proxy": 11801.024075000003
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 60702.50266699998,
+    "cost_proxy": 12140.500533399994
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 13672.588458000007,
+    "cost_proxy": 984.4263689760005
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 60702.50266699998,
+    "cost_proxy": 12140.500533399994
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 60702.50266699998,
+    "cost_proxy": 12140.500533399994
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 56089.27429200003,
+    "cost_proxy": 11217.854858400007
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 19139.109667000015,
+    "cost_proxy": 1378.015896024001
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 19139.109667000015,
+    "cost_proxy": 1378.015896024001
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 56089.27429200003,
+    "cost_proxy": 11217.854858400007
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 70871.81166699997,
+    "cost_proxy": 14174.362333399995
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 20271.195415999955,
+    "cost_proxy": 1459.5260699519968
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 20271.195415999955,
+    "cost_proxy": 1459.5260699519968
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 70871.81166699997,
+    "cost_proxy": 14174.362333399995
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.7142857142857143,
+    "latency_ms": 54814.660291999986,
+    "cost_proxy": 10962.932058399998
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 36728.18220900001,
+    "cost_proxy": 2644.4291190480008
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 36728.18220900001,
+    "cost_proxy": 2644.4291190480008
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.7142857142857143,
+    "latency_ms": 54814.660291999986,
+    "cost_proxy": 10962.932058399998
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 66338.80483300005,
+    "cost_proxy": 13267.760966600008
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 16763.00754199997,
+    "cost_proxy": 1206.936543023998
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 16763.00754199997,
+    "cost_proxy": 1206.936543023998
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 66338.80483300005,
+    "cost_proxy": 13267.760966600008
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 41378.631625,
+    "cost_proxy": 8275.726325000001
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 7561.009709000004,
+    "cost_proxy": 544.3926990480003
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 7561.009709000004,
+    "cost_proxy": 544.3926990480003
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 41378.631625,
+    "cost_proxy": 8275.726325000001
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 64366.843292,
+    "cost_proxy": 12873.368658399999
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.125,
+    "latency_ms": 6227.60175000002,
+    "cost_proxy": 448.38732600000145
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.125,
+    "latency_ms": 6227.60175000002,
+    "cost_proxy": 448.38732600000145
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 64366.843292,
+    "cost_proxy": 12873.368658399999
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 25295.59866699998,
+    "cost_proxy": 5059.119733399995
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 5765.601750000031,
+    "cost_proxy": 415.12332600000224
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 25295.59866699998,
+    "cost_proxy": 5059.119733399995
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 5765.601750000031,
+    "cost_proxy": 415.12332600000224
+  },
+  {
+    "intent_id": "security-smf-session-hijack-detect",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 52638.473207999996,
+    "cost_proxy": 10527.6946416
+  },
+  {
+    "intent_id": "security-smf-session-hijack-detect",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 20264.439874999993,
+    "cost_proxy": 1459.0396709999995
+  },
+  {
+    "intent_id": "security-smf-session-hijack-detect",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 20264.439874999993,
+    "cost_proxy": 1459.0396709999995
+  },
+  {
+    "intent_id": "security-smf-session-hijack-detect",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 20264.439874999993,
+    "cost_proxy": 1459.0396709999995
+  },
+  {
+    "intent_id": "slice-mmtc-periodicity-misconfiguration",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 22878.38462500008,
+    "cost_proxy": 4575.676925000015
+  },
+  {
+    "intent_id": "slice-mmtc-periodicity-misconfiguration",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 12363.465375000033,
+    "cost_proxy": 890.1695070000023
+  },
+  {
+    "intent_id": "slice-mmtc-periodicity-misconfiguration",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 12363.465375000033,
+    "cost_proxy": 890.1695070000023
+  },
+  {
+    "intent_id": "slice-mmtc-periodicity-misconfiguration",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 22878.38462500008,
+    "cost_proxy": 4575.676925000015
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 23074.19341600007,
+    "cost_proxy": 4614.838683200014
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 7206.797041999948,
+    "cost_proxy": 518.8893870239963
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 7206.797041999948,
+    "cost_proxy": 518.8893870239963
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 23074.19341600007,
+    "cost_proxy": 4614.838683200014
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 31641.892749999897,
+    "cost_proxy": 6328.378549999979
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 8916.819625000016,
+    "cost_proxy": 642.0110130000012
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 8916.819625000016,
+    "cost_proxy": 642.0110130000012
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 31641.892749999897,
+    "cost_proxy": 6328.378549999979
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 22292.703500000018,
+    "cost_proxy": 4458.540700000004
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.75,
+    "latency_ms": 8589.80566599996,
+    "cost_proxy": 618.4660079519971
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.75,
+    "latency_ms": 8589.80566599996,
+    "cost_proxy": 618.4660079519971
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 22292.703500000018,
+    "cost_proxy": 4458.540700000004
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 48533.11062499995,
+    "cost_proxy": 9706.62212499999
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 11217.601292000154,
+    "cost_proxy": 807.6672930240111
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 48533.11062499995,
+    "cost_proxy": 9706.62212499999
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 11217.601292000154,
+    "cost_proxy": 807.6672930240111
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 62040.06937500003,
+    "cost_proxy": 12408.013875000006
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 14933.884042000045,
+    "cost_proxy": 1075.2396510240033
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 14933.884042000045,
+    "cost_proxy": 1075.2396510240033
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 62040.06937500003,
+    "cost_proxy": 12408.013875000006
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 29473.645667,
+    "cost_proxy": 5894.7291334
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 3457.2280000000005,
+    "cost_proxy": 248.92041600000005
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 3457.2280000000005,
+    "cost_proxy": 248.92041600000005
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 29473.645667,
+    "cost_proxy": 5894.7291334
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 66080.00058400001,
+    "cost_proxy": 13216.000116800002
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 13499.986500000006,
+    "cost_proxy": 971.9990280000004
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 13499.986500000006,
+    "cost_proxy": 971.9990280000004
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "medium",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 66080.00058400001,
+    "cost_proxy": 13216.000116800002
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 36096.093417000004,
+    "cost_proxy": 7219.218683400001
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 12067.172709000004,
+    "cost_proxy": 868.8364350480003
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 12067.172709000004,
+    "cost_proxy": 868.8364350480003
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 36096.093417000004,
+    "cost_proxy": 7219.218683400001
+  },
+  {
+    "intent_id": "slice-urllc-sla-breach-root-cause",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 29300.898542,
+    "cost_proxy": 5860.1797084
+  },
+  {
+    "intent_id": "slice-urllc-sla-breach-root-cause",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 14013.829500000014,
+    "cost_proxy": 1008.995724000001
+  },
+  {
+    "intent_id": "slice-urllc-sla-breach-root-cause",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 14013.829500000014,
+    "cost_proxy": 1008.995724000001
+  },
+  {
+    "intent_id": "slice-urllc-sla-breach-root-cause",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.625,
+    "latency_ms": 29300.898542,
+    "cost_proxy": 5860.1797084
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 36527.93141700002,
+    "cost_proxy": 7305.586283400004
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 14291.342667000037,
+    "cost_proxy": 1028.9766720240027
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 36527.93141700002,
+    "cost_proxy": 7305.586283400004
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 36527.93141700002,
+    "cost_proxy": 7305.586283400004
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 47169.60999999998,
+    "cost_proxy": 9433.921999999995
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 13143.845416000033,
+    "cost_proxy": 946.3568699520024
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 13143.845416000033,
+    "cost_proxy": 946.3568699520024
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 13143.845416000033,
+    "cost_proxy": 946.3568699520024
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 36623.96129200001,
+    "cost_proxy": 7324.792258400001
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 39980.201041,
+    "cost_proxy": 2878.574474952
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 39980.201041,
+    "cost_proxy": 2878.574474952
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 36623.96129200001,
+    "cost_proxy": 7324.792258400001
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 34777.91699999997,
+    "cost_proxy": 6955.583399999995
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 40719.81454200002,
+    "cost_proxy": 2931.8266470240014
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 40719.81454200002,
+    "cost_proxy": 2931.8266470240014
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.375,
+    "latency_ms": 40719.81454200002,
+    "cost_proxy": 2931.8266470240014
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 38544.29470899999,
+    "cost_proxy": 7708.858941799997
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 10217.053584000041,
+    "cost_proxy": 735.627858048003
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 38544.29470899999,
+    "cost_proxy": 7708.858941799997
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 10217.053584000041,
+    "cost_proxy": 735.627858048003
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 34577.3945,
+    "cost_proxy": 6915.478900000001
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 5638.495000000006,
+    "cost_proxy": 405.97164000000043
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 5638.495000000006,
+    "cost_proxy": 405.97164000000043
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.25,
+    "latency_ms": 5638.495000000006,
+    "cost_proxy": 405.97164000000043
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 37429.17075,
+    "cost_proxy": 7485.83415
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 5688.490458999979,
+    "cost_proxy": 409.57131304799844
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 5688.490458999979,
+    "cost_proxy": 409.57131304799844
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 5688.490458999979,
+    "cost_proxy": 409.57131304799844
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 42354.06483399998,
+    "cost_proxy": 8470.812966799997
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 10170.811875000027,
+    "cost_proxy": 732.2984550000019
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.75,
+    "latency_ms": 42354.06483399998,
+    "cost_proxy": 8470.812966799997
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5,
+    "latency_ms": 10170.811875000027,
+    "cost_proxy": 732.2984550000019
+  },
+  {
+    "intent_id": "security-read-dos-drop-count-upf",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 10099.086250000028,
+    "cost_proxy": 2019.8172500000055
+  },
+  {
+    "intent_id": "security-read-dos-drop-count-upf",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 3524.4451670000103,
+    "cost_proxy": 253.76005202400074
+  },
+  {
+    "intent_id": "security-read-dos-drop-count-upf",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 3524.4451670000103,
+    "cost_proxy": 253.76005202400074
+  },
+  {
+    "intent_id": "security-read-dos-drop-count-upf",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 3524.4451670000103,
+    "cost_proxy": 253.76005202400074
+  },
+  {
+    "intent_id": "slice-read-jitter-urllc",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 8925.426666,
+    "cost_proxy": 1785.0853332
+  },
+  {
+    "intent_id": "slice-read-jitter-urllc",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 1969.1844579999972,
+    "cost_proxy": 141.7812809759998
+  },
+  {
+    "intent_id": "slice-read-jitter-urllc",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 1969.1844579999972,
+    "cost_proxy": 141.7812809759998
+  },
+  {
+    "intent_id": "slice-read-jitter-urllc",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 1969.1844579999972,
+    "cost_proxy": 141.7812809759998
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 10207.566374999999,
+    "cost_proxy": 2041.5132749999998
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2903.4644170000092,
+    "cost_proxy": 209.04943802400066
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2903.4644170000092,
+    "cost_proxy": 209.04943802400066
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2903.4644170000092,
+    "cost_proxy": 209.04943802400066
+  },
+  {
+    "intent_id": "security-check-ue-auth-status",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 12282.790083999998,
+    "cost_proxy": 2456.5580167999997
+  },
+  {
+    "intent_id": "security-check-ue-auth-status",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 6840.116917000003,
+    "cost_proxy": 492.4884180240002
+  },
+  {
+    "intent_id": "security-check-ue-auth-status",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 12282.790083999998,
+    "cost_proxy": 2456.5580167999997
+  },
+  {
+    "intent_id": "security-check-ue-auth-status",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 6840.116917000003,
+    "cost_proxy": 492.4884180240002
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 9713.435375000003,
+    "cost_proxy": 1942.6870750000007
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 8536.29749999999,
+    "cost_proxy": 614.6134199999992
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 8536.29749999999,
+    "cost_proxy": 614.6134199999992
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 8536.29749999999,
+    "cost_proxy": 614.6134199999992
+  },
+  {
+    "intent_id": "slice-read-max-datarate-cap",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.7142857142857143,
+    "latency_ms": 17949.25649999999,
+    "cost_proxy": 3589.851299999998
+  },
+  {
+    "intent_id": "slice-read-max-datarate-cap",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 3554.8513749999984,
+    "cost_proxy": 255.94929899999988
+  },
+  {
+    "intent_id": "slice-read-max-datarate-cap",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 3554.8513749999984,
+    "cost_proxy": 255.94929899999988
+  },
+  {
+    "intent_id": "slice-read-max-datarate-cap",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 3554.8513749999984,
+    "cost_proxy": 255.94929899999988
+  },
+  {
+    "intent_id": "ran-read-sinr-sector",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 10400.067790999998,
+    "cost_proxy": 2080.0135581999994
+  },
+  {
+    "intent_id": "ran-read-sinr-sector",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 3373.1049589999884,
+    "cost_proxy": 242.86355704799917
+  },
+  {
+    "intent_id": "ran-read-sinr-sector",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 3373.1049589999884,
+    "cost_proxy": 242.86355704799917
+  },
+  {
+    "intent_id": "ran-read-sinr-sector",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 3373.1049589999884,
+    "cost_proxy": 242.86355704799917
+  },
+  {
+    "intent_id": "security-check-n2-interface-integrity",
+    "strategy": "always_heavy",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 16274.25466699998,
+    "cost_proxy": 3254.850933399996
+  },
+  {
+    "intent_id": "security-check-n2-interface-integrity",
+    "strategy": "always_light",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 8112.340500000017,
+    "cost_proxy": 584.0885160000012
+  },
+  {
+    "intent_id": "security-check-n2-interface-integrity",
+    "strategy": "random",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.625,
+    "latency_ms": 8112.340500000017,
+    "cost_proxy": 584.0885160000012
+  },
+  {
+    "intent_id": "security-check-n2-interface-integrity",
+    "strategy": "inferrouter",
+    "domain": "security",
+    "complexity": "complex",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.875,
+    "latency_ms": 16274.25466699998,
+    "cost_proxy": 3254.850933399996
+  },
+  {
+    "intent_id": "slice-read-packet-loss-mmtc",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 10218.303625,
+    "cost_proxy": 2043.6607250000002
+  },
+  {
+    "intent_id": "slice-read-packet-loss-mmtc",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2028.131333000001,
+    "cost_proxy": 146.02545597600007
+  },
+  {
+    "intent_id": "slice-read-packet-loss-mmtc",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2028.131333000001,
+    "cost_proxy": 146.02545597600007
+  },
+  {
+    "intent_id": "slice-read-packet-loss-mmtc",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2028.131333000001,
+    "cost_proxy": 146.02545597600007
+  },
+  {
+    "intent_id": "ran-read-cell-availability",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 9180.728500000001,
+    "cost_proxy": 1836.1457
+  },
+  {
+    "intent_id": "ran-read-cell-availability",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 4088.701625000006,
+    "cost_proxy": 294.3865170000004
+  },
+  {
+    "intent_id": "ran-read-cell-availability",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 4088.701625000006,
+    "cost_proxy": 294.3865170000004
+  },
+  {
+    "intent_id": "ran-read-cell-availability",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.2857142857142857,
+    "latency_ms": 4088.701625000006,
+    "cost_proxy": 294.3865170000004
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 9139.693208000012,
+    "cost_proxy": 1827.9386416000023
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 11607.589750000003,
+    "cost_proxy": 835.7464620000002
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 9139.693208000012,
+    "cost_proxy": 1827.9386416000023
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 11607.589750000003,
+    "cost_proxy": 835.7464620000002
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 9844.091792000001,
+    "cost_proxy": 1968.8183584
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 5636.927958000001,
+    "cost_proxy": 405.8588129760001
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 5636.927958000001,
+    "cost_proxy": 405.8588129760001
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 5636.927958000001,
+    "cost_proxy": 405.8588129760001
+  },
+  {
+    "intent_id": "ran-read-gnb-sw-version",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 6392.253541000002,
+    "cost_proxy": 1278.4507082000002
+  },
+  {
+    "intent_id": "ran-read-gnb-sw-version",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.14285714285714285,
+    "latency_ms": 6867.598958000002,
+    "cost_proxy": 494.46712497600015
+  },
+  {
+    "intent_id": "ran-read-gnb-sw-version",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.14285714285714285,
+    "latency_ms": 6867.598958000002,
+    "cost_proxy": 494.46712497600015
+  },
+  {
+    "intent_id": "ran-read-gnb-sw-version",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.14285714285714285,
+    "latency_ms": 6867.598958000002,
+    "cost_proxy": 494.46712497600015
+  },
+  {
+    "intent_id": "slice-read-registered-imsi-count",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 10592.796540999998,
+    "cost_proxy": 2118.5593081999996
+  },
+  {
+    "intent_id": "slice-read-registered-imsi-count",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.8571428571428571,
+    "latency_ms": 6200.350457999988,
+    "cost_proxy": 446.42523297599917
+  },
+  {
+    "intent_id": "slice-read-registered-imsi-count",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 10592.796540999998,
+    "cost_proxy": 2118.5593081999996
+  },
+  {
+    "intent_id": "slice-read-registered-imsi-count",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.8571428571428571,
+    "latency_ms": 6200.350457999988,
+    "cost_proxy": 446.42523297599917
+  },
+  {
+    "intent_id": "slice-read-snssai-mapping",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 8827.040917000006,
+    "cost_proxy": 1765.408183400001
+  },
+  {
+    "intent_id": "slice-read-snssai-mapping",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 3111.420124999995,
+    "cost_proxy": 224.02224899999965
+  },
+  {
+    "intent_id": "slice-read-snssai-mapping",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 3111.420124999995,
+    "cost_proxy": 224.02224899999965
+  },
+  {
+    "intent_id": "slice-read-snssai-mapping",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.7142857142857143,
+    "latency_ms": 3111.420124999995,
+    "cost_proxy": 224.02224899999965
+  },
+  {
+    "intent_id": "slice-read-max-ues-mmtc",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 9238.369250000005,
+    "cost_proxy": 1847.673850000001
+  },
+  {
+    "intent_id": "slice-read-max-ues-mmtc",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.8571428571428571,
+    "latency_ms": 2183.500415999987,
+    "cost_proxy": 157.21202995199909
+  },
+  {
+    "intent_id": "slice-read-max-ues-mmtc",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.8571428571428571,
+    "latency_ms": 2183.500415999987,
+    "cost_proxy": 157.21202995199909
+  },
+  {
+    "intent_id": "slice-read-max-ues-mmtc",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.8571428571428571,
+    "latency_ms": 2183.500415999987,
+    "cost_proxy": 157.21202995199909
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "strategy": "always_heavy",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 8431.340209000013,
+    "cost_proxy": 1686.2680418000025
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "strategy": "always_light",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2953.667290999988,
+    "cost_proxy": 212.66404495199913
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "strategy": "random",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2953.667290999988,
+    "cost_proxy": 212.66404495199913
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "strategy": "inferrouter",
+    "domain": "core",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 2953.667290999988,
+    "cost_proxy": 212.66404495199913
+  },
+  {
+    "intent_id": "slice-read-ssr-urllc",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 1.0,
+    "latency_ms": 9600.148167000001,
+    "cost_proxy": 1920.0296334
+  },
+  {
+    "intent_id": "slice-read-ssr-urllc",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.14285714285714285,
+    "latency_ms": 1221.847750000002,
+    "cost_proxy": 87.97303800000014
+  },
+  {
+    "intent_id": "slice-read-ssr-urllc",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.14285714285714285,
+    "latency_ms": 1221.847750000002,
+    "cost_proxy": 87.97303800000014
+  },
+  {
+    "intent_id": "slice-read-ssr-urllc",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.14285714285714285,
+    "latency_ms": 1221.847750000002,
+    "cost_proxy": 87.97303800000014
+  },
+  {
+    "intent_id": "ran-read-rlc-retransmission",
+    "strategy": "always_heavy",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.8571428571428571,
+    "latency_ms": 10210.637709,
+    "cost_proxy": 2042.1275418
+  },
+  {
+    "intent_id": "ran-read-rlc-retransmission",
+    "strategy": "always_light",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 11727.851625,
+    "cost_proxy": 844.405317
+  },
+  {
+    "intent_id": "ran-read-rlc-retransmission",
+    "strategy": "random",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 11727.851625,
+    "cost_proxy": 844.405317
+  },
+  {
+    "intent_id": "ran-read-rlc-retransmission",
+    "strategy": "inferrouter",
+    "domain": "ran",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.5714285714285714,
+    "latency_ms": 11727.851625,
+    "cost_proxy": 844.405317
+  },
+  {
+    "intent_id": "slice-read-upf-assigned",
+    "strategy": "always_heavy",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "anthropic/claude-sonnet-4.6",
+    "q": 0.7142857142857143,
+    "latency_ms": 9387.501833000002,
+    "cost_proxy": 1877.5003666000002
+  },
+  {
+    "intent_id": "slice-read-upf-assigned",
+    "strategy": "always_light",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 1033.9071670000094,
+    "cost_proxy": 74.44131602400067
+  },
+  {
+    "intent_id": "slice-read-upf-assigned",
+    "strategy": "random",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 1033.9071670000094,
+    "cost_proxy": 74.44131602400067
+  },
+  {
+    "intent_id": "slice-read-upf-assigned",
+    "strategy": "inferrouter",
+    "domain": "slice",
+    "complexity": "simple",
+    "model_id": "qwen/qwen-2.5-72b-instruct",
+    "q": 0.42857142857142855,
+    "latency_ms": 1033.9071670000094,
+    "cost_proxy": 74.44131602400067
+  }
+]

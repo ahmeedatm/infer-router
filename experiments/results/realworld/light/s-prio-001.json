@@ -1,0 +1,1 @@
+{"failed": true, "reason": "plan array rejected, 1 validation error for IntentPlan\noperations\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=(), input_type=tuple]\n    For further information visit https://errors.pydantic.dev/2.12/v/too_short"}

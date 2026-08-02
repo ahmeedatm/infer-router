@@ -1,0 +1,742 @@
+[
+  {
+    "intent_id": "core-read-amf-cpu-utilization",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9472.137458,
+    "cost_heavy_candidate": 0.011685000000000001
+  },
+  {
+    "intent_id": "core-amf-deregistration-loop",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.25,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 23280.508,
+    "cost_heavy_candidate": 0.034265000000000004
+  },
+  {
+    "intent_id": "core-charging-revenue-assurance-slice",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.25,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 34420.501667,
+    "cost_heavy_candidate": 0.053855
+  },
+  {
+    "intent_id": "core-read-amf-deregistration-rate",
+    "complexity": "simple",
+    "q_light2": 0.42857142857142855,
+    "q_heavy_sonnet": 0.8571428571428571,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 11430.357541000007,
+    "cost_heavy_candidate": 0.015005
+  },
+  {
+    "intent_id": "core-nef-api-rate-limit-breach",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.875,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 18460.638875,
+    "cost_heavy_candidate": 0.02823
+  },
+  {
+    "intent_id": "core-disaster-recovery-core-nf-reroute",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 28473.542208,
+    "cost_heavy_candidate": 0.045930000000000006
+  },
+  {
+    "intent_id": "core-read-amf-memory-usage",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy_sonnet": 0.8571428571428571,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9620.795791999995,
+    "cost_heavy_candidate": 0.012875000000000001
+  },
+  {
+    "intent_id": "core-smf-idle-session-accumulation",
+    "complexity": "medium",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.25,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 15519.939375000007,
+    "cost_heavy_candidate": 0.02418
+  },
+  {
+    "intent_id": "core-network-slice-sla-renegotiation-capacity",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.375,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 33361.473542,
+    "cost_heavy_candidate": 0.054155
+  },
+  {
+    "intent_id": "core-read-amf-registered-ues-mmtc",
+    "complexity": "simple",
+    "q_light2": 1.0,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 10653.695542000038,
+    "cost_heavy_candidate": 0.01478
+  },
+  {
+    "intent_id": "core-smf-pfcp-session-timeout",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.75,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 19455.233292000004,
+    "cost_heavy_candidate": 0.03134
+  },
+  {
+    "intent_id": "core-open-roaming-nef-exposure-security",
+    "complexity": "complex",
+    "q_light2": 0.75,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 20190.947999999993,
+    "cost_heavy_candidate": 0.034269999999999995
+  },
+  {
+    "intent_id": "core-read-ausf-auth-failures",
+    "complexity": "simple",
+    "q_light2": 1.0,
+    "q_heavy_sonnet": 0.2857142857142857,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 8818.399417000022,
+    "cost_heavy_candidate": 0.011785000000000002
+  },
+  {
+    "intent_id": "core-smf-qos-flow-misconfiguration",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.625,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 21150.09870900002,
+    "cost_heavy_candidate": 0.03177
+  },
+  {
+    "intent_id": "core-pcf-policy-conflict-multi-slice",
+    "complexity": "complex",
+    "q_light2": 0.625,
+    "q_heavy_sonnet": 0.25,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 21259.314667000013,
+    "cost_heavy_candidate": 0.038175
+  },
+  {
+    "intent_id": "core-read-ausf-latency",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.42857142857142855,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 10736.420708000082,
+    "cost_heavy_candidate": 0.01482
+  },
+  {
+    "intent_id": "core-udm-subscriber-data-sync",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 24952.83154100002,
+    "cost_heavy_candidate": 0.033049999999999996
+  },
+  {
+    "intent_id": "core-slice-admission-resource-arbitration",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 28516.03149999994,
+    "cost_heavy_candidate": 0.044320000000000005
+  },
+  {
+    "intent_id": "core-read-nrf-registered-nfs",
+    "complexity": "simple",
+    "q_light2": 1.0,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9782.807041999946,
+    "cost_heavy_candidate": 0.013065000000000002
+  },
+  {
+    "intent_id": "core-upf-far-rule-drop",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 23691.939250000018,
+    "cost_heavy_candidate": 0.038585
+  },
+  {
+    "intent_id": "ran-disaster-recovery-coverage-restoration",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.375,
+    "q_heavy_candidate": 0.625,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 24808.889375000035,
+    "cost_heavy_candidate": 0.040105
+  },
+  {
+    "intent_id": "core-read-nssf-slice-selection-load",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 12341.855167000063,
+    "cost_heavy_candidate": 0.017400000000000002
+  },
+  {
+    "intent_id": "core-upf-mmtc-pdr-mismatch",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 20998.41745800006,
+    "cost_heavy_candidate": 0.032465
+  },
+  {
+    "intent_id": "ran-energy-harvest-sleep-cycle-rural-cluster",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 26199.792333000005,
+    "cost_heavy_candidate": 0.045635
+  },
+  {
+    "intent_id": "core-read-pcf-policy-rule-count",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9672.312917,
+    "cost_heavy_candidate": 0.012960000000000001
+  },
+  {
+    "intent_id": "core-upf-urllc-bufferbloat",
+    "complexity": "medium",
+    "q_light2": 0.42857142857142855,
+    "q_heavy_sonnet": 0.42857142857142855,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 28297.440542000004,
+    "cost_heavy_candidate": 0.04508
+  },
+  {
+    "intent_id": "ran-handover-storm-prevention-dense-urban",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 18665.73904199993,
+    "cost_heavy_candidate": 0.030084999999999997
+  },
+  {
+    "intent_id": "core-read-smf-downlink-volume-urllc",
+    "complexity": "simple",
+    "q_light2": 0.75,
+    "q_heavy_sonnet": 0.375,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 14023.16333300007,
+    "cost_heavy_candidate": 0.017035
+  },
+  {
+    "intent_id": "ran-antenna-tilt-interference-gnb162",
+    "complexity": "medium",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 16753.536291000048,
+    "cost_heavy_candidate": 0.025705000000000002
+  },
+  {
+    "intent_id": "ran-interference-coordination-hetnet-smallcell",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.625,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 25721.540707999793,
+    "cost_heavy_candidate": 0.044045
+  },
+  {
+    "intent_id": "core-read-smf-ip-pool-usage",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 8379.339874999914,
+    "cost_heavy_candidate": 0.01217
+  },
+  {
+    "intent_id": "ran-mmtc-device-attach-failure-gnb031",
+    "complexity": "medium",
+    "q_light2": 0.42857142857142855,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 25084.8108749999,
+    "cost_heavy_candidate": 0.024059999999999998
+  },
+  {
+    "intent_id": "ran-massive-mimo-beam-energy-sla-cooptimise",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 23712.197792000097,
+    "cost_heavy_candidate": 0.037665000000000004
+  },
+  {
+    "intent_id": "core-read-smf-session-setup-failures",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.42857142857142855,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 8980.10391600019,
+    "cost_heavy_candidate": 0.0127
+  },
+  {
+    "intent_id": "ran-paging-congestion-gnb073",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 19461.007624999867,
+    "cost_heavy_candidate": 0.028630000000000006
+  },
+  {
+    "intent_id": "ran-network-slicing-isolation-audit-remediation",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.0,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 36301.665917000035,
+    "cost_heavy_candidate": 0.058730000000000004
+  },
+  {
+    "intent_id": "core-read-smf-sessions-count",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9001.321166000025,
+    "cost_heavy_candidate": 0.012675
+  },
+  {
+    "intent_id": "ran-qos-flow-mapping-error-gnb092",
+    "complexity": "medium",
+    "q_light2": 0.14285714285714285,
+    "q_heavy_sonnet": 0.2857142857142857,
+    "q_heavy_candidate": 0.7142857142857143,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 20660.95650000011,
+    "cost_heavy_candidate": 0.033115
+  },
+  {
+    "intent_id": "ran-predictive-capacity-scaling-ml-kpi",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.375,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 24915.40629199994,
+    "cost_heavy_candidate": 0.038955000000000004
+  },
+  {
+    "intent_id": "core-read-smf-uplink-volume",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 11274.735125,
+    "cost_heavy_candidate": 0.01625
+  },
+  {
+    "intent_id": "ran-rlf-rate-increase-gnb009",
+    "complexity": "medium",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 15793.499749999999,
+    "cost_heavy_candidate": 0.023850000000000003
+  },
+  {
+    "intent_id": "sec-nrf-service-registry-tampering",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.0,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 28817.323665999993,
+    "cost_heavy_candidate": 0.045745
+  },
+  {
+    "intent_id": "core-read-udr-subscription-records",
+    "complexity": "simple",
+    "q_light2": 1.0,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9722.017457999997,
+    "cost_heavy_candidate": 0.013695000000000002
+  },
+  {
+    "intent_id": "ran-slice-prb-quota-embb-gnb150",
+    "complexity": "medium",
+    "q_light2": 0.75,
+    "q_heavy_sonnet": 0.75,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 16381.855499999987,
+    "cost_heavy_candidate": 0.027315000000000002
+  },
+  {
+    "intent_id": "sec-o-ran-near-rt-ric-policy-poisoning",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 25914.444750000002,
+    "cost_heavy_candidate": 0.04386
+  },
+  {
+    "intent_id": "core-read-upf-active-pdu-embb",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 0.7142857142857143,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9738.80379100001,
+    "cost_heavy_candidate": 0.013240000000000002
+  },
+  {
+    "intent_id": "security-ausf-supi-enumeration-detect",
+    "complexity": "medium",
+    "q_light2": 0.75,
+    "q_heavy_sonnet": 0.375,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 23423.749750000014,
+    "cost_heavy_candidate": 0.032805
+  },
+  {
+    "intent_id": "sec-ran-jamming-adaptive-frequency-replan",
+    "complexity": "complex",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 25047.896165999988,
+    "cost_heavy_candidate": 0.04242
+  },
+  {
+    "intent_id": "core-read-upf-drop-rate",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy_sonnet": 0.2857142857142857,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9142.971375000001,
+    "cost_heavy_candidate": 0.01311
+  },
+  {
+    "intent_id": "security-certificate-expiry-amf",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 18688.486624999998,
+    "cost_heavy_candidate": 0.027775
+  },
+  {
+    "intent_id": "slice-budget-constrained-scaling-multisite",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 22492.745958,
+    "cost_heavy_candidate": 0.03692
+  },
+  {
+    "intent_id": "core-read-upf-n3-packet-loss",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.42857142857142855,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 10157.626250000021,
+    "cost_heavy_candidate": 0.015024999999999998
+  },
+  {
+    "intent_id": "security-detect-rogue-gnb-attach",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 22864.173083000027,
+    "cost_heavy_candidate": 0.035105
+  },
+  {
+    "intent_id": "slice-e2e-orchestration-multi-domain-latency",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.625,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 33275.026708,
+    "cost_heavy_candidate": 0.05108000000000001
+  },
+  {
+    "intent_id": "core-read-upf-n6-interface-status",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.8571428571428571,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9015.543624999993,
+    "cost_heavy_candidate": 0.012975
+  },
+  {
+    "intent_id": "security-ipsec-tunnel-expiry-n3",
+    "complexity": "medium",
+    "q_light2": 0.14285714285714285,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 16508.341833000002,
+    "cost_heavy_candidate": 0.027100000000000003
+  },
+  {
+    "intent_id": "slice-isolation-breach-remediation-multiservice",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.0,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 19136.878582999998,
+    "cost_heavy_candidate": 0.034295000000000006
+  },
+  {
+    "intent_id": "core-read-upf-n6-latency",
+    "complexity": "simple",
+    "q_light2": 0.8571428571428571,
+    "q_heavy_sonnet": 1.0,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 8915.943624999984,
+    "cost_heavy_candidate": 0.012745
+  },
+  {
+    "intent_id": "security-ran-user-plane-integrity-failure",
+    "complexity": "medium",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.375,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 25143.570708,
+    "cost_heavy_candidate": 0.04043
+  },
+  {
+    "intent_id": "slice-multi-cell-coverage-sla-reoptimization",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 20456.36675000003,
+    "cost_heavy_candidate": 0.035685
+  },
+  {
+    "intent_id": "core-read-upf-throughput-urllc",
+    "complexity": "simple",
+    "q_light2": 0.7142857142857143,
+    "q_heavy_sonnet": 0.42857142857142855,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 8014.654833000009,
+    "cost_heavy_candidate": 0.011640000000000001
+  },
+  {
+    "intent_id": "security-smf-urllc-policy-enforcement",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.5,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 23145.349958,
+    "cost_heavy_candidate": 0.037175
+  },
+  {
+    "intent_id": "slice-network-function-failover-sla-preservation",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.0,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 23055.94725000003,
+    "cost_heavy_candidate": 0.037895000000000005
+  },
+  {
+    "intent_id": "ran-read-active-ues",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy_sonnet": 0.8571428571428571,
+    "q_heavy_candidate": 0.8571428571428571,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 8061.389500000018,
+    "cost_heavy_candidate": 0.009825
+  },
+  {
+    "intent_id": "slice-mmtc-device-quota-exhaustion",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.25,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 14422.126417000016,
+    "cost_heavy_candidate": 0.021615000000000002
+  },
+  {
+    "intent_id": "slice-revenue-optimised-qos-degradation-ladder",
+    "complexity": "complex",
+    "q_light2": 0.25,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 20381.40008399995,
+    "cost_heavy_candidate": 0.03508
+  },
+  {
+    "intent_id": "ran-read-beam-index",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy_sonnet": 0.42857142857142855,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 11337.72533299998,
+    "cost_heavy_candidate": 0.016085000000000002
+  },
+  {
+    "intent_id": "slice-urllc-gnb-resource-reservation",
+    "complexity": "medium",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.625,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 17744.63049999997,
+    "cost_heavy_candidate": 0.027755000000000002
+  },
+  {
+    "intent_id": "slice-security-tenant-isolation-audit",
+    "complexity": "complex",
+    "q_light2": 0.125,
+    "q_heavy_sonnet": 0.0,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 31171.348707999983,
+    "cost_heavy_candidate": 0.04999000000000001
+  },
+  {
+    "intent_id": "security-list-blocked-ips-n6",
+    "complexity": "simple",
+    "q_light2": 0.5714285714285714,
+    "q_heavy_sonnet": 0.5714285714285714,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9741.041541000071,
+    "cost_heavy_candidate": 0.014585
+  },
+  {
+    "intent_id": "slice-urllc-redundancy-path-activate",
+    "complexity": "medium",
+    "q_light2": 0.375,
+    "q_heavy_sonnet": 0.625,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 16496.530042000017,
+    "cost_heavy_candidate": 0.024895
+  },
+  {
+    "intent_id": "slice-sla-violation-root-cause-multi-nf",
+    "complexity": "complex",
+    "q_light2": 0.5,
+    "q_heavy_sonnet": 0.125,
+    "q_heavy_candidate": 0.75,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 24549.01437500007,
+    "cost_heavy_candidate": 0.045380000000000004
+  },
+  {
+    "intent_id": "slice-read-latency-urllc",
+    "complexity": "simple",
+    "q_light2": 0.0,
+    "q_heavy_sonnet": 0.5,
+    "q_heavy_candidate": 0.875,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 9386.57012500005,
+    "cost_heavy_candidate": 0.0123
+  },
+  {
+    "intent_id": "slice-read-priority-label",
+    "complexity": "simple",
+    "q_light2": 0.2857142857142857,
+    "q_heavy_sonnet": 0.7142857142857143,
+    "q_heavy_candidate": 1.0,
+    "heavy_candidate": "anthropic/claude-opus-4.8",
+    "latency_heavy_candidate_ms": 7401.948875000016,
+    "cost_heavy_candidate": 0.0096
+  }
+]

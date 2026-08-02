@@ -1,0 +1,1 @@
+{"intent_id": "c-006", "operations": [{"src": "embb_user", "dst": "core_edge", "verb": "allow", "selector": null}]}

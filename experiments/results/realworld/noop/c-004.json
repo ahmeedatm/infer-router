@@ -1,0 +1,1 @@
+{"intent_id": "c-004", "operations": [{"src": "mgmt_host", "dst": "client_plane", "verb": "allow", "selector": null}]}

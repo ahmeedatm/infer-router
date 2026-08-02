@@ -1,0 +1,1 @@
+{"intent_id": "s-blocksel-001", "operations": [{"src": "legacy_ran", "dst": "sec_ops", "verb": "allow", "selector": null}]}

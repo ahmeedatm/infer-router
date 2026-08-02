@@ -1,0 +1,1 @@
+{"intent_id": "m-004", "operations": [{"src": "mgmt_link", "dst": "core_srv", "verb": "allow", "selector": null}]}

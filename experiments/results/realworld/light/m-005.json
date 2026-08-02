@@ -1,0 +1,1 @@
+{"intent_id": "m-005", "operations": [{"src": "contractor", "dst": "ops_console", "verb": "block", "selector": {"proto": "tcp", "port": 3389}}, {"src": "contractor", "dst": "ops_console", "verb": "mirror", "to": "historian"}]}

@@ -1,0 +1,122 @@
+[
+  {
+    "intent_id": "ran-read-throughput",
+    "error_type": "wrong_number",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "ran-read-prb-utilization",
+    "error_type": "missing_step",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "core-read-amf-registrations",
+    "error_type": "false_claim",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "core-read-upf-status",
+    "error_type": "wrong_number",
+    "q_correct": 0.75,
+    "q_degraded": 0.75
+  },
+  {
+    "intent_id": "security-list-firewall-rules",
+    "error_type": "missing_step",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "slice-read-active-count",
+    "error_type": "false_claim",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "security-read-auth-failures",
+    "error_type": "wrong_number",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "ran-diagnose-handover-failures",
+    "error_type": "missing_step",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "ran-adjust-tilt-coverage-hole",
+    "error_type": "false_claim",
+    "q_correct": 0.875,
+    "q_degraded": 0.875
+  },
+  {
+    "intent_id": "core-scale-smf-sessions",
+    "error_type": "wrong_number",
+    "q_correct": 1.0,
+    "q_degraded": 1.0
+  },
+  {
+    "intent_id": "slice-reconfigure-urllc-latency",
+    "error_type": "missing_step",
+    "q_correct": 0.625,
+    "q_degraded": 0.625
+  },
+  {
+    "intent_id": "security-mitigate-signaling-storm",
+    "error_type": "false_claim",
+    "q_correct": 0.75,
+    "q_degraded": 0.75
+  },
+  {
+    "intent_id": "core-diagnose-pdu-session-drops",
+    "error_type": "wrong_number",
+    "q_correct": 0.75,
+    "q_degraded": 0.75
+  },
+  {
+    "intent_id": "slice-resize-mmtc-capacity",
+    "error_type": "missing_step",
+    "q_correct": 0.8571428571428571,
+    "q_degraded": 0.7142857142857143
+  },
+  {
+    "intent_id": "ran-optimize-multicell-load-balance",
+    "error_type": "false_claim",
+    "q_correct": 0.875,
+    "q_degraded": 0.875
+  },
+  {
+    "intent_id": "slice-admission-multitenant-contention",
+    "error_type": "wrong_number",
+    "q_correct": 0.75,
+    "q_degraded": 0.75
+  },
+  {
+    "intent_id": "security-isolate-compromised-slice",
+    "error_type": "missing_step",
+    "q_correct": 0.875,
+    "q_degraded": 0.875
+  },
+  {
+    "intent_id": "core-redesign-edge-upf-placement",
+    "error_type": "false_claim",
+    "q_correct": 0.875,
+    "q_degraded": 0.875
+  },
+  {
+    "intent_id": "ran-energy-saving-vs-sla",
+    "error_type": "wrong_number",
+    "q_correct": 0.75,
+    "q_degraded": 0.75
+  },
+  {
+    "intent_id": "security-zero-trust-rollout-impact",
+    "error_type": "missing_step",
+    "q_correct": 0.75,
+    "q_degraded": 0.875
+  }
+]

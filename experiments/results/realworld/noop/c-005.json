@@ -1,0 +1,1 @@
+{"intent_id": "c-005", "operations": [{"src": "primary_bs", "dst": "core_srv", "verb": "allow", "selector": null}]}

@@ -1,0 +1,1 @@
+{"intent_id": "s-reroute-002", "operations": [{"src": "spare_agg", "dst": "core_coll", "verb": "reroute", "via": "s3"}]}

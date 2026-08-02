@@ -1,0 +1,1 @@
+{"intent_id": "c-003", "operations": [{"src": "primary_ctrl", "dst": "core_anchor", "verb": "reroute", "via": "southern"}, {"src": "primary_ctrl", "dst": "core_anchor", "verb": "priority", "klass": "high"}, {"src": "secondary_ctrl", "dst": "core_anchor", "verb": "bandwidth_min", "bw_mbps": 5.0}]}

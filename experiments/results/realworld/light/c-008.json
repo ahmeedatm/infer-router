@@ -1,0 +1,1 @@
+{"intent_id": "c-008", "operations": [{"src": "breach_src", "dst": "primary_host", "verb": "block", "selector": null}, {"src": "secondary_uplink", "dst": "core_hub", "verb": "reroute", "via": "southern_path"}, {"src": "primary_host", "dst": "core_hub", "verb": "bandwidth_min", "bw_mbps": 4.0}, {"src": "primary_host", "dst": "core_hub", "verb": "priority", "klass": "high"}]}

@@ -1,0 +1,33 @@
+=== Phase 2 — Estimateur de complexité sémantique (CV 5-fold) ===
+n = 252 intents · classes = ('simple', 'medium', 'complex') · k = 5
+
+Modèle                              | acc moy ± écart | gain/base |  simple |  medium | complex
+----------------------------------------------------------------------------------------------------
+baseline majoritaire                |  32.5% ± 0.7% |  +0.0%   |    19% |    19% |    60%
+longueur seule (n_tokens)           |  48.8% ± 4.6% | +16.3%   |    67% |    23% |    57%
+attributs+LogReg                    |  77.0% ± 5.1% | +44.4%   |    82% |    79% |    70%
+attributs+RandomForest              |  73.0% ± 4.0% | +40.5%   |    79% |    71% |    69%
+embeddings seuls (LogReg)           |  84.9% ± 5.5% | +52.4%   |    95% |    77% |    82%
+combiné (attributs+embeddings)      |  85.3% ± 6.9% | +52.8%   |    96% |    79% |    81%
+
+Importance des features (RandomForest, attributs seuls) :
+  n_tokens        29.2%  ############
+  n_sentences     20.8%  ########
+  n_entities      15.2%  ######
+  n_constraints   15.1%  ######
+  n_numbers       10.3%  ####
+  n_domains        9.4%  ####
+
+Matrice de confusion — attributs+RandomForest (lignes = vérité) :
+               simple   medium  complex   (préd.)
+  simple          66       14        4
+  medium          10       60       14
+  complex         12       14       58
+
+=== Verdict honnête ===
+  Attributs (attributs+LogReg) = 77.0% vs baseline 32.5% vs longueur seule 48.8%.
+  + Les attributs battent nettement le baseline majoritaire.
+  + Les attributs battent la longueur seule : du signal au-delà de la forme.
+  Feature dominante (RF) = 'n_tokens'. n_tokens domine → la décision reste largement portée par la forme.
+
+Modèle persisté (sous-ensemble ('n_entities', 'n_constraints', 'n_domains', 'n_numbers')) : RandomForest (features de fond, sans longueur) → data/complexity_estimator.joblib

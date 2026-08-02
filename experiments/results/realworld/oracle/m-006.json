@@ -1,0 +1,1 @@
+{"intent_id": "m-006", "operations": [{"src": "backup_agent", "dst": "orchestrator", "verb": "bandwidth_max", "bw_mbps": 4.0}]}
