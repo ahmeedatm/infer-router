@@ -24,6 +24,7 @@ from __future__ import annotations
 from app import config
 from app.llm.pool import PoolModel
 
+
 def _clamp_unit(value: float) -> float:
     """Clamp a score into the [0, 1] interval."""
     return max(0.0, min(1.0, value))

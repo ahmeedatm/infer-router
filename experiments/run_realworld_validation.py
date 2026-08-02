@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Callable
 
 from app import config
+from app.llm.inferrouter import route
 from app.llm.intent_plan import (
     AllowOp,
     IntentPlan,
@@ -37,7 +38,6 @@ from app.llm.intent_plan import (
     build_plan_prompt,
     parse_plan_response,
 )
-from app.llm.inferrouter import route
 from app.llm.openrouter_client import call_model
 from app.llm.schema import Intent, ModelResponse
 from bench.oracle import ORACLE_STRATEGY, oracle_plan

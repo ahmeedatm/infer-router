@@ -14,7 +14,6 @@ from pydantic import BaseModel, ConfigDict
 
 from bench.subset import EndpointRef
 
-
 # --- OpenFlow pipeline ---------------------------------------------------
 #
 # THE scheme. Every module that installs a flow reads its table and priority

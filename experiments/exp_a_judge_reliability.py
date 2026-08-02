@@ -21,8 +21,8 @@ from pathlib import Path
 
 from app import config
 from app.llm.intents import load_intents
-from app.llm.judge import judge, JudgeError
-from app.llm.openrouter_client import call_model, OpenRouterError
+from app.llm.judge import JudgeError, judge
+from app.llm.openrouter_client import OpenRouterError, call_model
 from app.llm.schema import Intent
 
 RESULTS_DIR = Path("experiments/results")

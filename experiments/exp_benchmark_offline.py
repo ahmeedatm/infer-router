@@ -19,6 +19,7 @@ Usage :
 from __future__ import annotations
 
 import json
+import os
 import random
 from pathlib import Path
 
@@ -26,8 +27,6 @@ from app import config
 from app.llm.inferrouter import route
 from app.llm.intents import load_intents
 from app.llm.metrics import aiq, p50, p99
-
-import os
 
 # Chemin du léger paramétrable : calibration_api_light.json (qwen-72b, défaut,
 # le léger du système) ou calibration_deepseek.json (pour l'analyse du finding).

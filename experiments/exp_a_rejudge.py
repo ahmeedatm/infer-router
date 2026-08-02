@@ -15,7 +15,7 @@ from pathlib import Path
 from app import config
 from app.llm.intents import load_intents
 from app.llm.judge import judge
-from experiments.exp_a_agreement import compute_agreement, VERDICTS_PATH, _load_verdicts
+from experiments.exp_a_agreement import VERDICTS_PATH, _load_verdicts, compute_agreement
 
 RESPONSES_PATH = Path("experiments/results/exp_a_responses.json")
 

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from bench.orchestrator import CaseResult
 from experiments.aggregate_realization import (
-    by_complexity, mean_realization, realization_rate, render_table,
+    by_complexity,
+    mean_realization,
+    realization_rate,
+    render_table,
 )
 
 

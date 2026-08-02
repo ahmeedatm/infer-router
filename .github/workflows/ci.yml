@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
 
 permissions:
@@ -16,20 +16,25 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          # Version réellement livrée : le Dockerfile part de python:3.9-slim.
+          # Tester sur une version plus récente laisserait passer un usage
+          # indisponible à l'exécution.
+          python-version: "3.9"
           cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff pytest
-          [ -f requirements.txt ] && pip install -r requirements.txt || true
+          # Linter épinglé : sans version fixe, une nouvelle release de ruff
+          # fait rougir la CI sans qu'une ligne de code ait changé.
+          pip install ruff==0.15.18 pytest==8.4.2
+          pip install -r requirements-runtime.txt
 
       - name: Lint (Ruff)
         run: ruff check .
 
       # Tests unitaires uniquement : déterministes, sans réseau ni service.
-      # Les tests d'intégration (tests/integration/) requièrent Ollama/Redis
-      # et ne sont pas exécutés en CI.
+      # Les tests d'intégration demandent Ollama vivant ou la VM du banc
+      # (Mininet + Open vSwitch), donc ne peuvent pas tourner ici.
       - name: Tests (Pytest)
         run: pytest tests/unit -q
