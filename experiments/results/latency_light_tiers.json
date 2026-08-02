@@ -1,0 +1,11 @@
+{
+  "date": "2026-08-02",
+  "protocol": "6 intents simples du dataset, prompt standard (app.llm.prompting.build_prompt), max_tokens=4096, provider novita exclu",
+  "note": "La latence des tiers n'avait jamais été mesurée par candidat : le tableau des six modèles légers du ch.5 ne porte que qualité et coût. Les qualités citées ici viennent de ce tableau, pas de ce run.",
+  "measurements": [
+    {"model": "google/gemini-2.5-flash-lite", "p50_s": 1.3, "min_s": 0.9, "max_s": 2.4, "cost_per_call_usd": 0.00002, "quality_simple": 0.42},
+    {"model": "qwen/qwen-2.5-72b-instruct", "p50_s": 5.7, "min_s": 4.1, "max_s": 10.6, "cost_per_call_usd": 0.00007, "quality_simple": 0.64},
+    {"model": "anthropic/claude-opus-4.8", "p50_s": 10.0, "min_s": 9.6, "max_s": 11.1, "cost_per_call_usd": 0.01201, "quality_simple": 0.94}
+  ],
+  "reading": "Un tier rapide diviserait la latence par 4,4 face au léger actuel et par 7,7 face au lourd. Mais sa qualité sur les intents simples (0,42) ne franchit que le plancher le plus bas (low, 0,35) : il resterait inéligible dès la criticité med (0,50), que le léger actuel franchit (0,64). Le gain de latence est donc réel mais confiné aux intents simples ET peu critiques."
+}
