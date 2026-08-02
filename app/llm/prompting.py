@@ -35,3 +35,50 @@ def base_model_id(model_id: str) -> str:
 def is_local_model_id(model_id: str) -> bool:
     """True when ``model_id`` is an Ollama tag rather than an OpenRouter id."""
     return ":" in model_id
+
+
+# Domain expertise prepended for a specialist target. Until this existed, a
+# "specialist" was purely nominal: the pool suffixed a model id with #<domain>,
+# base_model_id() stripped the suffix before the call, and every tier received
+# the same SYSTEM_PREFIX. Contribution C2 could therefore never be measured,
+# only assumed through the hardcoded quality constants in app.config.
+SPECIALIST_EXPERTISE: dict[str, str] = {
+    "ran": (
+        "You specialise in the radio access network: gNB and cell "
+        "configuration, RSRP/RSRQ/SINR, handover and mobility parameters, "
+        "scheduler behaviour, PRB utilisation and radio KPIs."
+    ),
+    "core": (
+        "You specialise in the 5G core: AMF, SMF, UPF and PCF procedures, "
+        "PDU session and bearer handling, N-interfaces, subscriber state, "
+        "and control-plane signalling."
+    ),
+    "security": (
+        "You specialise in network security: segmentation and isolation "
+        "policy, access control and filtering rules, anomaly and intrusion "
+        "signals, incident containment, and audit trails."
+    ),
+    "slice": (
+        "You specialise in network slicing: eMBB, URLLC and mMTC slice "
+        "profiles, SLA parameters and their enforcement, slice isolation, "
+        "resource partitioning and admission control."
+    ),
+}
+
+
+def build_specialist_prompt(intent: Intent) -> str:
+    """Prompt for a domain specialist target.
+
+    Falls back to the generic framing when the intent's domain has no declared
+    expertise, so an unknown domain degrades to the generic tier rather than
+    silently losing the operator framing.
+    """
+    expertise = SPECIALIST_EXPERTISE.get(intent.domain)
+    if expertise is None:
+        return build_prompt(intent)
+    return (
+        "You are a network operations assistant for a 5G/O-RAN operator. "
+        f"{expertise} "
+        "Answer the following operator intent precisely and concisely.\n\n"
+        f"Intent: {intent.text}"
+    )

@@ -1,0 +1,134 @@
+{
+  "domain": "ran",
+  "summary": {
+    "n": 15,
+    "q_generic": 0.9238,
+    "q_specialist": 0.9619,
+    "delta": 0.0381,
+    "specialist_wins": 5,
+    "specialist_loses": 1,
+    "ties": 9
+  },
+  "records": [
+    {
+      "intent_id": "ran-read-rsrp-cell",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 0.8571428571428571
+    },
+    {
+      "intent_id": "ran-read-sinr-sector",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 0.8571428571428571
+    },
+    {
+      "intent_id": "ran-read-cqi-cell",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 0.8571428571428571
+    },
+    {
+      "intent_id": "ran-read-active-ues",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-prb-ul-utilization",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 0.8571428571428571
+    },
+    {
+      "intent_id": "ran-read-cell-availability",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-handover-success-rate",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-rlc-retransmission",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-tx-power",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-dl-latency",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-paging-load",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 1.0,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-beam-index",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-cell-bandwidth",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-rach-success-rate",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 1.0
+    },
+    {
+      "intent_id": "ran-read-drb-setup-success",
+      "domain": "ran",
+      "expected_complexity": "simple",
+      "n_criteria": 7,
+      "q_generic": 0.8571428571428571,
+      "q_specialist": 1.0
+    }
+  ]
+}
