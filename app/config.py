@@ -75,8 +75,13 @@ INTENTS_SPIKE_PATH: str = os.getenv("INTENTS_SPIKE_PATH", "data/intents_spike.ya
 EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 
 # Génération du dataset d'intents.
-# Modèle fort par défaut : la génération exige du réalisme et de la diversité.
-GENERATION_MODEL: str = os.getenv("GENERATION_MODEL", MODEL_HEAVY)
+# Modèle fort, mais FIGÉ plutôt que dérivé de MODEL_HEAVY : les 252 intents ont
+# été produits le 2026-06-21 par claude-sonnet-4.6, quand MODEL_HEAVY valait
+# encore Sonnet. Le basculement du lourd sur Opus (2026-07-22) rendrait une
+# régénération non reproductible si ce paramètre suivait MODEL_HEAVY, alors que
+# le mémoire attribue explicitement le jeu à Sonnet. Le figer préserve aussi la
+# neutralité : le générateur du jeu reste distinct des deux tiers évalués.
+GENERATION_MODEL: str = os.getenv("GENERATION_MODEL", "anthropic/claude-sonnet-4.6")
 # Dataset cible produit par scripts/generate_dataset.py.
 DATASET_PATH: str = os.getenv("DATASET_PATH", "data/intents_dataset.yaml")
 

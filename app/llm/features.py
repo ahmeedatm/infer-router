@@ -1,9 +1,17 @@
 """Semantic-complexity feature extractor for InferRouter-LLM.
 
-Experiments showed that raw sentence embeddings do **not** separate
-intent complexity (``simple`` / ``medium`` / ``complex``) at the accuracy of the
-majority baseline. The model instead grounds complexity on three
-explicit criteria:
+An early test on 20 intents concluded that raw sentence embeddings do not
+separate intent complexity beyond the majority baseline. Re-run on the full
+252-intent set with a logistic regression, that verdict does not hold:
+embeddings reach 93.7 % on the length-controlled variant and 84.9 % on the
+decorrelated one, above these calculated attributes. The estimator still
+rests on the attributes below, for two reasons that survive the correction:
+they implement the report's chapter-3 criteria directly, so a decision stays
+readable as entities, constraints and domains, and they are insensitive to
+statement verbosity by construction. The combined attributes-plus-embeddings
+estimator is the reference the production model has yet to match.
+
+The three explicit criteria:
 
 * ``n(e)``  — number of distinct entities the intent touches;
 * ``p(e)``  — depth of inference / number of coupled constraints;
