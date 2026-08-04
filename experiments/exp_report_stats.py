@@ -41,6 +41,12 @@ from app.llm.metrics import aiq
 RESULTS_DIR = Path("experiments/results")
 BENCH_PATH = RESULTS_DIR / "benchmark_offline.json"
 SAMPLE39_PATH = RESULTS_DIR / "benchmark_generic_pool.json"
+# Real per-intent billed costs, needed because the benchmark's cost field is a
+# flat per-tier tariff. The heavy tier is dearer on complex intents, so pricing
+# every heavy call at the mean overstates the saving of offloading the simple
+# (cheap) ones. These two files carry the actual dollar cost per intent.
+HEAVY_COST_PATH = RESULTS_DIR / "heavy_robustness.json"
+LIGHT_COST_PATH = RESULTS_DIR / "calibration_api_light.json"
 OUT_PATH = RESULTS_DIR / "report_stats.json"
 PARETO_PNG = RESULTS_DIR / "pareto_cout_qualite.png"
 
@@ -150,6 +156,8 @@ def pareto_frontier(
     q_light: Sequence[float],
     q_heavy: Sequence[float],
     step: float = 0.01,
+    cost_light: Optional[Sequence[float]] = None,
+    cost_heavy: Optional[Sequence[float]] = None,
 ) -> tuple[FrontierPoint, ...]:
     """Sweep the quality floor and keep every distinct operating point.
 
@@ -158,11 +166,19 @@ def pareto_frontier(
     from 0 to 1 therefore walks the whole spectrum from all-light to all-heavy.
     A coarse sweep hides operating points, so the step defaults to 0.01.
 
+    Cost is the **real per-intent** price when ``cost_light`` / ``cost_heavy``
+    are given (billed dollars from the campaign), so the frontier reflects that
+    the heavy tier is dearer on complex intents than on simple ones. When they
+    are omitted, the flat per-tier tariff from config is used (kept for the
+    unit tests, which do not need real costs).
+
     Args:
         complexities: Annotated complexity of each intent.
         q_light: Measured quality of the light tier, per intent.
         q_heavy: Measured quality of the heavy tier, per intent.
         step: Granularity of the floor sweep.
+        cost_light: Real per-intent cost on the light tier, or ``None``.
+        cost_heavy: Real per-intent cost on the heavy tier, or ``None``.
 
     Returns:
         Distinct operating points, ordered by increasing cost.
@@ -170,6 +186,17 @@ def pareto_frontier(
     expected = config.QUALITY_LIGHT_BY_COMPLEXITY
     light = np.asarray(q_light, dtype=float)
     heavy = np.asarray(q_heavy, dtype=float)
+    n = len(complexities)
+    cl = (
+        np.asarray(cost_light, dtype=float)
+        if cost_light is not None
+        else np.full(n, config.POOL_LIGHT_COST)
+    )
+    cheavy = (
+        np.asarray(cost_heavy, dtype=float)
+        if cost_heavy is not None
+        else np.full(n, config.POOL_HEAVY_COST)
+    )
     seen: dict[tuple[int, ...], FrontierPoint] = {}
     for floor in np.arange(0.0, 1.0 + step / 2, step):
         to_light = tuple(
@@ -178,15 +205,9 @@ def pareto_frontier(
         )
         if to_light in seen:
             continue
-        chosen = np.where(np.array(to_light) == 1, light, heavy)
-        cost = float(
-            np.mean(
-                [
-                    config.POOL_LIGHT_COST if flag else config.POOL_HEAVY_COST
-                    for flag in to_light
-                ]
-            )
-        )
+        mask = np.array(to_light) == 1
+        chosen = np.where(mask, light, heavy)
+        cost = float(np.mean(np.where(mask, cl, cheavy)))
         seen[to_light] = FrontierPoint(
             q_min=float(floor),
             cost=cost,
@@ -306,15 +327,16 @@ def tighten_latency(
 def _plot_frontier(
     frontier: Sequence[FrontierPoint],
     n_intents: int,
-    random_point: tuple[float, float],
     path: Path,
 ) -> None:
-    """Draw the cost/quality frontier with Random placed on the same axes.
+    """Draw the real-cost quality frontier (frontier only).
 
-    Random is plotted because the comparison that matters is vertical: at its
-    own budget, how far below the frontier does a uniform draw sit? Reading the
-    two strategies at their own operating points would compare a quality gap
-    that is partly bought with extra spend.
+    Random is deliberately not plotted: at real per-intent cost it sits above
+    the frontier at its own budget (an uninformed split is cheaper on average,
+    because it does not concentrate the expensive complex intents on the heavy
+    tier), and the equal-budget reading it invited was dropped from the report
+    as an over-engineered construction. The bare frontier is what the thesis
+    now shows.
 
     Imported lazily: matplotlib is heavy and only this function needs it.
     """
@@ -326,15 +348,7 @@ def _plot_frontier(
     costs = [p.cost for p in frontier]
     qualities = [p.quality for p in frontier]
     fig, ax = plt.subplots(figsize=(6.4, 4.0))
-    ax.plot(
-        costs,
-        qualities,
-        marker="o",
-        color="#b00020",
-        linewidth=1.6,
-        zorder=3,
-        label="InferRouter-LLM (plancher variable)",
-    )
+    ax.plot(costs, qualities, marker="o", color="#b00020", linewidth=1.6, zorder=3)
     for point in frontier:
         offset = (-58, -14) if point.n_light == 0 else (8, -13)
         ax.annotate(
@@ -345,31 +359,10 @@ def _plot_frontier(
             fontsize=7.5,
             color="#444444",
         )
-    cost_random, q_random = random_point
-    ax.plot(
-        [cost_random],
-        [q_random],
-        marker="s",
-        markersize=7,
-        color="#1f3f7a",
-        linestyle="none",
-        zorder=4,
-        label="Random (tirage uniforme)",
-    )
-    ax.vlines(
-        cost_random,
-        q_random,
-        quality_at_cost(frontier, cost_random),
-        color="#1f3f7a",
-        linestyle=":",
-        linewidth=1.2,
-        zorder=2,
-    )
-    ax.set_xlabel("Coût moyen par intent (USD)")
+    ax.set_xlabel("Coût réel moyen par intent (USD)")
     ax.set_ylabel("Qualité agrégée (AIQ)")
     ax.grid(True, linewidth=0.4, alpha=0.5)
     ax.set_ylim(0.35, 0.95)
-    ax.legend(loc="lower right", fontsize=8, frameon=False)
     fig.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=200)
@@ -387,7 +380,27 @@ def main() -> None:
     q_light = [indexed["always_light"][i]["q"] for i in ids]
     q_heavy = [indexed["always_heavy"][i]["q"] for i in ids]
 
+    # Real per-intent billed costs (see the constants' rationale).
+    real_heavy = {r["intent_id"]: r["cost_heavy_candidate"] for r in _load_rows(HEAVY_COST_PATH)}
+    real_light = {r["intent_id"]: r["cost_light2"] for r in _load_rows(LIGHT_COST_PATH)}
+    cost_light = [real_light[i] for i in ids]
+    cost_heavy = [real_heavy[i] for i in ids]
+
     print(f"Benchmark à deux tiers — {len(ids)} intents\n")
+
+    # 0. Économie : distinguer la réduction d'appels lourds de la dépense réelle.
+    tiers = [indexed["inferrouter"][i]["tier"] for i in ids]
+    n_heavy_calls = sum(1 for t in tiers if t == "heavy")
+    call_reduction = 1.0 - n_heavy_calls / len(ids)
+    spend_ir = float(np.mean([
+        real_heavy[i] if t == "heavy" else real_light[i]
+        for i, t in zip(ids, tiers)
+    ]))
+    spend_ah = float(np.mean(cost_heavy))
+    print("0. Économie")
+    print(f"   appels lourds en moins   {call_reduction * 100:.1f} %")
+    print(f"   dépense réelle vs AH     {(1 - spend_ir / spend_ah) * 100:.1f} %"
+          f"  (InferRouter {spend_ir:.4f} vs {spend_ah:.4f} $/intent)")
 
     # 1. Intervalles de confiance.
     print("1. Intervalles de confiance (bootstrap apparié, 20 000 tirages)")
@@ -406,8 +419,11 @@ def main() -> None:
             f"IC95 [{interval.low:+.3f} ; {interval.high:+.3f}]"
         )
 
-    # 2. Frontière complète.
-    frontier = pareto_frontier(complexities, q_light, q_heavy)
+    # 2. Frontière complète, en coût réel par intent.
+    frontier = pareto_frontier(
+        complexities, q_light, q_heavy,
+        cost_light=cost_light, cost_heavy=cost_heavy,
+    )
     print(f"\n2. Frontière de Pareto — {len(frontier)} points de fonctionnement")
     for point in frontier:
         print(
@@ -415,17 +431,26 @@ def main() -> None:
             f"AIQ {point.quality:.3f}   {point.n_light} intents au léger"
         )
 
-    # 3. Comparaison à coût égal.
-    cost_random = float(np.mean([indexed["random"][i]["cost"] for i in ids]))
+    # 3. Comparaison à coût réel égal contre Random. En coût réel, Random est
+    #    plus économe qu'un point de frontière de même fraction (il ne
+    #    concentre pas les intents complexes, chers, sur le lourd), donc à son
+    #    propre budget la frontière passe SOUS lui. Le rapport a retiré cette
+    #    analyse ; on la garde ici, chiffrée, pour tracer d'où vient le −0,040.
+    cost_random = float(np.mean([
+        real_heavy[i] if indexed["random"][i]["tier"] == "heavy" else real_light[i]
+        for i in ids
+    ]))
     q_random = float(aiq([indexed["random"][i]["q"] for i in ids]))
     q_frontier = quality_at_cost(frontier, cost_random)
-    print("\n3. Comparaison à coût égal contre Random")
-    print(f"   coût de Random           {cost_random:.5f} $/intent")
+    print("\n3. Comparaison à coût réel égal contre Random")
+    print(f"   coût réel de Random      {cost_random:.5f} $/intent")
     print(f"   frontière à ce coût      AIQ {q_frontier:.3f}")
     print(f"   Random                   AIQ {q_random:.3f}")
-    print(f"   écart à budget égal      {q_frontier - q_random:+.3f}")
+    print(f"   écart à budget réel égal {q_frontier - q_random:+.3f}")
 
-    # 4. Échantillon de 39 intents, en dollars réels.
+    # 4. Échantillon de 39 intents : on ne rapporte que le taux de routage vers
+    #    le léger. Seuls 24 des 39 ont un coût réel par intent (jeu partiel), la
+    #    dépense réelle n'y est donc pas calculable ; l'économie suit ce taux.
     sample = _by_strategy(_load_rows(SAMPLE39_PATH))
     sample_ids = sorted(sample["inferrouter"])
     n_light = sum(
@@ -434,12 +459,10 @@ def main() -> None:
         if sample["inferrouter"][i]["model_id"] == config.MODEL_LIGHT
     )
     n_heavy = len(sample_ids) - n_light
-    cost_router = n_light * config.POOL_LIGHT_COST + n_heavy * config.POOL_HEAVY_COST
-    cost_all_heavy = len(sample_ids) * config.POOL_HEAVY_COST
-    saving = 1.0 - cost_router / cost_all_heavy
-    print(f"\n4. Échantillon de {len(sample_ids)} intents, coût en dollars réels")
+    light_rate = n_light / len(sample_ids)
+    print(f"\n4. Échantillon de {len(sample_ids)} intents")
     print(f"   {n_light} au léger, {n_heavy} au lourd")
-    print(f"   économie contre Always-Heavy  {saving * 100:.1f} %")
+    print(f"   part déportée vers le léger  {light_rate * 100:.1f} %")
 
     # 5. Point mort de la spécialisation.
     gain = config.SPECIALIST_ON_DOMAIN_DELTA
@@ -466,11 +489,17 @@ def main() -> None:
             f"AIQ {quality}, coût {cost}"
         )
 
-    _plot_frontier(frontier, len(ids), (cost_random, q_random), PARETO_PNG)
+    _plot_frontier(frontier, len(ids), PARETO_PNG)
     print(f"\nFigure écrite : {PARETO_PNG}")
 
     report = {
         "n_intents": len(ids),
+        "economy": {
+            "heavy_call_reduction": call_reduction,
+            "real_spend_reduction_vs_ah": 1 - spend_ir / spend_ah,
+            "spend_inferrouter": spend_ir,
+            "spend_always_heavy": spend_ah,
+        },
         "confidence_intervals": {
             "aiq_inferrouter": aiq_router.as_dict(),
             "delta_vs_random": gain_random.as_dict(),
@@ -485,17 +514,17 @@ def main() -> None:
             }
             for p in frontier
         ],
-        "equal_cost_vs_random": {
+        "equal_real_cost_vs_random": {
             "cost": cost_random,
             "aiq_frontier": q_frontier,
             "aiq_random": q_random,
             "delta": q_frontier - q_random,
         },
-        "sample39_real_cost": {
+        "sample39": {
             "n_intents": len(sample_ids),
             "n_light": n_light,
             "n_heavy": n_heavy,
-            "saving_vs_always_heavy": saving,
+            "light_routing_rate": light_rate,
         },
         "specialisation": {
             "on_domain_gain": gain,

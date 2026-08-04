@@ -110,6 +110,20 @@ class TestParetoFrontier:
         frontier = pareto_frontier(self.COMPLEXITIES, self.LIGHT, self.HEAVY)
         assert len(frontier) == 4
 
+    def test_real_per_intent_costs_shift_the_frontier(self):
+        # Real costs make the heavy tier dearer on complex intents. A frontier
+        # keeping complex intents on heavy then costs more than the flat model
+        # at the same routing fraction. The all-heavy point must equal the mean
+        # real heavy cost, not the flat tariff.
+        cheavy = [0.01, 0.03, 0.05, 0.01]  # simple cheap, complex dear
+        clight = [0.0, 0.0, 0.0, 0.0]
+        frontier = pareto_frontier(
+            self.COMPLEXITIES, self.LIGHT, self.HEAVY,
+            cost_light=clight, cost_heavy=cheavy,
+        )
+        assert frontier[-1].cost == pytest.approx(sum(cheavy) / len(cheavy))
+        assert frontier[0].cost == pytest.approx(0.0)
+
     def test_a_coarse_sweep_hides_an_operating_point(self):
         fine = pareto_frontier(self.COMPLEXITIES, self.LIGHT, self.HEAVY, step=0.01)
         coarse = pareto_frontier(self.COMPLEXITIES, self.LIGHT, self.HEAVY, step=0.10)

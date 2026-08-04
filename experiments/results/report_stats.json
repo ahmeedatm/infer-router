@@ -1,5 +1,11 @@
 {
   "n_intents": 74,
+  "economy": {
+    "heavy_call_reduction": 0.29729729729729726,
+    "real_spend_reduction_vs_ah": 0.13920687956031474,
+    "spend_inferrouter": 0.024551215675675676,
+    "spend_always_heavy": 0.028521621621621626
+  },
   "confidence_intervals": {
     "aiq_inferrouter": {
       "estimate": 0.7818532818532818,
@@ -20,40 +26,40 @@
   "pareto_frontier": [
     {
       "q_min_max": 0.0,
-      "cost": 0.000168,
+      "cost": 0.0001677718918918919,
       "aiq": 0.45535714285714285,
       "n_light": 74
     },
     {
       "q_min_max": 0.33,
-      "cost": 0.009356756756756755,
+      "cost": 0.013916593513513516,
       "aiq": 0.6259652509652509,
       "n_light": 50
     },
     {
       "q_min_max": 0.4,
-      "cost": 0.018545513513513513,
+      "cost": 0.023817942162162164,
       "aiq": 0.7765444015444014,
       "n_light": 26
     },
     {
       "q_min_max": 0.65,
-      "cost": 0.028500000000000004,
+      "cost": 0.028521621621621626,
       "aiq": 0.8824806949806948,
       "n_light": 0
     }
   ],
-  "equal_cost_vs_random": {
-    "cost": 0.012419675675675675,
-    "aiq_frontier": 0.6761583011583011,
+  "equal_real_cost_vs_random": {
+    "cost": 0.012487588108108108,
+    "aiq_frontier": 0.6082328288419562,
     "aiq_random": 0.6481660231660232,
-    "delta": 0.02799227799227788
+    "delta": -0.039933194324067056
   },
-  "sample39_real_cost": {
+  "sample39": {
     "n_intents": 39,
     "n_light": 9,
     "n_heavy": 30,
-    "saving_vs_always_heavy": 0.22940890688259108
+    "light_routing_rate": 0.23076923076923078
   },
   "specialisation": {
     "on_domain_gain": 0.038,
