@@ -276,17 +276,26 @@ class SlaOutcome:
 
 
 def tighten_latency(
-    indexed: dict[str, dict[str, dict]], l_max_ms: float
+    indexed: dict[str, dict[str, dict]],
+    l_max_ms: float,
+    cost_light: Optional[dict[str, float]] = None,
+    cost_heavy: Optional[dict[str, float]] = None,
 ) -> SlaOutcome:
     """Re-decide every intent under a hard latency budget.
 
     Admissibility is evaluated on the latency each tier actually took on that
     intent, as measured during the campaign. An intent whose every candidate
-    breaches the budget is unroutable (bottom); the others fall back to the
-    tier that fits, which is the light one whenever only the heavy breaches.
+    breaches the budget is unroutable (bottom); the router's choice is kept
+    when it fits, otherwise the intent falls back to the only admissible tier.
 
-    Quality and cost are averaged over the routable intents only, and reported
-    as ``None`` when none remains.
+    ``n_forced_light`` counts *only* fallbacks that land on the light tier
+    (router chose heavy, heavy breached, light fits), matching the report's
+    column "rabattus sur le léger". Fallbacks onto the heavy tier (router chose
+    light, light breached) are not counted there.
+
+    Cost is the real per-intent billed cost when ``cost_light`` / ``cost_heavy``
+    are given, else the flat per-tier ``cost`` field of the rows (kept for the
+    unit tests). Quality and cost are averaged over the routable intents only.
     """
     if l_max_ms <= 0:
         raise ValueError(f"l_max_ms doit être > 0, reçu {l_max_ms}.")
@@ -294,28 +303,39 @@ def tighten_latency(
     kept_q: list[float] = []
     kept_cost: list[float] = []
     unroutable = 0
-    forced = 0
+    forced_light = 0
     for intent_id in shared:
         light = indexed["always_light"][intent_id]
         heavy = indexed["always_heavy"][intent_id]
-        chosen = indexed["inferrouter"][intent_id]
-        admissible = [
-            row for row in (light, heavy) if row["latency_ms"] <= l_max_ms
-        ]
-        if not admissible:
+        light_ok = light["latency_ms"] <= l_max_ms
+        heavy_ok = heavy["latency_ms"] <= l_max_ms
+        if not (light_ok or heavy_ok):
             unroutable += 1
             continue
-        if chosen["latency_ms"] <= l_max_ms:
-            kept = chosen
+        chosen_tier = indexed["inferrouter"][intent_id]["tier"]
+        if chosen_tier == "light" and light_ok:
+            tier = "light"
+        elif chosen_tier == "heavy" and heavy_ok:
+            tier = "heavy"
         else:
-            kept = min(admissible, key=lambda r: r["cost"])
-            forced += 1
-        kept_q.append(kept["q"])
-        kept_cost.append(kept["cost"])
+            # The chosen tier breached; only the other tier is admissible.
+            tier = "light" if light_ok else "heavy"
+            if tier == "light" and chosen_tier == "heavy":
+                forced_light += 1
+        if tier == "light":
+            kept_q.append(light["q"])
+            kept_cost.append(
+                cost_light[intent_id] if cost_light is not None else light["cost"]
+            )
+        else:
+            kept_q.append(heavy["q"])
+            kept_cost.append(
+                cost_heavy[intent_id] if cost_heavy is not None else heavy["cost"]
+            )
     return SlaOutcome(
         l_max_ms=l_max_ms,
         n_unroutable=unroutable,
-        n_forced_light=forced,
+        n_forced_light=forced_light,
         quality=float(np.mean(kept_q)) if kept_q else None,
         cost=float(np.mean(kept_cost)) if kept_cost else None,
     )
@@ -475,11 +495,11 @@ def main() -> None:
         delta = expected_specialisation_delta(accuracy, gain, loss)
         print(f"   à {accuracy * 100:5.1f} % d'exactitude : delta attendu {delta:+.3f}")
 
-    # 6. Budget de latence resserré.
+    # 6. Budget de latence resserré, en coût réel par intent.
     print("\n6. Effet d'un budget de latence dur")
     sla_rows = []
     for budget in (30_000.0, 20_000.0, 10_000.0, 5_000.0):
-        outcome = tighten_latency(indexed, budget)
+        outcome = tighten_latency(indexed, budget, real_light, real_heavy)
         sla_rows.append(outcome)
         quality = "n/a" if outcome.quality is None else f"{outcome.quality:.3f}"
         cost = "n/a" if outcome.cost is None else f"{outcome.cost:.5f}"

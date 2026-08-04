@@ -206,9 +206,9 @@ class TestTightenLatency:
                 "i3": {"q": 0.9, "cost": 0.02, "latency_ms": 80_000.0},
             },
             "inferrouter": {
-                "i1": {"q": 0.9, "cost": 0.02, "latency_ms": 9_000.0},
-                "i2": {"q": 0.95, "cost": 0.02, "latency_ms": 50_000.0},
-                "i3": {"q": 0.9, "cost": 0.02, "latency_ms": 80_000.0},
+                "i1": {"q": 0.9, "cost": 0.02, "latency_ms": 9_000.0, "tier": "heavy"},
+                "i2": {"q": 0.95, "cost": 0.02, "latency_ms": 50_000.0, "tier": "heavy"},
+                "i3": {"q": 0.9, "cost": 0.02, "latency_ms": 80_000.0, "tier": "heavy"},
             },
         }
 
@@ -233,6 +233,33 @@ class TestTightenLatency:
         assert outcome.n_unroutable == 3
         assert outcome.quality is None
         assert outcome.cost is None
+
+    def test_a_light_routed_intent_breaching_is_not_counted_as_forced_light(self):
+        # Router chose light, light breaches, heavy fits -> fallback to heavy.
+        # This must NOT count under "rabattus sur le léger".
+        indexed = {
+            "always_light": {"i1": {"q": 0.4, "cost": 0.001, "latency_ms": 40_000.0}},
+            "always_heavy": {"i1": {"q": 0.9, "cost": 0.02, "latency_ms": 9_000.0}},
+            "inferrouter": {
+                "i1": {"q": 0.4, "cost": 0.001, "latency_ms": 40_000.0, "tier": "light"}
+            },
+        }
+        outcome = tighten_latency(indexed, 10_000.0)
+        assert outcome.n_forced_light == 0
+        assert outcome.quality == pytest.approx(0.9)  # fell back to heavy
+
+    def test_real_per_intent_costs_override_the_flat_tariff(self):
+        indexed = {
+            "always_light": {"i1": {"q": 0.4, "cost": 0.001, "latency_ms": 5_000.0}},
+            "always_heavy": {"i1": {"q": 0.9, "cost": 0.02, "latency_ms": 9_000.0}},
+            "inferrouter": {
+                "i1": {"q": 0.9, "cost": 0.02, "latency_ms": 9_000.0, "tier": "heavy"}
+            },
+        }
+        outcome = tighten_latency(
+            indexed, 1e9, cost_light={"i1": 0.0}, cost_heavy={"i1": 0.05}
+        )
+        assert outcome.cost == pytest.approx(0.05)  # real, not the flat 0.02
 
     def test_tightening_never_raises_the_cost(self):
         loose = tighten_latency(self._indexed(), 1e9)
